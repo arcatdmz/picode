@@ -30,12 +30,26 @@ import java.io.*;
 
 import javax.swing.*;
 
+import jp.digitalmuseum.roboko.RobokoMain;
+import jp.digitalmuseum.roboko.parser.PdeParser;
+import jp.digitalmuseum.roboko.ui.RobokoFrame;
+
 
 /**
  * Stores information about files in the current sketch
  */
-public class Sketch {
-  private Editor editor;
+public class RobokoSketch {
+  private RobokoMain robokoMain;
+  private PdeParser pdeParser;
+  private RobokoFrame editor;
+  public PdeParser getParser() {
+    return pdeParser;
+  }
+  public static RobokoSketch newInstance(RobokoMain robokoMain) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
   private Mode mode;
 
   /** main pde file for this sketch. */
@@ -96,26 +110,12 @@ public class Sketch {
    */
 //  private File buildFolder;
 
-
   /**
-   * Used by the command-line version to create a sketch object.
-   * @param path location of the main .pde file
-   * @param mode what flavor of sketch we're dealing with.
+   * path is location of the main .pde file, because this is also simplest to
+   * use when opening the file from the finder/explorer.
    */
-  public Sketch(String path, Mode mode) {
-    this.editor = null;
-    this.mode = mode;
-    load(path);
-  }
-
-
-  /**
-   * path is location of the main .pde file, because this is also
-   * simplest to use when opening the file from the finder/explorer.
-   */
-  public Sketch(String path, Editor editor) throws IOException {
-    this.editor = editor;
-    this.mode = editor.getMode();
+  public RobokoSketch(RobokoMain robokoMain, String path) throws IOException {
+    this.robokoMain = robokoMain;
     load(path);
   }
 
@@ -286,7 +286,7 @@ public class Sketch {
     }
 
     renamingCode = false;
-    editor.status.edit("Name for new file:", "");
+    editor.getSketchListener().statusEdit("Name for new file:", "");
   }
 
 
@@ -326,7 +326,7 @@ public class Sketch {
       "New name for sketch:" : "New name for file:";
     String oldName = (current.isExtension("pde")) ?
       current.getPrettyName() : current.getFileName();
-    editor.status.edit(prompt, oldName);
+    editor.getSketchListener().statusEdit(prompt, oldName);
   }
 
 
@@ -472,15 +472,15 @@ public class Sketch {
 //        // having saved everything and renamed the folder and the main .pde,
 //        // use the editor to re-open the sketch to re-init state
 //        // (unfortunately this will kill positions for carets etc)
-//        editor.handleOpenUnchecked(newMainFilePath,
+//        editor.getSketchListener().handleOpenUnchecked(newMainFilePath,
 //                                   currentIndex,
-//                                   editor.getSelectionStart(),
-//                                   editor.getSelectionStop(),
-//                                   editor.getScrollPosition());
+//                                   editor.getSketchListener().getSelectionStart(),
+//                                   editor.getSketchListener().getSelectionStop(),
+//                                   editor.getSketchListener().getScrollPosition());
 //
 //        // get the changes into the sketchbook menu
 //        // (re-enabled in 0115 to fix bug #332)
-//        editor.base.rebuildSketchbookMenusAsync();
+//        editor.getSketchListener().baseRebuildSketchbookMenusAsync();
 
       } else {  // else if something besides code[0]
         if (!current.renameTo(newFile, newExtension)) {
@@ -515,7 +515,7 @@ public class Sketch {
     setCurrentCode(newName);
 
     // update the tabs
-    editor.header.rebuild();
+    editor.getSketchListener().headerRebuild();
   }
 
 
@@ -561,9 +561,9 @@ public class Sketch {
         //sketchbook.rebuildMenus();
 
         // make a new sketch, and i think this will rebuild the sketch menu
-        //editor.handleNewUnchecked();
-        //editor.handleClose2();
-        editor.base.handleClose(editor, false);
+        //editor.getSketchListener().handleNewUnchecked();
+        //editor.getSketchListener().handleClose2();
+        editor.getSketchListener().baseHandleClose(editor, false);
 
       } else {
         // delete the file
@@ -581,7 +581,7 @@ public class Sketch {
         setCurrentCode(0);
 
         // update the tabs
-        editor.header.repaint();
+        editor.getSketchListener().headerRepaint();
       }
     }
   }
@@ -643,7 +643,7 @@ public class Sketch {
         break;
       }
     }
-    editor.header.repaint();
+    editor.getSketchListener().headerRepaint();
 
     if (Base.isMacOS()) {
       // http://developer.apple.com/qa/qa2001/qa1146.html
@@ -661,7 +661,7 @@ public class Sketch {
   /**
    * Save all code in the current sketch. This just forces the files to save
    * in place, so if it's an untitled (un-saved) sketch, saveAs() should be
-   * called instead. (This is handled inside Editor.handleSave()).
+   * called instead. (This is handled inside editor.getSketchListener().handleSave()).
    */
   public boolean save() throws IOException {
     // make sure the user didn't hide the sketch folder
@@ -669,7 +669,7 @@ public class Sketch {
 
     // first get the contents of the editor text area
 //    if (current.isModified()) {
-    current.setProgram(editor.getText());
+    current.setProgram(editor.getSketchListener().getText());
 //    }
 
     // don't do anything if not actually modified
@@ -703,7 +703,7 @@ public class Sketch {
    * Also removes the previously-generated .class and .jar files,
    * because they can cause trouble.
    */
-  protected boolean saveAs() throws IOException {
+  public boolean saveAs() throws IOException {
     String newParentDir = null;
     String newName = null;
     // TODO rewrite this to use shared version from PApplet
@@ -810,7 +810,7 @@ public class Sketch {
     // grab the contents of the current tab before saving
     // first get the contents of the editor text area
     if (current.isModified()) {
-      current.setProgram(editor.getText());
+      current.setProgram(editor.getSketchListener().getText());
     }
 
     File[] copyItems = folder.listFiles(new FileFilter() {
@@ -859,7 +859,7 @@ public class Sketch {
     // the Recent menu so that it's not sticking around after the rename.
     // If untitled, it won't be in the menu, so there's no point.
     if (!isUntitled()) {
-      editor.removeRecent();
+      editor.getSketchListener().removeRecent();
     }
 
     // save the main tab with its new name
@@ -872,7 +872,7 @@ public class Sketch {
     setUntitled(false);
 
     // Add this sketch back using the new name
-    editor.addRecent();
+    editor.getSketchListener().addRecent();
 
     // let Editor know that the save was successful
     return true;
@@ -888,7 +888,7 @@ public class Sketch {
 //  String oldPath = getMainFilePath();
     primaryFile = code[0].getFile();
 //    String newPath = getMainFilePath();
-//    editor.base.renameRecent(oldPath, newPath);
+//    editor.getSketchListener().base.renameRecent(oldPath, newPath);
 
     name = sketchName;
     folder = sketchFolder;
@@ -902,9 +902,9 @@ public class Sketch {
     // Name changed, rebuild the sketch menus
     calcModified();
 //    System.out.println("modified is now " + modified);
-    editor.updateTitle();
-    editor.base.rebuildSketchbookMenus();
-//    editor.header.rebuild();
+    editor.getSketchListener().updateTitle();
+    editor.getSketchListener().baseRebuildSketchbookMenus();
+//    editor.getSketchListener().headerRebuild();
   }
 
 
@@ -945,7 +945,7 @@ public class Sketch {
     boolean result = addFile(sourceFile);
 
     if (result) {
-      editor.statusNotice("One file added to the sketch.");
+      editor.getSketchListener().statusNotice("One file added to the sketch.");
     }
   }
 
@@ -1060,7 +1060,7 @@ public class Sketch {
         sortCode();
       }
       setCurrentCode(filename);
-      editor.header.repaint();
+      editor.getSketchListener().headerRepaint();
       if (isUntitled()) {  // TODO probably not necessary? problematic?
         // Mark the new code as modified so that the sketch is saved
         current.setModified(true);
@@ -1098,19 +1098,19 @@ public class Sketch {
 
     // get the text currently being edited
     if (current != null) {
-      current.setState(editor.getText(),
-                       editor.getSelectionStart(),
-                       editor.getSelectionStop(),
-                       editor.getScrollPosition());
+      current.setState(editor.getSketchListener().getText(),
+                       editor.getSketchListener().getSelectionStart(),
+                       editor.getSketchListener().getSelectionStop(),
+                       editor.getSketchListener().getScrollPosition());
     }
 
     current = code[which];
     currentIndex = which;
     current.visited = System.currentTimeMillis();
 
-    editor.setCode(current);
-//    editor.header.rebuild();
-    editor.header.repaint();
+    editor.getSketchListener().setCode(current);
+//    editor.getSketchListener().headerRebuild();
+    editor.getSketchListener().headerRepaint();
   }
 
 
@@ -1164,11 +1164,11 @@ public class Sketch {
     // don't do from the command line
     if (editor != null) {
       // make sure any edits have been stored
-      current.setProgram(editor.getText());
+      current.setProgram(editor.getSketchListener().getText());
 
       // if an external editor is being used, need to grab the
       // latest version of the code from the file.
-      if (Preferences.getBoolean("editor.external")) {
+      if (Preferences.getBoolean("editor.getSketchListener().external")) {
         // set current to null so that the tab gets updated
         // http://dev.processing.org/bugs/show_bug.cgi?id=515
         current = null;
@@ -1218,7 +1218,7 @@ public class Sketch {
                          "Could not properly re-save the sketch. " +
                          "You may be in trouble at this point,\n" +
                          "and it might be time to copy and paste " +
-                         "your code to another text editor.", e);
+                         "your code to another text editor.getSketchListener().", e);
       }
     }
   }
@@ -1231,7 +1231,7 @@ public class Sketch {
    */
   public boolean isReadOnly() {
     String apath = folder.getAbsolutePath();
-    Mode mode = editor.getMode();
+    Mode mode = editor.getSketchListener().getMode();
     if (apath.startsWith(mode.getExamplesFolder().getAbsolutePath()) ||
         apath.startsWith(mode.getLibrariesFolder().getAbsolutePath())) {
       return true;
@@ -1394,14 +1394,14 @@ public class Sketch {
 
 
   public void setUntitled(boolean untitled) {
-//    editor.untitled = u;
+//    editor.getSketchListener().untitled = u;
     this.untitled = untitled;
-    editor.updateTitle();
+    editor.getSketchListener().updateTitle();
   }
 
 
   public boolean isUntitled() {
-//    return editor.untitled;
+//    return editor.getSketchListener().untitled;
     return untitled;
   }
 

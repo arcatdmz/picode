@@ -7,25 +7,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import jp.digitalmuseum.roboko.RobokoMain;
-import jp.digitalmuseum.roboko.core.Roboko;
-import jp.digitalmuseum.roboko.ui.editor.RobokoEditor;
-
 import processing.app.Base;
 import processing.app.Editor;
-import processing.app.Library;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
 import processing.app.SketchException;
 import processing.app.exec.StreamRedirectThread;
 import processing.core.PApplet;
 import processing.mode.java.JavaBuild;
-import processing.mode.java.runner.EventThread;
 import processing.mode.java.runner.MessageConsumer;
 import processing.mode.java.runner.MessageSiphon;
 
@@ -43,37 +35,35 @@ import com.sun.jdi.ReferenceType;
 import com.sun.jdi.StackFrame;
 import com.sun.jdi.StringReference;
 import com.sun.jdi.ThreadReference;
-import com.sun.jdi.VMDisconnectedException;
 import com.sun.jdi.Value;
 import com.sun.jdi.VirtualMachine;
 import com.sun.jdi.connect.Connector;
 import com.sun.jdi.connect.IllegalConnectorArgumentsException;
 import com.sun.jdi.connect.LaunchingConnector;
 import com.sun.jdi.connect.VMStartException;
-import com.sun.jdi.event.ClassPrepareEvent;
-import com.sun.jdi.event.Event;
-import com.sun.jdi.event.EventIterator;
-import com.sun.jdi.event.EventQueue;
-import com.sun.jdi.event.EventSet;
 import com.sun.jdi.event.ExceptionEvent;
-import com.sun.jdi.event.MethodEntryEvent;
-import com.sun.jdi.event.MethodExitEvent;
-import com.sun.jdi.event.ModificationWatchpointEvent;
-import com.sun.jdi.event.StepEvent;
-import com.sun.jdi.event.ThreadDeathEvent;
-import com.sun.jdi.event.VMDeathEvent;
-import com.sun.jdi.event.VMDisconnectEvent;
-import com.sun.jdi.event.VMStartEvent;
-import com.sun.jdi.request.EventRequest;
-import com.sun.jdi.request.EventRequestManager;
-import com.sun.jdi.request.ExceptionRequest;
-import com.sun.jdi.request.ModificationWatchpointRequest;
-import com.sun.jdi.request.StepRequest;
 
 /**
  * Copied from {@link processing.mode.java.runner.Runner}
  */
 public class Launcher implements MessageConsumer {
+
+  private Builder builder;
+  
+  public Launcher(Builder builder) {
+    this.builder = builder;
+  }
+
+  public void stop() {
+    if (vm != null) {
+      try {
+        vm.exit(0);
+      } catch (com.sun.jdi.VMDisconnectedException e) {
+        // Connection closed.
+      }
+      vm = null;
+    }
+  }
 
   private boolean presenting;
 
@@ -104,33 +94,6 @@ public class Launcher implements MessageConsumer {
 
   protected SketchException exception;
   //private PrintStream leechErr;
-
-  protected Editor editor;
-//  protected Sketch sketch;
-  protected JavaBuild build;
-//  private String appletClassName;
-
-
-  public Runner(JavaBuild build, RunnerListener listener) throws SketchException {
-    this.listener = listener;
-//    this.sketch = sketch;
-    this.build = build;
-
-    if (listener instanceof Editor) {
-      this.editor = (Editor) listener;
-//    } else {
-//      System.out.println("actually it's a " + listener.getClass().getName());
-    }
-
-    // Make sure all the imported libraries will actually run with this setup.
-    int bits = Base.getNativeBits();
-    for (Library library : build.getImportedLibraries()) {
-      if (!library.supportsArch(PApplet.platform, bits)) {
-        throw new SketchException(library.getName() + " does not run in " + bits + "-bit mode.");
-      }
-    }
-  }
-
 
 //  public void launch(String appletClassName, boolean presenting) {
 //    this.appletClassName = appletClassName;
@@ -193,19 +156,19 @@ public class Launcher implements MessageConsumer {
     }
 
     if (Base.isMacOS()) {
-      params.add("-Xdock:name=" + build.getSketchClassName());
+      params.add("-Xdock:name=" + builder.mainClassName);
 //      params.add("-Dcom.apple.mrj.application.apple.menu.about.name=" +
 //                 sketch.getMainClassName());
     }
     // sketch.libraryPath might be ""
     // librariesClassPath will always have sep char prepended
     params.add("-Djava.library.path=" +
-               build.getJavaLibraryPath() +
+               builder.javaLibraryPath +
                File.pathSeparator +
                System.getProperty("java.library.path"));
 
     params.add("-cp");
-    params.add(build.getClassPath());
+    params.add(builder.classPath);
 //    params.add(sketch.getClassPath() +
 //        File.pathSeparator +
 //        Base.librariesClassPath);
@@ -241,8 +204,8 @@ public class Launcher implements MessageConsumer {
     // It's dangerous to add your own main() to your code,
     // but if you've done it, we'll respect your right to hang yourself.
     // http://dev.processing.org/bugs/show_bug.cgi?id=1446
-    if (build.getFoundMain()) {
-      params.add(build.getSketchClassName());
+    if (builder.foundMain) {
+      params.add(builder.mainClassName);
 
     } else {
       params.add("processing.core.PApplet");
@@ -316,7 +279,7 @@ public class Launcher implements MessageConsumer {
 
       params.add(PApplet.ARGS_DISPLAY + "=" + runDisplay);
       params.add(PApplet.ARGS_SKETCH_FOLDER + "=" +
-                 build.getSketchPath());
+                 builder.getSketchPath());
 
       if (presenting) {
         params.add(PApplet.ARGS_FULL_SCREEN);
@@ -329,7 +292,7 @@ public class Launcher implements MessageConsumer {
                    Preferences.get("run.present.bgcolor"));
       }
 
-      params.add(build.getSketchClassName());
+      params.add(builder.mainClassName);
     }
 
 //    String outgoing[] = new String[params.size()];
@@ -507,7 +470,7 @@ public class Launcher implements MessageConsumer {
 
     EventThread eventThread = null;
     //if (writer != null) {
-    eventThread = new EventThread(this, vm, excludes, writer);
+    eventThread = new EventThread(this, writer);
     eventThread.start();
     eventThread.setEventRequests(watchFields);
     //}
@@ -551,9 +514,11 @@ public class Launcher implements MessageConsumer {
       // This happens when the sketch is exited by hitting ESC,
       // or the user manually closes the sketch window.
       // TODO this should be handled better, should it not?
+      /*
       if (editor != null) {
         editor.deactivateRun();
       }
+      */
     } catch (InterruptedException exc) {
       // we don't interrupt
     }
@@ -619,9 +584,11 @@ public class Launcher implements MessageConsumer {
     if (!handleCommonErrors(exceptionName, message, listener)) {
       reportException(message, or, event.thread());
     }
+    /*
     if (editor != null) {
       editor.deactivateRun();
     }
+    */
   }
 
 
@@ -699,7 +666,7 @@ public class Launcher implements MessageConsumer {
           filename = location.sourceName();
           int lineNumber = location.lineNumber() - 1;
           SketchException rex =
-            build.placeException(message, filename, lineNumber);
+            builder.placeException(message, filename, lineNumber);
           if (rex != null) {
             return rex;
           }
@@ -734,7 +701,7 @@ public class Launcher implements MessageConsumer {
         IntegerValue intval = (IntegerValue) ref.invokeMethod(thread, method, new ArrayList<Value>(), ObjectReference.INVOKE_SINGLE_THREADED);
         int lineNumber = intval.intValue() - 1;
         SketchException rex =
-          build.placeException(message, filename, lineNumber);
+          builder.placeException(message, filename, lineNumber);
         if (rex != null) {
           return rex;
         }
@@ -781,11 +748,13 @@ public class Launcher implements MessageConsumer {
     // that signals that the applet has been quit.
     if (s.indexOf(PApplet.EXTERNAL_STOP) == 0) {
       //System.out.println("external: quit");
+      /*
       if (editor != null) {
 //        editor.internalCloseRunner();  // [091124]
 //        editor.handleStop();  // prior to 0192
         editor.internalCloseRunner();  // 0192
       }
+      */
       return;
     }
 

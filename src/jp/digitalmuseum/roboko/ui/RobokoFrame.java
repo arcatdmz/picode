@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -41,12 +42,13 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import processing.app.EditorFrameAbstractImpl;
+import processing.app.Mode;
 import processing.app.RobokoSketch;
 import processing.app.SketchCode;
+
 import java.awt.event.InputEvent;
 
-public class RobokoFrame extends EditorFrameAbstractImpl {
+public class RobokoFrame extends JFrame {
 	private static final long serialVersionUID = -7081881044895496089L;
 
 	private static final Font defaultFont = Phybots.getInstance().getDefaultFont();
@@ -201,6 +203,88 @@ public class RobokoFrame extends EditorFrameAbstractImpl {
 			it.remove();
 		}
 	}
+	
+	public RobokoEditorProxy getSketchListener() {
+	  return new RobokoEditorProxy();
+	}
+
+  public static class RobokoEditorProxy {
+
+    public void statusNotice(String string) {
+      // TODO 自動生成されたメソッド・スタブ
+
+    }
+
+    public int getSelectionStart() {
+      // TODO 自動生成されたメソッド・スタブ
+      return 0;
+    }
+
+    public int getSelectionStop() {
+      // TODO 自動生成されたメソッド・スタブ
+      return 0;
+    }
+
+    public int getScrollPosition() {
+      // TODO 自動生成されたメソッド・スタブ
+      return 0;
+    }
+
+    public void setCode(SketchCode current) {
+      // TODO 自動生成されたメソッド・スタブ
+
+    }
+
+    public void statusEdit(String string, String string2) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void headerRebuild() {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void baseHandleClose(RobokoFrame editor, boolean b) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void headerRepaint() {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public String getText() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public void removeRecent() {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void addRecent() {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void updateTitle() {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void baseRebuildSketchbookMenus() {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public Mode getMode() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+  }
 
 	@Override
 	public void dispose() {

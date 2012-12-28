@@ -1,15 +1,11 @@
 package jp.digitalmuseum.roboko.builder;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.Method;
-
-import org.eclipse.jdt.core.compiler.CompilationProgress;
-import org.eclipse.jdt.core.compiler.batch.BatchCompiler;
 
 import processing.app.Base;
 import processing.app.Editor;
@@ -26,7 +22,7 @@ public class Compiler {
 	}
 
 	/**
-	 * Copied from {@link processing.mode.java.JavaBuild#preprocess(File)}
+	 * Copied from {@link processing.mode.java.Compiler}
 	 * Compile with ECJ. See http://j.mp/8paifz for documentation.
 	 * <dl>
 	 * <dt>In:</dt>
@@ -53,8 +49,7 @@ public class Compiler {
 		String[] command = PApplet.concat(baseCommand, sourceFiles);
 
 		try {
-			// Create single method dummy writer class to slurp errors from
-			// ecj
+			// Create single method dummy writer class to slurp errors from ecj
 			final StringBuffer errorBuffer = new StringBuffer();
 			Writer internalWriter = new Writer() {
 				public void write(char[] buf, int off, int len) {

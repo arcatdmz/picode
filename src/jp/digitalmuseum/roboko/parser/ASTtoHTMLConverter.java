@@ -80,27 +80,27 @@ public class ASTtoHTMLConverter {
 			printChildren(ast);
 			break;
 
-		case PdeWalker.PACKAGE_DEF:
+		case PdeTokenTypes.PACKAGE_DEF:
 			sb.append(String.format(FORMAT_KEYWORDS, "package"));
 			dumpHiddenAfter(ast);
 			doConvert(ast.getFirstChild());
 			break;
 
 		// IMPORT has exactly one child
-		case PdeWalker.IMPORT:
+		case PdeTokenTypes.IMPORT:
 			sb.append(String.format(FORMAT_KEYWORDS, "import"));
 			dumpHiddenAfter(ast);
 			doConvert(ast.getFirstChild());
 			break;
 
-		case PdeWalker.STATIC_IMPORT:
+		case PdeTokenTypes.STATIC_IMPORT:
 			sb.append(String.format(FORMAT_KEYWORDS, "import static"));
 			dumpHiddenAfter(ast);
 			doConvert(ast.getFirstChild());
 			break;
 
-		case PdeWalker.CLASS_DEF:
-		case PdeWalker.INTERFACE_DEF:
+		case PdeTokenTypes.CLASS_DEF:
+		case PdeTokenTypes.INTERFACE_DEF:
 			doConvert(getChild(ast, PdeTokenTypes.MODIFIERS));
 			sb.append(String.format(FORMAT_KEYWORDS,
 					ast.getType() == PdeTokenTypes.CLASS_DEF ?
@@ -113,7 +113,7 @@ public class ASTtoHTMLConverter {
 			doConvert(getChild(ast, PdeTokenTypes.OBJBLOCK));
 			break;
 
-		case PdeWalker.EXTENDS_CLAUSE:
+		case PdeTokenTypes.EXTENDS_CLAUSE:
 			if (hasChildren(ast)) {
 				sb.append(String.format(FORMAT_KEYWORDS, "extends"));
 				dumpHiddenBefore(getBestPrintableNode(ast, false));
@@ -121,7 +121,7 @@ public class ASTtoHTMLConverter {
 			}
 			break;
 
-		case PdeWalker.IMPLEMENTS_CLAUSE:
+		case PdeTokenTypes.IMPLEMENTS_CLAUSE:
 			if (hasChildren(ast)) {
 				sb.append(String.format(FORMAT_KEYWORDS, "implements"));
 				dumpHiddenBefore(getBestPrintableNode(ast, false));
@@ -130,47 +130,47 @@ public class ASTtoHTMLConverter {
 			break;
 
 		// DOT always has exactly two children.
-		case PdeWalker.DOT:
+		case PdeTokenTypes.DOT:
 			doConvert(child1);
 			sb.append(".");
 			dumpHiddenAfter(ast);
 			doConvert(child2);
 			break;
 
-		case PdeWalker.METHOD_CALL:
+		case PdeTokenTypes.METHOD_CALL:
 			if (handleRobokoMethodCall(child1, child2, sb)) {
 				break;
 			}
-		case PdeWalker.MODIFIERS:
-		case PdeWalker.OBJBLOCK:
-		case PdeWalker.CTOR_DEF:
+		case PdeTokenTypes.MODIFIERS:
+		case PdeTokenTypes.OBJBLOCK:
+		case PdeTokenTypes.CTOR_DEF:
 			// case PdeWalker.METHOD_DEF:
-		case PdeWalker.PARAMETERS:
-		case PdeWalker.PARAMETER_DEF:
-		case PdeWalker.VARIABLE_PARAMETER_DEF:
-		case PdeWalker.VARIABLE_DEF:
-		case PdeWalker.TYPE:
-		case PdeWalker.SLIST:
-		case PdeWalker.ELIST:
-		case PdeWalker.ARRAY_DECLARATOR:
-		case PdeWalker.TYPECAST:
-		case PdeWalker.EXPR:
-		case PdeWalker.ARRAY_INIT:
-		case PdeWalker.FOR_INIT:
-		case PdeWalker.FOR_CONDITION:
-		case PdeWalker.FOR_ITERATOR:
-		case PdeWalker.INSTANCE_INIT:
-		case PdeWalker.INDEX_OP:
-		case PdeWalker.SUPER_CTOR_CALL:
-		case PdeWalker.CTOR_CALL:
-		case PdeWalker.METHOD_DEF:
+		case PdeTokenTypes.PARAMETERS:
+		case PdeTokenTypes.PARAMETER_DEF:
+		case PdeTokenTypes.VARIABLE_PARAMETER_DEF:
+		case PdeTokenTypes.VARIABLE_DEF:
+		case PdeTokenTypes.TYPE:
+		case PdeTokenTypes.SLIST:
+		case PdeTokenTypes.ELIST:
+		case PdeTokenTypes.ARRAY_DECLARATOR:
+		case PdeTokenTypes.TYPECAST:
+		case PdeTokenTypes.EXPR:
+		case PdeTokenTypes.ARRAY_INIT:
+		case PdeTokenTypes.FOR_INIT:
+		case PdeTokenTypes.FOR_CONDITION:
+		case PdeTokenTypes.FOR_ITERATOR:
+		case PdeTokenTypes.INSTANCE_INIT:
+		case PdeTokenTypes.INDEX_OP:
+		case PdeTokenTypes.SUPER_CTOR_CALL:
+		case PdeTokenTypes.CTOR_CALL:
+		case PdeTokenTypes.METHOD_DEF:
 			printChildren(ast);
 			break;
 
 		// if we have two children, it's of the form "a=0"
 		// if just one child, it's of the form "=0" (where the
 		// lhs is above this AST).
-		case PdeWalker.ASSIGN:
+		case PdeTokenTypes.ASSIGN:
 			if (child2 != null) {
 				doConvert(child1);
 				sb.append("=");
@@ -184,41 +184,41 @@ public class ASTtoHTMLConverter {
 			break;
 
 		// binary operators:
-		case PdeWalker.PLUS:
-		case PdeWalker.MINUS:
-		case PdeWalker.DIV:
-		case PdeWalker.MOD:
-		case PdeWalker.NOT_EQUAL:
-		case PdeWalker.EQUAL:
-		case PdeWalker.LE:
-		case PdeWalker.GE:
-		case PdeWalker.LOR:
-		case PdeWalker.LAND:
-		case PdeWalker.BOR:
-		case PdeWalker.BXOR:
-		case PdeWalker.BAND:
-		case PdeWalker.SL:
-		case PdeWalker.SR:
-		case PdeWalker.BSR:
-		case PdeWalker.LITERAL_instanceof:
-		case PdeWalker.PLUS_ASSIGN:
-		case PdeWalker.MINUS_ASSIGN:
-		case PdeWalker.STAR_ASSIGN:
-		case PdeWalker.DIV_ASSIGN:
-		case PdeWalker.MOD_ASSIGN:
-		case PdeWalker.SR_ASSIGN:
-		case PdeWalker.BSR_ASSIGN:
-		case PdeWalker.SL_ASSIGN:
-		case PdeWalker.BAND_ASSIGN:
-		case PdeWalker.BXOR_ASSIGN:
-		case PdeWalker.BOR_ASSIGN:
+		case PdeTokenTypes.PLUS:
+		case PdeTokenTypes.MINUS:
+		case PdeTokenTypes.DIV:
+		case PdeTokenTypes.MOD:
+		case PdeTokenTypes.NOT_EQUAL:
+		case PdeTokenTypes.EQUAL:
+		case PdeTokenTypes.LE:
+		case PdeTokenTypes.GE:
+		case PdeTokenTypes.LOR:
+		case PdeTokenTypes.LAND:
+		case PdeTokenTypes.BOR:
+		case PdeTokenTypes.BXOR:
+		case PdeTokenTypes.BAND:
+		case PdeTokenTypes.SL:
+		case PdeTokenTypes.SR:
+		case PdeTokenTypes.BSR:
+		case PdeTokenTypes.LITERAL_instanceof:
+		case PdeTokenTypes.PLUS_ASSIGN:
+		case PdeTokenTypes.MINUS_ASSIGN:
+		case PdeTokenTypes.STAR_ASSIGN:
+		case PdeTokenTypes.DIV_ASSIGN:
+		case PdeTokenTypes.MOD_ASSIGN:
+		case PdeTokenTypes.SR_ASSIGN:
+		case PdeTokenTypes.BSR_ASSIGN:
+		case PdeTokenTypes.SL_ASSIGN:
+		case PdeTokenTypes.BAND_ASSIGN:
+		case PdeTokenTypes.BXOR_ASSIGN:
+		case PdeTokenTypes.BOR_ASSIGN:
 
-		case PdeWalker.LT:
-		case PdeWalker.GT:
+		case PdeTokenTypes.LT:
+		case PdeTokenTypes.GT:
 			printBinaryOperator(ast);
 			break;
 
-		case PdeWalker.LITERAL_for:
+		case PdeTokenTypes.LITERAL_for:
 			sb.append(String.format(FORMAT_KEYWORDS, "for"));
 			dumpHiddenAfter(ast);
 			if (child1.getType() == PdeTokenTypes.FOR_EACH_CLAUSE) {
@@ -229,122 +229,122 @@ public class ASTtoHTMLConverter {
 			}
 			break;
 
-		case PdeWalker.POST_INC:
-		case PdeWalker.POST_DEC:
+		case PdeTokenTypes.POST_INC:
+		case PdeTokenTypes.POST_DEC:
 			doConvert(child1);
 			sb.append(getSanitizedText(ast));
 			dumpHiddenAfter(ast);
 			break;
 
 		// unary operators:
-		case PdeWalker.BNOT:
-		case PdeWalker.LNOT:
-		case PdeWalker.INC:
-		case PdeWalker.DEC:
-		case PdeWalker.UNARY_MINUS:
-		case PdeWalker.UNARY_PLUS:
+		case PdeTokenTypes.BNOT:
+		case PdeTokenTypes.LNOT:
+		case PdeTokenTypes.INC:
+		case PdeTokenTypes.DEC:
+		case PdeTokenTypes.UNARY_MINUS:
+		case PdeTokenTypes.UNARY_PLUS:
 			sb.append(getSanitizedText(ast));
 			dumpHiddenAfter(ast);
 			doConvert(child1);
 			break;
 
-		case PdeWalker.LITERAL_new:
+		case PdeTokenTypes.LITERAL_new:
 			sb.append(String.format(FORMAT_KEYWORDS, "new"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_return:
+		case PdeTokenTypes.LITERAL_return:
 			sb.append(String.format(FORMAT_KEYWORDS, "return"));
 			dumpHiddenAfter(ast);
 			doConvert(child1);
 			break;
 
-		case PdeWalker.STATIC_INIT:
+		case PdeTokenTypes.STATIC_INIT:
 			sb.append(String.format(FORMAT_KEYWORDS, "static"));
 			dumpHiddenBefore(getBestPrintableNode(ast, false));
 			doConvert(child1);
 			break;
 
-		case PdeWalker.LITERAL_switch:
+		case PdeTokenTypes.LITERAL_switch:
 			sb.append(String.format(FORMAT_KEYWORDS, "switch"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LABELED_STAT:
-		case PdeWalker.CASE_GROUP:
+		case PdeTokenTypes.LABELED_STAT:
+		case PdeTokenTypes.CASE_GROUP:
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_case:
+		case PdeTokenTypes.LITERAL_case:
 			sb.append(String.format(FORMAT_KEYWORDS, "case"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_default:
+		case PdeTokenTypes.LITERAL_default:
 			sb.append(String.format(FORMAT_KEYWORDS, "default"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.NUM_INT:
-		case PdeWalker.CHAR_LITERAL:
-		case PdeWalker.STRING_LITERAL:
-		case PdeWalker.NUM_FLOAT:
-		case PdeWalker.NUM_LONG:
+		case PdeTokenTypes.NUM_INT:
+		case PdeTokenTypes.CHAR_LITERAL:
+		case PdeTokenTypes.STRING_LITERAL:
+		case PdeTokenTypes.NUM_FLOAT:
+		case PdeTokenTypes.NUM_LONG:
 			sb.append(getSanitizedText(ast));
 			dumpHiddenAfter(ast);
 			break;
 
-		case PdeWalker.LITERAL_synchronized: // 0137 to fix bug #136
-		case PdeWalker.LITERAL_assert:
+		case PdeTokenTypes.LITERAL_synchronized: // 0137 to fix bug #136
+		case PdeTokenTypes.LITERAL_assert:
 			sb.append(String.format(FORMAT_KEYWORDS,
 					getSanitizedText(ast)));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_private:
-		case PdeWalker.LITERAL_public:
-		case PdeWalker.LITERAL_protected:
-		case PdeWalker.LITERAL_static:
-		case PdeWalker.LITERAL_transient:
-		case PdeWalker.LITERAL_native:
-		case PdeWalker.LITERAL_threadsafe:
+		case PdeTokenTypes.LITERAL_private:
+		case PdeTokenTypes.LITERAL_public:
+		case PdeTokenTypes.LITERAL_protected:
+		case PdeTokenTypes.LITERAL_static:
+		case PdeTokenTypes.LITERAL_transient:
+		case PdeTokenTypes.LITERAL_native:
+		case PdeTokenTypes.LITERAL_threadsafe:
 			// case PdeWalker.LITERAL_synchronized: // 0137 to fix bug #136
-		case PdeWalker.LITERAL_volatile:
-		case PdeWalker.LITERAL_class: // 0176 to fix bug #1466
-		case PdeWalker.FINAL:
-		case PdeWalker.ABSTRACT:
-		case PdeWalker.LITERAL_package:
-		case PdeWalker.LITERAL_void:
-		case PdeWalker.LITERAL_boolean:
-		case PdeWalker.LITERAL_byte:
-		case PdeWalker.LITERAL_char:
-		case PdeWalker.LITERAL_short:
-		case PdeWalker.LITERAL_int:
-		case PdeWalker.LITERAL_float:
-		case PdeWalker.LITERAL_long:
-		case PdeWalker.LITERAL_double:
-		case PdeWalker.LITERAL_true:
-		case PdeWalker.LITERAL_false:
-		case PdeWalker.LITERAL_null:
-		case PdeWalker.SEMI:
-		case PdeWalker.LITERAL_this:
-		case PdeWalker.LITERAL_super:
+		case PdeTokenTypes.LITERAL_volatile:
+		case PdeTokenTypes.LITERAL_class: // 0176 to fix bug #1466
+		case PdeTokenTypes.FINAL:
+		case PdeTokenTypes.ABSTRACT:
+		case PdeTokenTypes.LITERAL_package:
+		case PdeTokenTypes.LITERAL_void:
+		case PdeTokenTypes.LITERAL_boolean:
+		case PdeTokenTypes.LITERAL_byte:
+		case PdeTokenTypes.LITERAL_char:
+		case PdeTokenTypes.LITERAL_short:
+		case PdeTokenTypes.LITERAL_int:
+		case PdeTokenTypes.LITERAL_float:
+		case PdeTokenTypes.LITERAL_long:
+		case PdeTokenTypes.LITERAL_double:
+		case PdeTokenTypes.LITERAL_true:
+		case PdeTokenTypes.LITERAL_false:
+		case PdeTokenTypes.LITERAL_null:
+		case PdeTokenTypes.SEMI:
+		case PdeTokenTypes.LITERAL_this:
+		case PdeTokenTypes.LITERAL_super:
 			sb.append(String.format(FORMAT_KEYWORDS,
 					getSanitizedText(ast)));
 			dumpHiddenAfter(ast);
 			break;
 
-		case PdeWalker.EMPTY_STAT:
-		case PdeWalker.EMPTY_FIELD:
+		case PdeTokenTypes.EMPTY_STAT:
+		case PdeTokenTypes.EMPTY_FIELD:
 			break;
 
-		case PdeWalker.LITERAL_continue:
-		case PdeWalker.LITERAL_break:
+		case PdeTokenTypes.LITERAL_continue:
+		case PdeTokenTypes.LITERAL_break:
 			sb.append(String.format(FORMAT_KEYWORDS,
 					getSanitizedText(ast)));
 			dumpHiddenAfter(ast);
@@ -354,7 +354,7 @@ public class ASTtoHTMLConverter {
 			break;
 
 		// yuck: Distinguish between "import x.y.*" and "x = 1 * 3"
-		case PdeWalker.STAR:
+		case PdeTokenTypes.STAR:
 			if (hasChildren(ast)) { // the binary mult. operator
 				printBinaryOperator(ast);
 			} else { // the special "*" in import:
@@ -363,23 +363,23 @@ public class ASTtoHTMLConverter {
 			}
 			break;
 
-		case PdeWalker.LITERAL_throws:
+		case PdeTokenTypes.LITERAL_throws:
 			sb.append(String.format(FORMAT_KEYWORDS, "throws"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_if:
+		case PdeTokenTypes.LITERAL_if:
 			printIfThenElse(ast);
 			break;
 
-		case PdeWalker.LITERAL_while:
+		case PdeTokenTypes.LITERAL_while:
 			sb.append(String.format(FORMAT_KEYWORDS, "while"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_do:
+		case PdeTokenTypes.LITERAL_do:
 			sb.append(String.format(FORMAT_KEYWORDS, "do"));
 			dumpHiddenAfter(ast);
 			doConvert(child1); // an SLIST
@@ -388,33 +388,33 @@ public class ASTtoHTMLConverter {
 			doConvert(child2); // an EXPR
 			break;
 
-		case PdeWalker.LITERAL_try:
+		case PdeTokenTypes.LITERAL_try:
 			sb.append(String.format(FORMAT_KEYWORDS, "try"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_catch:
+		case PdeTokenTypes.LITERAL_catch:
 			sb.append(String.format(FORMAT_KEYWORDS, "catch"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
 		// the first child is the "try" and the second is the SLIST
-		case PdeWalker.LITERAL_finally:
+		case PdeTokenTypes.LITERAL_finally:
 			sb.append(String.format(FORMAT_KEYWORDS, "finally"));
 			dumpHiddenAfter(ast);
 			printChildren(ast);
 			break;
 
-		case PdeWalker.LITERAL_throw:
+		case PdeTokenTypes.LITERAL_throw:
 			sb.append(String.format(FORMAT_KEYWORDS, "throw"));
 			dumpHiddenAfter(ast);
 			doConvert(child1);
 			break;
 
 		// the dreaded trinary operator
-		case PdeWalker.QUESTION:
+		case PdeTokenTypes.QUESTION:
 			doConvert(child1);
 			sb.append("?");
 			dumpHiddenAfter(ast);
@@ -425,19 +425,19 @@ public class ASTtoHTMLConverter {
 		// pde specific or modified tokens start here
 
 		// Image -> BImage, Font -> BFont as appropriate
-		case PdeWalker.IDENT:
+		case PdeTokenTypes.IDENT:
 			sb.append(getSanitizedText(ast));
 			dumpHiddenAfter(ast);
 			break;
 
 		// the color datatype is just an alias for int
-		case PdeWalker.LITERAL_color:
+		case PdeTokenTypes.LITERAL_color:
 			// sb.append("int");
 			sb.append(String.format(FORMAT_KEYWORDS, "color"));
 			dumpHiddenAfter(ast);
 			break;
 
-		case PdeWalker.WEBCOLOR_LITERAL:
+		case PdeTokenTypes.WEBCOLOR_LITERAL:
 			sb.append(ast.getText());
 			/*
 			if (ast.getText().length() != 6) {
@@ -452,7 +452,7 @@ public class ASTtoHTMLConverter {
 			break;
 
 		// allow for stuff like int(43.2).
-		case PdeWalker.CONSTRUCTOR_CAST:
+		case PdeTokenTypes.CONSTRUCTOR_CAST:
 			final AST terminalTypeNode = child1.getFirstChild();
 			final AST exprToCast = child2;
 			final String pooType = terminalTypeNode.getText();
@@ -467,48 +467,48 @@ public class ASTtoHTMLConverter {
 			break;
 
 		// making floating point literals default to floats, not doubles
-		case PdeWalker.NUM_DOUBLE:
+		case PdeTokenTypes.NUM_DOUBLE:
 			final String literalDouble = ast.getText(); // .toLowerCase();
 			sb.append(literalDouble);
 			dumpHiddenAfter(ast);
 			break;
 
-		case PdeWalker.TYPE_ARGUMENTS:
-		case PdeWalker.TYPE_PARAMETERS:
+		case PdeTokenTypes.TYPE_ARGUMENTS:
+		case PdeTokenTypes.TYPE_PARAMETERS:
 			printChildren(ast);
 			break;
 
-		case PdeWalker.TYPE_ARGUMENT:
-		case PdeWalker.TYPE_PARAMETER:
+		case PdeTokenTypes.TYPE_ARGUMENT:
+		case PdeTokenTypes.TYPE_PARAMETER:
 			printChildren(ast);
 			break;
 
-		case PdeWalker.WILDCARD_TYPE:
+		case PdeTokenTypes.WILDCARD_TYPE:
 			sb.append(getSanitizedText(ast));
 			dumpHiddenAfter(ast);
 			doConvert(ast.getFirstChild());
 			break;
 
-		case PdeWalker.TYPE_LOWER_BOUNDS:
-		case PdeWalker.TYPE_UPPER_BOUNDS:
+		case PdeTokenTypes.TYPE_LOWER_BOUNDS:
+		case PdeTokenTypes.TYPE_UPPER_BOUNDS:
 			sb.append(
 					String.format(FORMAT_KEYWORDS,
-					ast.getType() == PdeWalker.TYPE_LOWER_BOUNDS ?
+					ast.getType() == PdeTokenTypes.TYPE_LOWER_BOUNDS ?
 							"super" : "extends"));
 			dumpHiddenBefore(getBestPrintableNode(ast, false));
 			printChildren(ast);
 			break;
 
-		case PdeWalker.ANNOTATION:
+		case PdeTokenTypes.ANNOTATION:
 			sb.append("@");
 			printChildren(ast);
 			break;
 
-		case PdeWalker.ANNOTATION_ARRAY_INIT:
+		case PdeTokenTypes.ANNOTATION_ARRAY_INIT:
 			printChildren(ast);
 			break;
 
-		case PdeWalker.ANNOTATION_MEMBER_VALUE_PAIR:
+		case PdeTokenTypes.ANNOTATION_MEMBER_VALUE_PAIR:
 			doConvert(ast.getFirstChild());
 			sb.append("=");
 			dumpHiddenBefore(getBestPrintableNode(ast.getFirstChild()
@@ -524,8 +524,8 @@ public class ASTtoHTMLConverter {
 	}
 
 	private boolean handleRobokoMethodCall(AST dot, AST elist, StringBuilder sb) {
-		if (dot.getType() == PdeWalker.DOT &&
-				elist.getType() == PdeWalker.ELIST) {
+		if (dot.getType() == PdeTokenTypes.DOT &&
+				elist.getType() == PdeTokenTypes.ELIST) {
 			AST className = dot.getFirstChild();
 			AST methodName = className.getNextSibling();
 			if ("Roboko".equals(className.getText())) {
@@ -534,7 +534,7 @@ public class ASTtoHTMLConverter {
 						AST parameterExpression = elist.getFirstChild();
 						if (parameterExpression.getNumberOfChildren() == 1) {
 							AST poseFileName = parameterExpression.getFirstChild();
-							if (poseFileName.getType() == PdeWalker.STRING_LITERAL) {
+							if (poseFileName.getType() == PdeTokenTypes.STRING_LITERAL) {
 								String fileName = poseFileName.getText();
 								fileName = fileName.substring(1, fileName.length() - 1);
 								String imageTag = String.format("<img src=\"%s/%s.thumb.png\" border=\"1\" align=\"middle\">",
@@ -716,8 +716,8 @@ public class ASTtoHTMLConverter {
 	private void dumpHiddenTokens(CommonHiddenStreamToken t) {
 		for (; t != null; t = pp.getHiddenAfter(t)) {
 			switch (t.getType()) {
-			case PdeWalker.SL_COMMENT:
-			case PdeWalker.ML_COMMENT:
+			case PdeTokenTypes.SL_COMMENT:
+			case PdeTokenTypes.ML_COMMENT:
 				sb.append(String.format(
 						FORMAT_COMMENT,
 						getSanitizedText(t.getText())));

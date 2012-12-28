@@ -11,13 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import processing.app.Base;
-import processing.app.Editor;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
 import processing.app.SketchException;
 import processing.app.exec.StreamRedirectThread;
 import processing.core.PApplet;
-import processing.mode.java.JavaBuild;
 import processing.mode.java.runner.MessageConsumer;
 import processing.mode.java.runner.MessageSiphon;
 
@@ -63,6 +61,12 @@ public class Launcher implements MessageConsumer {
       }
       vm = null;
     }
+  }
+
+  private SketchException placeException(String message, String filename,
+                                         int lineNumber) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   private boolean presenting;
@@ -220,9 +224,9 @@ public class Launcher implements MessageConsumer {
       // Otherwise, the editor location will be passed, and the applet will
       // figure out where to place itself based on the editor location.
       // --editor-location=150,20
-      if (editor != null) {  // if running processing-cmd, don't do placement
+      //if (editor != null) {  // if running processing-cmd, don't do placement
         GraphicsDevice editorDevice =
-          editor.getGraphicsConfiguration().getDevice();
+          builder.robokoMain.getRobokoFrame().getGraphicsConfiguration().getDevice();
         GraphicsEnvironment ge =
           GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] devices = ge.getScreenDevices();
@@ -244,7 +248,7 @@ public class Launcher implements MessageConsumer {
           }
         }
 
-        Point windowLocation = editor.getSketchLocation();
+        Point windowLocation = builder.robokoMain.getRobokoFrame().getSketchLocation();
 //        if (windowLocation != null) {
 //          // could check to make sure the sketch location is on the device
 //          // that's specified in Preferences, but that's going to be annoying
@@ -257,7 +261,7 @@ public class Launcher implements MessageConsumer {
           if (editorDevice == runDevice) {
             // If sketches are to be shown on the same display as the editor,
             // provide the editor location so the sketch's main() can place it.
-            Point editorLocation = editor.getLocation();
+            Point editorLocation = builder.robokoMain.getRobokoFrame().getLocation();
             params.add(PApplet.ARGS_EDITOR_LOCATION + "=" +
                        editorLocation.x + "," + editorLocation.y);
           } else {
@@ -275,7 +279,7 @@ public class Launcher implements MessageConsumer {
                      windowLocation.x + "," + windowLocation.y);
         }
         params.add(PApplet.ARGS_EXTERNAL);
-      }
+      //}
 
       params.add(PApplet.ARGS_DISPLAY + "=" + runDisplay);
       params.add(PApplet.ARGS_SKETCH_FOLDER + "=" +
@@ -666,7 +670,7 @@ public class Launcher implements MessageConsumer {
           filename = location.sourceName();
           int lineNumber = location.lineNumber() - 1;
           SketchException rex =
-            builder.placeException(message, filename, lineNumber);
+            placeException(message, filename, lineNumber);
           if (rex != null) {
             return rex;
           }
@@ -701,7 +705,7 @@ public class Launcher implements MessageConsumer {
         IntegerValue intval = (IntegerValue) ref.invokeMethod(thread, method, new ArrayList<Value>(), ObjectReference.INVOKE_SINGLE_THREADED);
         int lineNumber = intval.intValue() - 1;
         SketchException rex =
-          builder.placeException(message, filename, lineNumber);
+          placeException(message, filename, lineNumber);
         if (rex != null) {
           return rex;
         }
@@ -715,7 +719,6 @@ public class Launcher implements MessageConsumer {
     rex.hideStackTrace();
     return rex;
   }
-
 
   public void close() {
     // TODO make sure stop() has already been called to exit the sketch
@@ -766,7 +769,7 @@ public class Launcher implements MessageConsumer {
       int left = Integer.parseInt(nums.substring(0, space));
       int top = Integer.parseInt(nums.substring(space + 1));
       // this is only fired when connected to an editor
-      editor.setSketchLocation(new Point(left, top));
+      builder.robokoMain.getRobokoFrame().setSketchLocation(new Point(left, top));
       //System.out.println("external: move to " + left + " " + top);
       return;
     }

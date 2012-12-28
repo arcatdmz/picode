@@ -6,7 +6,6 @@ import javax.swing.AbstractAction;
 import processing.app.SketchException;
 
 import jp.digitalmuseum.roboko.RobokoMain;
-import jp.digitalmuseum.roboko.RobokoSettings;
 import jp.digitalmuseum.roboko.builder.Builder;
 
 public class RunAction extends AbstractAction {
@@ -22,9 +21,7 @@ public class RunAction extends AbstractAction {
 		if (robokoMain.getLauncher() != null) {
 			new StopAction(robokoMain).actionPerformed(e);
 		}
-		Builder builder = new Builder(robokoMain, robokoMain.getSketch())
-				.setSrcFolder(RobokoSettings.getSrcFolderPath())
-				.setBinFolder(RobokoSettings.getBinFolderPath());
+		Builder builder = new Builder(robokoMain, robokoMain.getSketch());
 		try {
 			robokoMain.getRobot().disconnect();
 			robokoMain.setLauncher(builder.run());

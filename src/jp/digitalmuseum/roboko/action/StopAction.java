@@ -19,7 +19,7 @@ public class StopAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		Launcher launcher = robokoMain.getLauncher();
 		if (launcher != null) {
-			launcher.stop();
+			launcher.close();
 		}
 	}
 }

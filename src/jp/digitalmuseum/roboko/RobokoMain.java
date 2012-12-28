@@ -1,9 +1,7 @@
 package jp.digitalmuseum.roboko;
 
-import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -25,7 +23,7 @@ import jp.digitalmuseum.roboko.ui.library.PoseManager;
 
 public class RobokoMain {
 
-	private static final boolean FOR_KINECT = false;
+	private static final boolean FOR_KINECT = true;
 	private RobokoSketch sketch;
 	private RobokoFrame robokoFrame;
 
@@ -38,18 +36,9 @@ public class RobokoMain {
 
 	public RobokoMain() {
 
-		// Matereal.getInstance().showDebugFrame();
+		Phybots.getInstance().showDebugFrame();
 		ProcessingIntegration.init();
-		
 
-		  try {
-		    java.awt.Robot r = new java.awt.Robot();
-		    r.keyPress(java.awt.event.KeyEvent.VK_RIGHT);
-		    r.keyRelease(java.awt.event.KeyEvent.VK_RIGHT);
-		  } catch (java.awt.AWTException e) {
-		    e.printStackTrace();
-		  }
-		
 		try {
 			if (FOR_KINECT) {
 				robot = new Human(this);
@@ -61,6 +50,7 @@ public class RobokoMain {
 			camera = new Camera();
 			sketch = RobokoSettings.getDefaultSketch(this);
 		} catch (RuntimeException e) {
+		  e.printStackTrace();
 			System.err.println("Unsupported robot type.");
 			return;
 		} catch (IOException e) {

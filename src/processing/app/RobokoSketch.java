@@ -31,6 +31,7 @@ import java.io.*;
 import javax.swing.*;
 
 import jp.digitalmuseum.roboko.RobokoMain;
+import jp.digitalmuseum.roboko.RobokoSettings;
 import jp.digitalmuseum.roboko.parser.PdeParser;
 import jp.digitalmuseum.roboko.ui.RobokoFrame;
 
@@ -39,7 +40,6 @@ import jp.digitalmuseum.roboko.ui.RobokoFrame;
  * Stores information about files in the current sketch
  */
 public class RobokoSketch {
-  private RobokoMain robokoMain;
   private PdeParser pdeParser;
   private RobokoFrame editor;
   public PdeParser getParser() {
@@ -49,8 +49,6 @@ public class RobokoSketch {
     // TODO Auto-generated method stub
     return null;
   }
-
-  private Mode mode;
 
   /** main pde file for this sketch. */
   private File primaryFile;
@@ -115,7 +113,7 @@ public class RobokoSketch {
    * use when opening the file from the finder/explorer.
    */
   public RobokoSketch(RobokoMain robokoMain, String path) throws IOException {
-    this.robokoMain = robokoMain;
+    this.editor = robokoMain.getRobokoFrame();
     load(path);
   }
 
@@ -125,7 +123,7 @@ public class RobokoSketch {
     // get the name of the sketch by chopping .pde or .java
     // off of the main file name
     String mainFilename = primaryFile.getName();
-    int suffixLength = mode.getDefaultExtension().length() + 1;
+    int suffixLength = getDefaultExtension().length() + 1;
     name = mainFilename.substring(0, mainFilename.length() - suffixLength);
     folder = new File(new File(path).getParent());
     load();
@@ -159,7 +157,7 @@ public class RobokoSketch {
 
     code = new SketchCode[list.length];
 
-    String[] extensions = mode.getExtensions();
+    String[] extensions = getExtensions();
 
     for (String filename : list) {
       // Ignoring the dot prefix files is especially important to avoid files
@@ -343,7 +341,7 @@ public class RobokoSketch {
 
     // Add the extension here, this simplifies some of the logic below.
     if (newName.indexOf('.') == -1) {
-      newName += "." + mode.getDefaultExtension();
+      newName += "." + getDefaultExtension();
     }
 
     // if renaming to the same thing as before, just ignore.
@@ -370,7 +368,7 @@ public class RobokoSketch {
     }
 
     String newExtension = newName.substring(dot+1).toLowerCase();
-    if (!mode.validExtension(newExtension)) {
+    if (!validExtension(newExtension)) {
       Base.showWarning("Problem with rename",
                        "\"." + newExtension + "\"" +
                        "is not a valid extension.", null);
@@ -378,7 +376,7 @@ public class RobokoSketch {
     }
 
     // Don't let the user create the main tab as a .java file instead of .pde
-    if (!mode.isDefaultExtension(newExtension)) {
+    if (!isDefaultExtension(newExtension)) {
       if (renamingCode) {  // If creating a new tab, don't show this error
         if (current == code[0]) {  // If this is the main tab, disallow
           Base.showWarning("Problem with rename",
@@ -821,13 +819,13 @@ public class RobokoSketch {
           return false;
         }
         // list of files/folders to be ignored during "save as"
-        for (String ignorable : mode.getIgnorable()) {
+        for (String ignorable : getIgnorable()) {
           if (name.equals(ignorable)) {
             return false;
           }
         }
         // ignore the extensions for code, since that'll be copied below
-        for (String ext : mode.getExtensions()) {
+        for (String ext : getExtensions()) {
           if (name.endsWith(ext)) {
             return false;
           }
@@ -982,7 +980,7 @@ public class RobokoSketch {
       destFile = new File(codeFolder, filename);
 
     } else {
-      for (String extension : mode.getExtensions()) {
+      for (String extension : getExtensions()) {
         String lower = filename.toLowerCase();
         if (lower.endsWith("." + extension)) {
           destFile = new File(this.folder, filename);
@@ -1231,9 +1229,8 @@ public class RobokoSketch {
    */
   public boolean isReadOnly() {
     String apath = folder.getAbsolutePath();
-    Mode mode = editor.getSketchListener().getMode();
-    if (apath.startsWith(mode.getExamplesFolder().getAbsolutePath()) ||
-        apath.startsWith(mode.getLibrariesFolder().getAbsolutePath())) {
+    if (apath.startsWith(RobokoSettings.getExamplesFolder().getAbsolutePath()) ||
+        apath.startsWith(RobokoSettings.getLibrariesFolder().getAbsolutePath())) {
       return true;
 
       // canWrite() doesn't work on directories
@@ -1506,8 +1503,45 @@ public class RobokoSketch {
     return buffer.toString();
   }
 
+  //
+  
 
-  public Mode getMode() {
-    return mode;
+  /**
+   * True if the specified extension is the default file extension.
+   */
+  public boolean isDefaultExtension(String what) {
+    return what.equals(getDefaultExtension());
+  }
+
+
+  /**
+   * Check this extension (no dots, please) against the list of valid
+   * extensions.
+   */
+  public boolean validExtension(String what) {
+    String[] ext = getExtensions();
+    for (int i = 0; i < ext.length; i++) {
+      if (ext[i].equals(what)) return true;
+    }
+    return false;
+  }
+  
+  public String getDefaultExtension() {
+    return "pde";
+  }
+ 
+  
+  public String[] getExtensions() {
+    return new String[] { "pde", "java" };
+  }
+
+  
+  public String[] getIgnorable() {
+    return new String[] { 
+      "applet",
+      "application.macosx",
+      "application.windows",
+      "application.linux"
+    };
   }
 }

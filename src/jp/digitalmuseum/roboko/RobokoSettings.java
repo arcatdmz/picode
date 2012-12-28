@@ -21,11 +21,15 @@ public class RobokoSettings {
 		return System.getProperty("user.dir") + "\\p5\\bin";
 	}
 
+  public static File getExamplesFolder() {
+    return new File(getExamplesFolderPath());
+  }
+
 	/**
 	 * サンプル置き場
 	 */
 	public static String getExamplesFolderPath() {
-		return System.getProperty("user.dir") + "\\modes\\roboko\\examples";
+		return System.getProperty("user.dir") + "\\examples";
 	}
 
 	public static String getPoseFolderPath() {
@@ -64,10 +68,6 @@ public class RobokoSettings {
 
 	public static String getSketchbookLibrariesFolderPath() {
 		return System.getProperty("user.dir") + "\\libraries";
-	}
-
-	public static File getMaterealFolder() {
-		return new File(System.getProperty("user.dir") + "\\lib\\matereal");
 	}
 
 	public static String getProjectsFolderPath() {

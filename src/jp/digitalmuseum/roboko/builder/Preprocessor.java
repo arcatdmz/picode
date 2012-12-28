@@ -6,21 +6,19 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import jp.digitalmuseum.roboko.RobokoSettings;
-
 import processing.app.Base;
 import processing.app.Library;
 import processing.app.SketchCode;
 import processing.app.SketchException;
 import processing.core.PApplet;
-import processing.mode.java.JavaBuild;
 import processing.mode.java.preproc.PdePreprocessor;
 import processing.mode.java.preproc.PreprocessorResult;
 
 
 public class Preprocessor {
+  public static final String PACKAGE_REGEX =
+    "(?:^|\\s|;)package\\s+(\\S+)\\;";
+  
 	private Builder builder;
 
 	public Preprocessor(Builder builder) {
@@ -28,85 +26,165 @@ public class Preprocessor {
 	}
 
 	/**
-	 * Copied from {@link processing.mode.java.JavaBuild#preprocess(File)}
+	 * Copied from {@link processing.builder.java.JavaBuild#preprocess(File)}
 	 * <dl>
 	 * <dt>In:</dt>
 	 * <dd>sketch, packageName, srcFolder, codeFolder</dd>
 	 * <dt>Out:</dt>
-	 * <dd>classPath, javaLibraryPath, mainClassName, foundMain, (*.java in
+	 * <dd>builder.classPath, builder.javaLibraryPath, mainClassName, foundMain, (*.java in
 	 * srcFolder)</dd>
 	 * </dl>
+	 * 
+	 * 
+   * Build all the code for this builder.getSketch().
+   *
+   * In an advanced program, the returned class name could be different,
+   * which is why the className is set based on the return value.
+   * A compilation error will burp up a RunnerException.
+   *
+   * Setting purty to 'true' will cause exception line numbers to be incorrect.
+   * Unless you know the code compiles, you should first run the preprocessor
+   * with purty set to false to make sure there are no errors, then once
+   * successful, re-export with purty set to true.
+   *
+   * @param buildPath Location to copy all the .java files
+   * @return null if compilation failed, main class name if not
 	 *
 	 * @param preprocessor
 	 * @throws SketchException
 	 */
-	public void preprocess(PdePreprocessor preprocessor)
-			throws SketchException {
-	  builder.sketch.ensureExistence();
+//  public String preprocess() throws SketchException {
+//    return preprocess(builder.getSketch().makeTempFolder());
+//  }
 
-	  builder.classPath = builder.binFolder.getAbsolutePath();
+  public String preprocess(boolean sizeWarning) throws SketchException {
+    return preprocess(builder.getSrcFolder(), null, new PdePreprocessor(builder.getSketch().getName()), sizeWarning);
+  }
 
-		// Look for Jar files in the "code" folder.
-		String[] codeFolderPackages = null;
-		if (builder.codeFolder != null) {
 
-			builder.javaLibraryPath = File.separator + builder.codeFolder.getAbsolutePath();
-			String codeFolderClassPath = Base
-					.contentsToClassPath(builder.codeFolder);
-			builder.classPath += File.pathSeparator + codeFolderClassPath;
-			codeFolderPackages = Base
-					.packageListFromClassPath(codeFolderClassPath);
-		} else {
-      builder.javaLibraryPath = "";
+  /**
+   * @param srcFolder location where the .java source files will be placed
+   * @param packageName null, or the package name that should be used as default
+   * @param preprocessor the preprocessor object ready to do the work
+   * @return main PApplet class name found during preprocess, or null if error
+   * @throws SketchException
+   */
+  public String preprocess(File srcFolder,
+                           String packageName,
+                           PdePreprocessor preprocessor,
+                           boolean sizeWarning) throws SketchException {
+    // make sure the user isn't playing "hide the sketch folder"
+    builder.getSketch().ensureExistence();
+
+//    System.out.println("srcFolder is " + srcFolder);
+    builder.setClassPath(builder.getBinFolder().getAbsolutePath());
+
+    // figure out the contents of the code folder to see if there
+    // are files that need to be added to the imports
+    String[] codeFolderPackages = null;
+    if (builder.getSketch().hasCodeFolder()) {
+      File codeFolder = builder.getSketch().getCodeFolder();
+      builder.setJavaLibraryPath(codeFolder.getAbsolutePath());
+
+      // get a list of .jar files in the "code" folder
+      // (class files in subfolders should also be picked up)
+      String codeFolderClassPath =
+        Base.contentsToClassPath(codeFolder);
+      // append the jar files in the code folder to the class path
+      builder.setClassPath(builder.getClassPath() + (File.pathSeparator + codeFolderClassPath));
+      // get list of packages found in those jars
+      codeFolderPackages =
+        Base.packageListFromClassPath(codeFolderClassPath);
+
+    } else {
+      builder.setJavaLibraryPath("");
     }
 
-		// Merge all Processing code files as one big code string.
-		// Store line numbers for their starting points.
-		StringBuffer bigCode = new StringBuffer();
-		int bigCount = 0;
-		for (SketchCode sc : builder.sketch.getCode()) {
-			if (hasExtension(sc.getFile(), "pde")) {
-				sc.setPreprocOffset(bigCount);
-				bigCode.append(sc.getProgram());
-				bigCode.append('\n');
-				bigCount += sc.getLineCount();
-			}
-		}
+    // 1. concatenate all .pde files to the 'main' pde
+    //    store line number for starting point of each code bit
 
-		// Export the big code as a Java file.
-		PreprocessorResult result;
-		try {
-			File outputFolder = (builder.packageName == null) ? builder.srcFolder
-					: new File(builder.srcFolder, builder.packageName.replace('.', '/'));
-			outputFolder.mkdirs();
-			File java = new File(outputFolder, builder.sketch.getName() + ".java");
-			PrintWriter stream = new PrintWriter(new FileWriter(java));
-			try {
-				result = preprocessor.write(stream, bigCode.toString(),
-						codeFolderPackages);
-			} finally {
-				stream.close();
-			}
-		} catch (FileNotFoundException fnfe) {
-			fnfe.printStackTrace();
-			String msg = "Build folder disappeared or could not be written";
-			throw new SketchException(msg);
-		} catch (antlr.RecognitionException re) {
+    StringBuffer bigCode = new StringBuffer();
+    int bigCount = 0;
+    for (SketchCode sc : builder.getSketch().getCode()) {
+      if (sc.isExtension("pde")) {
+        sc.setPreprocOffset(bigCount);
+        bigCode.append(sc.getProgram());
+        bigCode.append('\n');
+        bigCount += sc.getLineCount();
+      }
+    }
 
-			// Get the original file and the line number
-			// that caused the error.
-			int errorLine = re.getLine() - 1;
-			int errorFile = findErrorFile(errorLine);
-			errorLine -= builder.sketch.getCode(errorFile).getPreprocOffset();
+//    // initSketchSize() sets the internal sketchWidth/Height/Renderer vars
+//    // in the preprocessor. Those are used in preproc.write() so that they
+//    // can be turned into sketchXxxx() methods.
+//    // This also returns the size info as an array so that we can figure out
+//    // if this fella is OpenGL, and if so, to add the import. It's messy and
+//    // gross and someday we'll just always include OpenGL.
+//    String[] sizeInfo =
+//      preprocessor.initSketchSize(builder.getSketch().getMainProgram(), sizeWarning);
+//      //PdePreprocessor.parseSketchSize(builder.getSketch().getMainProgram(), false);
+//    if (sizeInfo != null) {
+//      String sketchRenderer = sizeInfo[3];
+//      if (sketchRenderer != null) {
+//        if (sketchRenderer.equals("P2D") ||
+//            sketchRenderer.equals("P3D") ||
+//            sketchRenderer.equals("OPENGL")) {
+//          bigCode.insert(0, "import processing.opengl.*; ");
+//        }
+//      }
+//    }
 
-			String msg = re.getMessage();
+    PreprocessorResult result;
+    try {
+      File outputFolder = (packageName == null) ?
+        srcFolder : new File(srcFolder, packageName.replace('.', '/'));
+      outputFolder.mkdirs();
+//      Base.openFolder(outputFolder);
+      final File java = new File(outputFolder, builder.getSketch().getName() + ".java");
+      final PrintWriter stream = new PrintWriter(new FileWriter(java));
+      try {
+        result = preprocessor.write(stream, bigCode.toString(), codeFolderPackages);
+      } finally {
+        stream.close();
+      }
+    } catch (FileNotFoundException fnfe) {
+      fnfe.printStackTrace();
+      String msg = "Build folder disappeared or could not be written";
+      throw new SketchException(msg);
+
+    } catch (antlr.RecognitionException re) {
+      // re also returns a column that we're not bothering with for now
+      // first assume that it's the main file
+//      int errorFile = 0;
+      int errorLine = re.getLine() - 1;
+
+      // then search through for anyone else whose preprocName is null,
+      // since they've also been combined into the main pde.
+      int errorFile = findErrorFile(errorLine);
+//      System.out.println("error line is " + errorLine + ", file is " + errorFile);
+      errorLine -= builder.getSketch().getCode(errorFile).getPreprocOffset();
+//      System.out.println("  preproc offset for that file: " + builder.getSketch().getCode(errorFile).getPreprocOffset());
+
+//      System.out.println("i found this guy snooping around..");
+//      System.out.println("whatcha want me to do with 'im boss?");
+//      System.out.println(errorLine + " " + errorFile + " " + code[errorFile].getPreprocOffset());
+
+      String msg = re.getMessage();
+
+      //System.out.println(java.getAbsolutePath());
+//      System.out.println(bigCode);
 
       if (msg.contains("expecting RCURLY")) {
-				throw new SketchException(
-						"Found one too many { characters "
-								+ "without a } to match it.", errorFile,
-						errorLine, re.getColumn(), false);
-			}
+      //if (msg.equals("expecting RCURLY, found 'null'")) {
+        // This can be a problem since the error is sometimes listed as a line
+        // that's actually past the number of lines. For instance, it might
+        // report "line 15" of a 14 line program. Added code to highlightLine()
+        // inside Editor to deal with this situation (since that code is also
+        // useful for other similar situations).
+        throw new SketchException("Found one too many { characters " +
+                                  "without a } to match it.",
+                                  errorFile, errorLine, re.getColumn(), false);
+      }
 
       if (msg.contains("expecting LCURLY")) {
         System.err.println(msg);
@@ -146,169 +224,166 @@ public class Preprocessor {
                                   errorFile, errorLine, re.getColumn(), false);
       }
 
-			throw new SketchException(msg, errorFile, errorLine,
-					re.getColumn(), false);
+      //System.out.println("msg is " + msg);
+      throw new SketchException(msg, errorFile,
+                                errorLine, re.getColumn(), false);
 
-		} catch (antlr.TokenStreamRecognitionException tsre) {
+    } catch (antlr.TokenStreamRecognitionException tsre) {
+      // while this seems to store line and column internally,
+      // there doesn't seem to be a method to grab it..
+      // so instead it's done using a regexp
 
-			String[] matches = PApplet.match(tsre.toString(),
-					"^line (\\d+):(\\d+):\\s");
-			if (matches != null) {
+//      System.err.println("and then she tells me " + tsre.toString());
+      // TODO not tested since removing ORO matcher.. ^ could be a problem
+      String mess = "^line (\\d+):(\\d+):\\s";
 
-				// Get the original file and the line number
-				// that caused the error.
-				int errorLine = Integer.parseInt(matches[1]) - 1;
-				int errorColumn = Integer.parseInt(matches[2]);
+      String[] matches = PApplet.match(tsre.toString(), mess);
+      if (matches != null) {
+        int errorLine = Integer.parseInt(matches[1]) - 1;
+        int errorColumn = Integer.parseInt(matches[2]);
+
         int errorFile = 0;
-        for (int i = 1; i < builder.sketch.getCodeCount(); i++) {
-          SketchCode sc = builder.sketch.getCode(i);
+        for (int i = 1; i < builder.getSketch().getCodeCount(); i++) {
+          SketchCode sc = builder.getSketch().getCode(i);
           if (sc.isExtension("pde") &&
               (sc.getPreprocOffset() < errorLine)) {
             errorFile = i;
           }
         }
-        errorLine -= builder.sketch.getCode(errorFile).getPreprocOffset();
+        errorLine -= builder.getSketch().getCode(errorFile).getPreprocOffset();
 
-				throw new SketchException(tsre.getMessage(), errorFile,
-						errorLine, errorColumn);
-			} else {
+        throw new SketchException(tsre.getMessage(),
+                                  errorFile, errorLine, errorColumn);
 
-				// The line number was not found.
-				String msg = tsre.toString();
-				throw new SketchException(msg, 0, -1, -1);
-			}
+      } else {
+        // this is bad, defaults to the main class.. hrm.
+        String msg = tsre.toString();
+        throw new SketchException(msg, 0, -1, -1);
+      }
 
-		} catch (SketchException pe) {
+    } catch (SketchException pe) {
+      // RunnerExceptions are caught here and re-thrown, so that they don't
+      // get lost in the more general "Exception" handler below.
+      throw pe;
 
-			// RunnerExceptions are caught here and re-thrown, so that they
-			// don't get lost in the more general "Exception" handler below.
-			throw pe;
+    } catch (Exception ex) {
+      // TODO better method for handling this?
+      System.err.println("Uncaught exception type:" + ex.getClass());
+      ex.printStackTrace();
+      throw new SketchException(ex.toString());
+    }
 
-		} catch (Exception ex) {
-			System.err.println("Uncaught exception type:" + ex.getClass());
-			ex.printStackTrace();
-			throw new SketchException(ex.toString());
-		}
+    // grab the imports from the code just preproc'd
 
-		// Get the list of imported libraries.
-		ArrayList<Library> importedLibraries = new ArrayList<Library>();
-    Library core = builder.sketch.getMode().getCoreLibrary();
+    ArrayList<Library> importedLibraries = new ArrayList<Library>();
+    Library core = builder.getCoreLibrary();
     if (core != null) {
       importedLibraries.add(core);
-      builder.classPath += core.getClassPath();
+      builder.setClassPath(builder.getClassPath() + core.getClassPath());
     }
 
+//    System.out.println("extra imports: " + result.extraImports);
     for (String item : result.extraImports) {
+      // remove things up to the last dot
+      int dot = item.lastIndexOf('.');
+      // http://dev.processing.org/bugs/show_bug.cgi?id=1145
+      String entry = (dot == -1) ? item : item.substring(0, dot);
+//      System.out.println("library searching for " + entry);
+      Library library = builder.getLibrary(entry);
+//      System.out.println("  found " + library);
 
-			// Get an imported library.
-			int dot = item.lastIndexOf('.');
-			String entry = (dot == -1) ? item : item.substring(0, dot);
-			Library library = builder.sketch.getMode().getLibrary(entry);
-
-			if (library != null) {
-				if (!importedLibraries.contains(library)) {
-					importedLibraries.add(library);
-					builder.classPath += library.getClassPath();
-					builder.javaLibraryPath += File.pathSeparator
-							+ library.getNativePath();
-				}
-			} else {
-
-				// Library not found:
-				// Prevent from printing the error for multiple times.
-				boolean found = false;
-				if (codeFolderPackages != null) {
-					String itemPkg = item.substring(0,
-							item.lastIndexOf('.'));
-					for (String pkg : codeFolderPackages) {
-						if (pkg.equals(itemPkg)) {
-							found = true;
-							break;
-						}
-					}
-				}
-				if (ignorableImport(item)) {
-					found = true;
-				}
-				if (!found) {
-					System.err.println("No library found for " + entry);
-				}
-			}
-		}
-
-		// Append regular class path to the class path.
-		String javaClassPath = System.getProperty("java.class.path");
-		if (javaClassPath.startsWith("\"") && javaClassPath.endsWith("\"")) {
-
-			// Remove quotes if any.. A messy (and frequent) Windows problem
-			javaClassPath = javaClassPath.substring(1,
-					javaClassPath.length() - 1);
-		}
-		builder.classPath += File.pathSeparator + javaClassPath;
-
-		// Save the rest Java code in the source folder.
-		for (SketchCode sc : builder.sketch.getCode()) {
-			if (sc.isExtension("java")) {
-				String fileName = sc.getFileName();
-				try {
-					String javaCode = sc.getProgram();
-					String[] packageMatch = PApplet.match(javaCode,
-							JavaBuild.PACKAGE_REGEX);
-					if (packageMatch == null && builder.packageName == null) {
-
-						// Save code in the source folder.
-						sc.copyTo(new File(builder.srcFolder, fileName));
-					} else {
-
-						// If no package, and a default package is being
-						// used,
-						// we'll have to save this file in the default
-						// package.
-						if (packageMatch == null) {
-							packageMatch = new String[] { builder.packageName };
-							javaCode = "package " + builder.packageName + ";"
-									+ javaCode;
-						}
-
-						// Save code in the sub folder representing the
-						// package.
-						File packageFolder = new File(builder.srcFolder,
-								packageMatch[0].replace('.', '/'));
-						packageFolder.mkdirs();
-						Base.saveFile(javaCode, new File(packageFolder,
-								fileName));
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-					String msg = "Problem moving " + fileName
-							+ " to the build folder";
-					throw new SketchException(msg);
-				}
-
-			} else if (sc.isExtension("pde")) {
-				sc.addPreprocOffset(result.headerOffset);
-			}
-		}
-    builder.foundMain = preprocessor.hasMethod("main");
-		builder.mainClassName = result.className;
-	}
-
-	/**
-	 * Get index for the original Processing code in the sketch from the
-	 * given line number.
-	 *
-	 * @param lineNumber
-	 * @return
-	 */
-  protected int findErrorFile(int errorLine) {
-    for (int i = builder.sketch.getCodeCount() - 1; i > 0; i--) {
-      SketchCode sc = builder.sketch.getCode(i);
-      if (sc.isExtension("pde") && (sc.getPreprocOffset() <= errorLine)) {
-        // keep looping until the errorLine is past the offset
-        return i;
+      if (library != null) {
+        if (!importedLibraries.contains(library)) {
+          importedLibraries.add(library);
+          builder.setClassPath(builder.getClassPath() + library.getClassPath());
+          builder.setJavaLibraryPath(builder.getJavaLibraryPath()
+            + (File.pathSeparator + library.getNativePath()));
+        }
+      } else {
+        boolean found = false;
+        // If someone insists on unnecessarily repeating the code folder
+        // import, don't show an error for it.
+        if (codeFolderPackages != null) {
+          String itemPkg = item.substring(0, item.lastIndexOf('.'));
+          for (String pkg : codeFolderPackages) {
+            if (pkg.equals(itemPkg)) {
+              found = true;
+              break;
+            }
+          }
+        }
+        if (ignorableImport(item)) {
+          found = true;
+        }
+        if (!found) {
+          System.err.println("No library found for " + entry);
+        }
       }
     }
-    return 0;  // i give up
+//    PApplet.println(PApplet.split(libraryPath, File.pathSeparatorChar));
+
+    // Finally, add the regular Java CLASSPATH. This contains everything
+    // imported by the PDE itself (core.jar, pde.jar, quaqua.jar) which may
+    // in fact be more of a problem.
+    String javaClassPath = System.getProperty("java.class.path");
+    // Remove quotes if any.. A messy (and frequent) Windows problem
+    if (javaClassPath.startsWith("\"") && javaClassPath.endsWith("\"")) {
+      javaClassPath = javaClassPath.substring(1, javaClassPath.length() - 1);
+    }
+    builder.setClassPath(builder.getClassPath() + (File.pathSeparator + javaClassPath));
+
+
+    // 3. then loop over the code[] and save each .java file
+
+    for (SketchCode sc : builder.getSketch().getCode()) {
+      if (sc.isExtension("java")) {
+        // In most cases, no pre-processing services necessary for Java files.
+        // Just write the the contents of 'program' to a .java file
+        // into the build directory. However, if a default package is being
+        // used (as in Android), and no package is specified in the source,
+        // then we need to move this code to the same package as the builder.getSketch().
+        // Otherwise, the class may not be found, or at a minimum, the default
+        // access across the packages will mean that things behave incorrectly.
+        // For instance, desktop code that uses a .java file with no packages,
+        // will be fine with the default access, but since Android's PApplet
+        // requires a package, code from that (default) package (such as the
+        // PApplet itself) won't have access to methods/variables from the
+        // package-less .java file (unless they're all marked public).
+        String filename = sc.getFileName();
+        try {
+          String javaCode = sc.getProgram();
+          String[] packageMatch = PApplet.match(javaCode, PACKAGE_REGEX);
+          // if no package, and a default package is being used
+          // (i.e. on Android) we'll have to add one
+
+          if (packageMatch == null && packageName == null) {
+            sc.copyTo(new File(srcFolder, filename));
+
+          } else {
+            if (packageMatch == null) {
+              // use the default package name, since mixing with package-less code will break
+              packageMatch = new String[] { packageName };
+              // add the package name to the source before writing it
+              javaCode = "package " + packageName + ";" + javaCode;
+            }
+            File packageFolder = new File(srcFolder, packageMatch[0].replace('.', '/'));
+            packageFolder.mkdirs();
+            Base.saveFile(javaCode, new File(packageFolder, filename));
+          }
+
+        } catch (IOException e) {
+          e.printStackTrace();
+          String msg = "Problem moving " + filename + " to the build folder";
+          throw new SketchException(msg);
+        }
+
+      } else if (sc.isExtension("pde")) {
+        // The compiler and runner will need this to have a proper offset
+        sc.addPreprocOffset(result.headerOffset);
+      }
+    }
+    builder.setFoundMain(preprocessor.hasMethod("main"));
+    return result.className;
   }
 
   /**
@@ -328,14 +403,31 @@ public class Preprocessor {
     if (pkg.startsWith("processing.event.")) return true;
     if (pkg.startsWith("processing.opengl.")) return true;
 
-    // TODO preferences.txtで指定されてるやつを取得して返すとか…ハードコードはまずい
-    if (pkg.startsWith("jp.digitalmuseum.picode")) return true;
+//    // ignore core, data, and opengl packages
+//    String[] coreImports = preprocessor.getCoreImports();
+//    for (int i = 0; i < coreImports.length; i++) {
+//      String imp = coreImports[i];
+//      if (imp.endsWith(".*")) {
+//        imp = imp.substring(0, imp.length() - 2);
+//      }
+//      if (pkg.startsWith(imp)) {
+//        return true;
+//      }
+//    }
 
     return false;
   }
 
-	private boolean hasExtension(File file, String extension) {
-		return file.getName().endsWith("." + extension);
-	}
+
+  protected int findErrorFile(int errorLine) {
+    for (int i = builder.getSketch().getCodeCount() - 1; i > 0; i--) {
+      SketchCode sc = builder.getSketch().getCode(i);
+      if (sc.isExtension("pde") && (sc.getPreprocOffset() <= errorLine)) {
+        // keep looping until the errorLine is past the offset
+        return i;
+      }
+    }
+    return 0;  // i give up
+  }
 }
 

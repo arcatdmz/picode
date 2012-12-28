@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import jp.digitalmuseum.roboko.ui.RobokoFrame;
+
 import processing.app.Base;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
@@ -52,15 +54,8 @@ public class Launcher implements MessageConsumer {
     this.builder = builder;
   }
 
-  public void stop() {
-    if (vm != null) {
-      try {
-        vm.exit(0);
-      } catch (com.sun.jdi.VMDisconnectedException e) {
-        // Connection closed.
-      }
-      vm = null;
-    }
+  private RobokoFrame getRobokoFrame() {
+    return builder.getRobokoMain().getRobokoFrame();
   }
 
   private SketchException placeException(String message, String filename,
@@ -130,7 +125,12 @@ public class Launcher implements MessageConsumer {
     }
   }
 
-
+  /**
+   * <dl>
+   * <dt>In:</dt>
+   * <dd>mainClassName, javaLibraryPath, classPath</dd>
+   * </dl>
+   */
   protected String[] getMachineParams() {
     ArrayList<String> params = new ArrayList<String>();
 
@@ -160,19 +160,19 @@ public class Launcher implements MessageConsumer {
     }
 
     if (Base.isMacOS()) {
-      params.add("-Xdock:name=" + builder.mainClassName);
+      params.add("-Xdock:name=" + builder.getMainClassName());
 //      params.add("-Dcom.apple.mrj.application.apple.menu.about.name=" +
 //                 sketch.getMainClassName());
     }
     // sketch.libraryPath might be ""
     // librariesClassPath will always have sep char prepended
     params.add("-Djava.library.path=" +
-               builder.javaLibraryPath +
+               builder.getJavaLibraryPath() +
                File.pathSeparator +
                System.getProperty("java.library.path"));
 
     params.add("-cp");
-    params.add(builder.classPath);
+    params.add(builder.getClassPath());
 //    params.add(sketch.getClassPath() +
 //        File.pathSeparator +
 //        Base.librariesClassPath);
@@ -201,15 +201,20 @@ public class Launcher implements MessageConsumer {
 //  System.out.println();
   }
 
-
+  /**
+   * <dl>
+   * <dt>In:</dt>
+   * <dd>foundMain, mainClassName, javaLibraryPath, classPath</dd>
+   * </dl>
+   */
   protected String[] getSketchParams() {
     ArrayList<String> params = new ArrayList<String>();
 
     // It's dangerous to add your own main() to your code,
     // but if you've done it, we'll respect your right to hang yourself.
     // http://dev.processing.org/bugs/show_bug.cgi?id=1446
-    if (builder.foundMain) {
-      params.add(builder.mainClassName);
+    if (builder.isFoundMain()) {
+      params.add(builder.getMainClassName());
 
     } else {
       params.add("processing.core.PApplet");
@@ -226,7 +231,7 @@ public class Launcher implements MessageConsumer {
       // --editor-location=150,20
       //if (editor != null) {  // if running processing-cmd, don't do placement
         GraphicsDevice editorDevice =
-          builder.robokoMain.getRobokoFrame().getGraphicsConfiguration().getDevice();
+          getRobokoFrame().getGraphicsConfiguration().getDevice();
         GraphicsEnvironment ge =
           GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] devices = ge.getScreenDevices();
@@ -248,7 +253,7 @@ public class Launcher implements MessageConsumer {
           }
         }
 
-        Point windowLocation = builder.robokoMain.getRobokoFrame().getSketchLocation();
+        Point windowLocation = getRobokoFrame().getSketchLocation();
 //        if (windowLocation != null) {
 //          // could check to make sure the sketch location is on the device
 //          // that's specified in Preferences, but that's going to be annoying
@@ -261,7 +266,7 @@ public class Launcher implements MessageConsumer {
           if (editorDevice == runDevice) {
             // If sketches are to be shown on the same display as the editor,
             // provide the editor location so the sketch's main() can place it.
-            Point editorLocation = builder.robokoMain.getRobokoFrame().getLocation();
+            Point editorLocation = getRobokoFrame().getLocation();
             params.add(PApplet.ARGS_EDITOR_LOCATION + "=" +
                        editorLocation.x + "," + editorLocation.y);
           } else {
@@ -296,7 +301,7 @@ public class Launcher implements MessageConsumer {
                    Preferences.get("run.present.bgcolor"));
       }
 
-      params.add(builder.mainClassName);
+      params.add(builder.getMainClassName());
     }
 
 //    String outgoing[] = new String[params.size()];
@@ -769,7 +774,7 @@ public class Launcher implements MessageConsumer {
       int left = Integer.parseInt(nums.substring(0, space));
       int top = Integer.parseInt(nums.substring(space + 1));
       // this is only fired when connected to an editor
-      builder.robokoMain.getRobokoFrame().setSketchLocation(new Point(left, top));
+      getRobokoFrame().setSketchLocation(new Point(left, top));
       //System.out.println("external: move to " + left + " " + top);
       return;
     }

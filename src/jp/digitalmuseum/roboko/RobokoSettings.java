@@ -59,7 +59,7 @@ public class RobokoSettings {
 	}
 
 	public static File getLibrariesFolder() {
-		return new File(System.getProperty("user.dir") + "\\lib\\p5");
+		return new File(System.getProperty("user.dir") + "\\lib");
 	}
 
 	public static File getSketchbookLibrariesFolder() {

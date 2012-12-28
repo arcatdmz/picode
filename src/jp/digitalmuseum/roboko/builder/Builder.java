@@ -2,11 +2,14 @@ package jp.digitalmuseum.roboko.builder;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import jp.digitalmuseum.roboko.ProcessingIntegration;
 import jp.digitalmuseum.roboko.RobokoMain;
 import jp.digitalmuseum.roboko.RobokoSettings;
 
+import processing.app.Base;
 import processing.app.Library;
 import processing.app.RobokoSketch;
 import processing.app.SketchCode;
@@ -20,7 +23,6 @@ public class Builder {
 		try {
 			sketch = RobokoSettings.getDefaultSketch();
 			Builder builder = new Builder(null, sketch);
-			// builder.setCodeFolder("D:\\Users\\arc\\Desktop\\BouncyBubbles\\code")
 			builder.run();
 		} catch (IOException e) {
 			System.err.println(String.format("Can't load Processing code: %s",
@@ -38,6 +40,8 @@ public class Builder {
 	private String mainClassName;
 	private RobokoMain robokoMain;
 	private RobokoSketch sketch;
+	
+  protected HashMap<String, ArrayList<Library>> importToLibraryTable;
 
 	private File srcFolder;
 
@@ -50,7 +54,8 @@ public class Builder {
 
   public Launcher run() throws SketchException {
     Preprocessor preprocessor = new Preprocessor(this);
-    preprocessor.preprocess(false);
+    String mainClassName = preprocessor.preprocess(false);
+    setMainClassName(mainClassName);
     Compiler compiler = new Compiler(this);
     if (compiler.compile()) {
       Launcher launcher = new Launcher(this);
@@ -209,18 +214,49 @@ public class Builder {
     return new SketchException(message, codeIndex, codeLine, -1, false);  // changed for 0194 for compile errors, but...
   }
 
-  public Library getCoreLibrary() {
-    // TODO Auto-generated method stub
-    return null;
+  private ArrayList<Library> coreLibraries;
+  public ArrayList<Library> getCoreLibraries() {
+    if (coreLibraries == null) {
+      coreLibraries = new ArrayList<Library>();
+      coreLibraries.add(new Library(
+          Base.getContentFile("lib/core"), null));
+      coreLibraries.add(new Library(
+          Base.getContentFile("lib/phybots"), null));
+      coreLibraries.add(new Library(
+          Base.getContentFile("lib/picode"), null));
+      importToLibraryTable = new HashMap<String, ArrayList<Library>>();
+      for (Library lib : coreLibraries) {
+        lib.addPackageList(importToLibraryTable);
+      }
+    }
+    return new ArrayList<Library>(coreLibraries);
   }
 
-  public Library getLibrary(String entry) {
-    // TODO Auto-generated method stub
-    return null;
+  public Library getLibrary(String pkgName) throws SketchException {
+    ArrayList<Library> libraries = importToLibraryTable.get(pkgName);
+    if (libraries == null) {
+      return null;
+
+    } else if (libraries.size() > 1) {
+      String primary = "More than one library is competing for this sketch.";
+      String secondary = "The import " + pkgName + " points to multiple libraries:<br>";
+      for (Library library : libraries) {
+        String location = library.getPath();
+        if (location.startsWith(RobokoSettings.getLibrariesFolder().getAbsolutePath())) {
+          location = "part of Processing";
+        }
+        secondary += "<b>" + library.getName() + "</b> (" + location + ")<br>";
+      }
+      secondary += "Extra libraries need to be removed before this sketch can be used.";
+      Base.showWarningTiered("Duplicate Library Problem", primary, secondary, null);
+      throw new SketchException("Duplicate libraries found for " + pkgName + ".");
+
+    } else {
+      return libraries.get(0);
+    }
   }
 
   public ClassLoader getClassLoader() {
-    // TODO Auto-generated method stub
-    return null;
+    return this.getClass().getClassLoader(); // Use the default class loader.
   }
 }

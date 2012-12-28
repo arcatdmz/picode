@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="picode" default="picode-jar" basedir=".">
+
+	<!-- ****Properties**** -->
+
+	<!-- Software version -->
+	<property name="picode-version" value="0.1.0" />
+
+	<!-- Dependent class pathes -->
+	<property name="picode-classpath" value="." />
+
+	<!-- Source directory -->
+	<property name="picode-src.dir" value="src" />
+	<property name="picode-src.includes" value="jp/digitalmuseum/roboko/core/**/*.java" />
+
+	<!-- Classes destination directory -->
+	<property name="picode-classes.dir" value="bin" />
+	<property name="picode-classes.includes" value="jp/digitalmuseum/roboko/core/**/*.class" />
+
+	<!-- Javadoc destination -->
+	<property name="picode-javadoc.dir" value="docs" />
+
+	<!-- Jar file name -->
+	<property name="picode-jar.dir" value="lib/picode/library/" />
+	<property name="picode-jar.name" value="picode.jar" />
+
+	<!-- ****Targets**** -->
+
+	<!-- Jar -->
+	<target name="picode-jar" depends="picode-compile">
+		<mkdir dir="${picode-jar.dir} "/>
+		<jar jarfile="${picode-jar.dir}${picode-jar.name}" >
+			<fileset dir="${picode-classes.dir}" includes="${picode-bin.includes}" />
+			<fileset dir="${picode-src.dir}" includes="${picode-src.includes}" />
+		</jar>
+	</target>
+
+	<!-- Compile -->
+	<target name="picode-compile">
+		<mkdir dir="${picode-classes.dir}" />
+		<javac srcdir="${picode-src.dir}" destdir="${picode-classes.dir}"
+				target="1.6"
+				source="1.6"
+				optimize="on"
+				classpath="${picode-classpath}" />
+	</target>
+
+	<!-- Javadoc -->
+	<target name="picode-javadoc">
+		<javadoc sourcepath="${picode-src.dir}"
+			destdir="${picode-javadoc.dir}"
+			charset="UTF-8"
+			encoding="UTF-8"
+			docencoding="UTF-8"
+			locale="en"
+			classpath="${picode-classpath}"
+			bottom="Copyright by Jun Kato (arc@dmz) at http://junkato.jp/" />
+	</target>
+
+	<!-- Clean -->
+	<target name="picode-clean">
+		<delete dir="${picode-classes.dir}" />
+		<delete dir="${picode-javadoc.dir}" />
+		<delete>
+			<fileset dir="./" includes="${picode-jar.name}" />
+		</delete>
+	</target>
+</project>

@@ -55,7 +55,8 @@ public class Launcher implements MessageConsumer {
   }
 
   private RobokoFrame getRobokoFrame() {
-    return builder.getRobokoMain().getRobokoFrame();
+    return builder.getRobokoMain() != null ?
+      builder.getRobokoMain().getRobokoFrame() : null;
   }
 
   private SketchException placeException(String message, String filename,
@@ -229,7 +230,7 @@ public class Launcher implements MessageConsumer {
       // Otherwise, the editor location will be passed, and the applet will
       // figure out where to place itself based on the editor location.
       // --editor-location=150,20
-      //if (editor != null) {  // if running processing-cmd, don't do placement
+      if (getRobokoFrame() != null) {  // if running processing-cmd, don't do placement
         GraphicsDevice editorDevice =
           getRobokoFrame().getGraphicsConfiguration().getDevice();
         GraphicsEnvironment ge =
@@ -284,7 +285,7 @@ public class Launcher implements MessageConsumer {
                      windowLocation.x + "," + windowLocation.y);
         }
         params.add(PApplet.ARGS_EXTERNAL);
-      //}
+      }
 
       params.add(PApplet.ARGS_DISPLAY + "=" + runDisplay);
       params.add(PApplet.ARGS_SKETCH_FOLDER + "=" +

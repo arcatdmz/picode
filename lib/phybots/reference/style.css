@@ -1,0 +1,48 @@
+
+html {
+	font-family: "Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", Arial, "メイリオ", "ＭＳ Ｐゴシック", sans-serif;
+	font-size: 96%;
+}
+
+table {
+	border: none;
+	border-collapse: collapse;
+}
+
+table td {
+	padding: 1px 0;
+}
+
+table td td.NavBarCell1,
+table td td.NavBarCell1Rev {
+	margin: 0;
+	padding: 5px 10px;
+	text-align: center;
+}
+
+table td.NavBarCell1 { background: #000; color: #999; }
+table td.NavBarCell1Rev { background: #fff; color: #000; }
+table td td.NavBarCell1 a font.NavBarFont1 { color: #eee; }
+table td td.NavBarCell1 a:hover font.NavBarFont1 { background-color: #fff; color: #000; }
+
+table td.NavBarCell2,
+table td.NavBarCell3 {
+	width: 50%;
+	padding: 7px 10px 0 10px;
+	text-align: center;
+}
+table td.NavBarCell2 font { font-size: 100%; }
+
+table tbody tr.TableHeadingColor th,
+table tbody tr.TableRowColor td {
+	border: solid #ccc;
+	border-width: 1px 0;
+	padding: 4px 2px;
+}
+
+table tbody tr.TableHeadingColor {
+	background: #eee;
+	color: #000;
+}
+
+hr { border: solid #000; border-width: 1px 0 0 0; }

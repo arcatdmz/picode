@@ -275,11 +275,9 @@ public class Preprocessor {
 
     // grab the imports from the code just preproc'd
 
-    ArrayList<Library> importedLibraries = new ArrayList<Library>();
-    Library core = builder.getCoreLibrary();
-    if (core != null) {
-      importedLibraries.add(core);
-      builder.setClassPath(builder.getClassPath() + core.getClassPath());
+    ArrayList<Library> importedLibraries = builder.getCoreLibraries();
+    for (Library coreLibrary : importedLibraries) {
+      builder.setClassPath(builder.getClassPath() + coreLibrary.getClassPath());
     }
 
 //    System.out.println("extra imports: " + result.extraImports);
@@ -382,6 +380,7 @@ public class Preprocessor {
         sc.addPreprocOffset(result.headerOffset);
       }
     }
+    
     builder.setFoundMain(preprocessor.hasMethod("main"));
     return result.className;
   }

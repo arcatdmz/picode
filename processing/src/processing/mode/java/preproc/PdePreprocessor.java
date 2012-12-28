@@ -939,7 +939,9 @@ public class PdePreprocessor {
       "processing.core.*",
       "processing.data.*",
       "processing.event.*",
-      "processing.opengl.*"
+      "processing.opengl.*",
+      "com.phybots.*",
+      "jp.digitalmuseum.roboko.core.*"
     };
   }
 

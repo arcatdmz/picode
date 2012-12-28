@@ -40,11 +40,7 @@ import jp.digitalmuseum.roboko.ui.RobokoFrame;
  * Stores information about files in the current sketch
  */
 public class RobokoSketch {
-  private PdeParser pdeParser;
   private RobokoFrame editor;
-  public PdeParser getParser() {
-    return pdeParser;
-  }
   public static RobokoSketch newInstance(RobokoMain robokoMain) {
     // TODO Auto-generated method stub
     return null;
@@ -113,7 +109,7 @@ public class RobokoSketch {
    * use when opening the file from the finder/explorer.
    */
   public RobokoSketch(RobokoMain robokoMain, String path) throws IOException {
-    this.editor = robokoMain.getRobokoFrame();
+    this.editor = robokoMain != null ? robokoMain.getRobokoFrame() : null;
     load(path);
   }
 
@@ -145,6 +141,8 @@ public class RobokoSketch {
    * in which case the load happens each time "run" is hit.
    */
   protected void load() {
+    parser = new PdeParser(this);
+
     codeFolder = new File(folder, "code");
     dataFolder = new File(folder, "data");
 
@@ -265,6 +263,8 @@ public class RobokoSketch {
 
 
   boolean renamingCode;
+
+  private PdeParser parser;
 
   /**
    * Handler for the New Code menu option.
@@ -1543,5 +1543,9 @@ public class RobokoSketch {
       "application.windows",
       "application.linux"
     };
+  }
+
+  public PdeParser getParser() {
+    return parser;
   }
 }

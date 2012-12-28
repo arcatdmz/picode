@@ -138,7 +138,7 @@ public class PdePreprocessor {
   protected static final String UNICODE_ESCAPES = "0123456789abcdefABCDEF";
 
   // used for calling the ASTFactory to get the root node
-  private static final int ROOT_ID = 0;
+  public static final int ROOT_ID = 0;
 
   protected final String indent;
   private final String name;
@@ -171,14 +171,14 @@ public class PdePreprocessor {
     //"(?:^|\\s|;)size\\s*\\(\\s*(\\S+)\\s*,\\s*([^\\s,\\)]+),?\\s*([^\\)]*)\\s*\\)\\s*\\;";
 
   
-  private static final Pattern PUBLIC_CLASS =
+  public static final Pattern PUBLIC_CLASS =
     Pattern.compile("(^|;)\\s*public\\s+class\\s+\\S+\\s+extends\\s+PApplet", Pattern.MULTILINE);
     // Can't only match any 'public class', needs to be a PApplet
     // http://code.google.com/p/processing/issues/detail?id=551
     //Pattern.compile("(^|;)\\s*public\\s+class", Pattern.MULTILINE);
 
   
-  private static final Pattern FUNCTION_DECL =
+  public static final Pattern FUNCTION_DECL =
     Pattern.compile("(^|;)\\s*((public|private|protected|final|static)\\s+)*" +
         "(void|int|float|double|String|char|byte)" +
         "(\\s*\\[\\s*\\])?\\s+[a-zA-Z0-9]+\\s*\\(",
@@ -369,12 +369,12 @@ public class PdePreprocessor {
   }
 
 
-  CommonHiddenStreamToken getHiddenAfter(final CommonHiddenStreamToken t) {
+  public CommonHiddenStreamToken getHiddenAfter(final CommonHiddenStreamToken t) {
     return filter.getHiddenAfter(t);
   }
 
 
-  CommonHiddenStreamToken getInitialHiddenToken() {
+  public CommonHiddenStreamToken getInitialHiddenToken() {
     return filter.getInitialHiddenToken();
   }
 
@@ -387,7 +387,7 @@ public class PdePreprocessor {
   }
 
 
-  private static void checkForUnterminatedMultilineComment(final String program)
+  public static void checkForUnterminatedMultilineComment(final String program)
       throws SketchException {
     final int length = program.length();
     for (int i = 0; i < length; i++) {
@@ -700,7 +700,7 @@ public class PdePreprocessor {
   }
   
 
-  private PdeRecognizer createParser(final String program) {
+  public PdeRecognizer createParser(final String program) {
     // create a lexer with the stream reader, and tell it to handle
     // hidden tokens (eg whitespace, comments) since we want to pass these
     // through so that the line numbers when the compiler reports errors
@@ -1042,5 +1042,14 @@ public class PdePreprocessor {
     if (sb.length() > 0)
       sb.append("]");
     return sb.toString();
+  }
+
+  /**
+   * Get the filter created at {@link #createParser(String)} method.
+   *
+   * @return
+   */
+  public TokenStreamCopyingHiddenTokenFilter getHiddenFilter() {
+    return filter;
   }
 }

@@ -1,14 +1,15 @@
 /* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 
-package processing.mode.java.preproc;
+package jp.digitalmuseum.roboko.parser;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.BitSet;
 import java.util.Stack;
-import processing.app.Preferences;
 import processing.app.SketchException;
+import processing.mode.java.preproc.PdePreprocessor;
 import processing.mode.java.preproc.PdeTokenTypes;
+import processing.mode.java.preproc.TokenUtil;
 import antlr.CommonASTWithHiddenTokens;
 import antlr.CommonHiddenStreamToken;
 import antlr.collections.AST;
@@ -24,21 +25,21 @@ import antlr.collections.AST;
  * other than System.out, and then call print(), passing the
  * AST. Typically, the AST node that you pass would be the root of a
  * tree - the ROOT_ID node that represents a Java file.
- *
+ * 
  * Modified March 2010 to support Java 5 type arguments and for loops by
  * @author Jonathan Feinberg &lt;jdf@pobox.com&gt;
  */
 
 @SuppressWarnings("serial")
-public class PdeEmitter implements PdeTokenTypes {
+public class PdeWalker implements PdeTokenTypes {
   private final PdePreprocessor pdePreprocessor;
   private final PrintWriter out;
   private final PrintStream debug = System.err;
 
   private final Stack<AST> stack = new Stack<AST>();
-  private final static int ROOT_ID = 0;
+  public final static int ROOT_ID = 0;
 
-  public PdeEmitter(final PdePreprocessor pdePreprocessor, final PrintWriter out) {
+  public PdeWalker(final PdePreprocessor pdePreprocessor, final PrintWriter out) {
     this.pdePreprocessor = pdePreprocessor;
     this.out = out;
   }
@@ -239,11 +240,10 @@ public class PdeEmitter implements PdeTokenTypes {
       type = modifiers.getNextSibling();
     }
     final AST methodName = type.getNextSibling();
-//    if (methodName.getText().equals("main")) {
-//      pdePreprocessor.setFoundMain(true);
-//    }
-    pdePreprocessor.addMethod(methodName.getText());
-    printChildren(ast);
+    if (methodName.getText().equals("main")) {
+      pdePreprocessor.setFoundMain(true);
+    }
+    printChildren(ast); 
   }
 
   private void printIfThenElse(final AST literalIf) throws SketchException {
@@ -266,10 +266,10 @@ public class PdeEmitter implements PdeTokenTypes {
       dumpHiddenBefore(bestPrintableNode);
       final CommonHiddenStreamToken hiddenBefore =
         ((CommonASTWithHiddenTokens) elsePath).getHiddenBefore();
-      if (elsePath.getType() == PdeTokenTypes.SLIST && elsePath.getNumberOfChildren() == 0 &&
+      if (elsePath.getType() == PdeTokenTypes.SLIST && elsePath.getNumberOfChildren() == 0 && 
           hiddenBefore == null) {
         out.print("{");
-        final CommonHiddenStreamToken hiddenAfter =
+        final CommonHiddenStreamToken hiddenAfter = 
           ((CommonASTWithHiddenTokens) elsePath).getHiddenAfter();
         if (hiddenAfter == null) {
           out.print("}");
@@ -709,10 +709,12 @@ public class PdeEmitter implements PdeTokenTypes {
     case NUM_DOUBLE:
       final String literalDouble = ast.getText().toLowerCase();
       out.print(literalDouble);
+      /*
       if (Preferences.getBoolean("preproc.substitute_floats")
           && literalDouble.indexOf('d') == -1) { // permit literal doubles
         out.print("f");
       }
+      */
       dumpHiddenAfter(ast);
       break;
 
@@ -743,11 +745,11 @@ public class PdeEmitter implements PdeTokenTypes {
       out.print("@");
       printChildren(ast);
       break;
-
+      
     case ANNOTATION_ARRAY_INIT:
       printChildren(ast);
       break;
-
+      
     case ANNOTATION_MEMBER_VALUE_PAIR:
       print(ast.getFirstChild());
       out.print("=");

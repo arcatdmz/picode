@@ -1,11 +1,9 @@
-package com.phybots.picode.core.internal;
+package com.phybots.picode;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import com.phybots.picode.Pose;
-import com.phybots.picode.RobotType;
 
 public class HumanPose extends Pose {
 	public static final int HIP_CENTER = 0;

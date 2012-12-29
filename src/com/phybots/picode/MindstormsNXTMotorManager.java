@@ -1,4 +1,4 @@
-package com.phybots.picode.core.internal;
+package com.phybots.picode;
 
 import java.util.List;
 
@@ -11,7 +11,6 @@ import com.phybots.service.Service;
 import com.phybots.service.ServiceGroup;
 import com.phybots.task.ManageMindstormsNXTMotorState;
 import com.phybots.task.Task;
-import com.phybots.picode.Robot;
 import com.phybots.picode.ui.CaptureFrameAbstractImpl;
 import com.phybots.picode.ui.PicodeMain;
 

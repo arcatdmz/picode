@@ -7,8 +7,8 @@ import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.text.SimpleAttributeSet;
 
+import com.phybots.picode.MotorManager;
 import com.phybots.picode.Pose;
-import com.phybots.picode.core.internal.MotorManager;
 import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.PicodeSettings;
 import com.phybots.picode.ui.library.internal.IconListModel;

@@ -3,7 +3,6 @@ package com.phybots.picode;
 
 import com.intel.bluetooth.BlueCoveImpl;
 
-import com.phybots.picode.core.internal.MotorManager;
 import com.phybots.picode.ui.PicodeMain;
 
 public class Robot {

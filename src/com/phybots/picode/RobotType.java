@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import com.phybots.entity.MindstormsNXT;
 import com.phybots.entity.MindstormsNXT.Port;
 import com.phybots.picode.Robot;
-import com.phybots.picode.core.internal.MotorManager;
 import com.phybots.picode.ui.PicodeMain;
 
 public enum RobotType {

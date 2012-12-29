@@ -1,4 +1,4 @@
-package com.phybots.picode.core.internal;
+package com.phybots.picode;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -7,7 +7,6 @@ import java.net.Socket;
 import jp.digitalmuseum.kinect.KinectClient;
 import jp.digitalmuseum.kinect.KinectClient.KinectListener;
 
-import com.phybots.picode.Robot;
 import com.phybots.picode.ui.CaptureFrameAbstractImpl;
 import com.phybots.picode.ui.PicodeMain;
 

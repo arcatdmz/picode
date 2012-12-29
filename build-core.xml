@@ -12,11 +12,11 @@
 
 	<!-- Source directory -->
 	<property name="picode-src.dir" value="src" />
-	<property name="picode-src.includes" value="jp/digitalmuseum/roboko/core/**/*.java" />
+	<property name="picode-src.includes" value="com/phybots/picode/*.java" />
 
 	<!-- Classes destination directory -->
 	<property name="picode-classes.dir" value="bin" />
-	<property name="picode-classes.includes" value="jp/digitalmuseum/roboko/core/**/*.class" />
+	<property name="picode-classes.includes" value="com/phybots/picode/*.class" />
 
 	<!-- Javadoc destination -->
 	<property name="picode-javadoc.dir" value="docs" />

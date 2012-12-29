@@ -16,7 +16,6 @@ import javax.swing.ImageIcon;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import com.phybots.picode.core.internal.MotorManager;
 import com.phybots.picode.ui.PicodeSettings;
 import com.phybots.picode.ui.editor.DocumentManager;
 

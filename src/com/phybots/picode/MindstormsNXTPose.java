@@ -1,4 +1,4 @@
-package com.phybots.picode.core.internal;
+package com.phybots.picode;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -7,8 +7,6 @@ import java.io.IOException;
 import com.phybots.Phybots;
 import com.phybots.service.Service;
 import com.phybots.task.ManageMindstormsNXTMotorState;
-import com.phybots.picode.Pose;
-import com.phybots.picode.RobotType;
 
 public class MindstormsNXTPose extends Pose {
 	private int[] rotationCounts;

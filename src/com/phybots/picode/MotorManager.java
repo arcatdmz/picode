@@ -1,8 +1,7 @@
-package com.phybots.picode.core.internal;
+package com.phybots.picode;
 
 import java.awt.image.BufferedImage;
 
-import com.phybots.picode.Robot;
 import com.phybots.picode.ui.CaptureFrameAbstractImpl;
 import com.phybots.picode.ui.PicodeMain;
 

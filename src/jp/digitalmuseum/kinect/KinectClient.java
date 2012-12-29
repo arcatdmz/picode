@@ -24,7 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import jp.digitalmuseum.roboko.core.internal.HumanPose;
+import com.phybots.picode.core.internal.HumanPose;
 
 public class KinectClient extends Thread {
 	private Set<KinectListener> listeners =

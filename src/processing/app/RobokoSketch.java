@@ -30,18 +30,18 @@ import java.io.*;
 
 import javax.swing.*;
 
-import jp.digitalmuseum.roboko.RobokoMain;
-import jp.digitalmuseum.roboko.RobokoSettings;
-import jp.digitalmuseum.roboko.parser.PdeParser;
-import jp.digitalmuseum.roboko.ui.RobokoFrame;
+import com.phybots.picode.parser.PdeParser;
+import com.phybots.picode.ui.PicodeFrame;
+import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.ui.PicodeSettings;
 
 
 /**
  * Stores information about files in the current sketch
  */
 public class RobokoSketch {
-  private RobokoFrame editor;
-  public static RobokoSketch newInstance(RobokoMain robokoMain) {
+  private PicodeFrame editor;
+  public static RobokoSketch newInstance(PicodeMain robokoMain) {
     // TODO Auto-generated method stub
     return null;
   }
@@ -108,7 +108,7 @@ public class RobokoSketch {
    * path is location of the main .pde file, because this is also simplest to
    * use when opening the file from the finder/explorer.
    */
-  public RobokoSketch(RobokoMain robokoMain, String path) throws IOException {
+  public RobokoSketch(PicodeMain robokoMain, String path) throws IOException {
     this.editor = robokoMain != null ? robokoMain.getRobokoFrame() : null;
     load(path);
   }
@@ -284,7 +284,7 @@ public class RobokoSketch {
     }
 
     renamingCode = false;
-    editor.getSketchListener().statusEdit("Name for new file:", "");
+    editor.getEditorProxy().statusEdit("Name for new file:", "");
   }
 
 
@@ -324,7 +324,7 @@ public class RobokoSketch {
       "New name for sketch:" : "New name for file:";
     String oldName = (current.isExtension("pde")) ?
       current.getPrettyName() : current.getFileName();
-    editor.getSketchListener().statusEdit(prompt, oldName);
+    editor.getEditorProxy().statusEdit(prompt, oldName);
   }
 
 
@@ -513,7 +513,7 @@ public class RobokoSketch {
     setCurrentCode(newName);
 
     // update the tabs
-    editor.getSketchListener().headerRebuild();
+    editor.getEditorProxy().headerRebuild();
   }
 
 
@@ -561,7 +561,7 @@ public class RobokoSketch {
         // make a new sketch, and i think this will rebuild the sketch menu
         //editor.getSketchListener().handleNewUnchecked();
         //editor.getSketchListener().handleClose2();
-        editor.getSketchListener().baseHandleClose(editor, false);
+        editor.getEditorProxy().baseHandleClose(editor, false);
 
       } else {
         // delete the file
@@ -579,7 +579,7 @@ public class RobokoSketch {
         setCurrentCode(0);
 
         // update the tabs
-        editor.getSketchListener().headerRepaint();
+        editor.getEditorProxy().headerRepaint();
       }
     }
   }
@@ -641,7 +641,7 @@ public class RobokoSketch {
         break;
       }
     }
-    editor.getSketchListener().headerRepaint();
+    editor.getEditorProxy().headerRepaint();
 
     if (Base.isMacOS()) {
       // http://developer.apple.com/qa/qa2001/qa1146.html
@@ -667,7 +667,7 @@ public class RobokoSketch {
 
     // first get the contents of the editor text area
 //    if (current.isModified()) {
-    current.setProgram(editor.getSketchListener().getText());
+    current.setProgram(editor.getEditorProxy().getText());
 //    }
 
     // don't do anything if not actually modified
@@ -808,7 +808,7 @@ public class RobokoSketch {
     // grab the contents of the current tab before saving
     // first get the contents of the editor text area
     if (current.isModified()) {
-      current.setProgram(editor.getSketchListener().getText());
+      current.setProgram(editor.getEditorProxy().getText());
     }
 
     File[] copyItems = folder.listFiles(new FileFilter() {
@@ -857,7 +857,7 @@ public class RobokoSketch {
     // the Recent menu so that it's not sticking around after the rename.
     // If untitled, it won't be in the menu, so there's no point.
     if (!isUntitled()) {
-      editor.getSketchListener().removeRecent();
+      editor.getEditorProxy().removeRecent();
     }
 
     // save the main tab with its new name
@@ -870,7 +870,7 @@ public class RobokoSketch {
     setUntitled(false);
 
     // Add this sketch back using the new name
-    editor.getSketchListener().addRecent();
+    editor.getEditorProxy().addRecent();
 
     // let Editor know that the save was successful
     return true;
@@ -900,8 +900,8 @@ public class RobokoSketch {
     // Name changed, rebuild the sketch menus
     calcModified();
 //    System.out.println("modified is now " + modified);
-    editor.getSketchListener().updateTitle();
-    editor.getSketchListener().baseRebuildSketchbookMenus();
+    editor.getEditorProxy().updateTitle();
+    editor.getEditorProxy().baseRebuildSketchbookMenus();
 //    editor.getSketchListener().headerRebuild();
   }
 
@@ -943,7 +943,7 @@ public class RobokoSketch {
     boolean result = addFile(sourceFile);
 
     if (result) {
-      editor.getSketchListener().statusNotice("One file added to the sketch.");
+      editor.getEditorProxy().statusNotice("One file added to the sketch.");
     }
   }
 
@@ -1058,7 +1058,7 @@ public class RobokoSketch {
         sortCode();
       }
       setCurrentCode(filename);
-      editor.getSketchListener().headerRepaint();
+      editor.getEditorProxy().headerRepaint();
       if (isUntitled()) {  // TODO probably not necessary? problematic?
         // Mark the new code as modified so that the sketch is saved
         current.setModified(true);
@@ -1096,19 +1096,19 @@ public class RobokoSketch {
 
     // get the text currently being edited
     if (current != null) {
-      current.setState(editor.getSketchListener().getText(),
-                       editor.getSketchListener().getSelectionStart(),
-                       editor.getSketchListener().getSelectionStop(),
-                       editor.getSketchListener().getScrollPosition());
+      current.setState(editor.getEditorProxy().getText(),
+                       editor.getEditorProxy().getSelectionStart(),
+                       editor.getEditorProxy().getSelectionStop(),
+                       editor.getEditorProxy().getScrollPosition());
     }
 
     current = code[which];
     currentIndex = which;
     current.visited = System.currentTimeMillis();
 
-    editor.getSketchListener().setCode(current);
+    editor.getEditorProxy().setCode(current);
 //    editor.getSketchListener().headerRebuild();
-    editor.getSketchListener().headerRepaint();
+    editor.getEditorProxy().headerRepaint();
   }
 
 
@@ -1229,8 +1229,8 @@ public class RobokoSketch {
    */
   public boolean isReadOnly() {
     String apath = folder.getAbsolutePath();
-    if (apath.startsWith(RobokoSettings.getExamplesFolder().getAbsolutePath()) ||
-        apath.startsWith(RobokoSettings.getLibrariesFolder().getAbsolutePath())) {
+    if (apath.startsWith(PicodeSettings.getExamplesFolder().getAbsolutePath()) ||
+        apath.startsWith(PicodeSettings.getLibrariesFolder().getAbsolutePath())) {
       return true;
 
       // canWrite() doesn't work on directories
@@ -1393,7 +1393,7 @@ public class RobokoSketch {
   public void setUntitled(boolean untitled) {
 //    editor.getSketchListener().untitled = u;
     this.untitled = untitled;
-    editor.getSketchListener().updateTitle();
+    editor.getEditorProxy().updateTitle();
   }
 
 

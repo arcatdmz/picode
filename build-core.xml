@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="picode" default="picode-jar" basedir=".">
+	<import file="./build.xml" />
 
 	<!-- ****Properties**** -->
 
@@ -8,14 +9,14 @@
 	<property name="picode-version" value="0.1.0" />
 
 	<!-- Dependent class pathes -->
-	<property name="picode-classpath" value="." />
+	<property name="picode-classpath" value="${pde.classpath}; ./bin; ./lib/phybots/library/phybots-core-1.0.0.jar; ./lib/phybots/library/connector-1.0.4.jar; ./lib/phybots/library/bluecove-2.1.1-SNAPSHOT.jar" />
 
 	<!-- Source directory -->
 	<property name="picode-src.dir" value="src" />
 	<property name="picode-src.includes" value="com/phybots/picode/*.java" />
 
 	<!-- Classes destination directory -->
-	<property name="picode-classes.dir" value="bin" />
+	<property name="picode-classes.dir" value="bin.picode" />
 	<property name="picode-classes.includes" value="com/phybots/picode/*.class" />
 
 	<!-- Javadoc destination -->
@@ -34,15 +35,17 @@
 			<fileset dir="${picode-classes.dir}" includes="${picode-bin.includes}" />
 			<fileset dir="${picode-src.dir}" includes="${picode-src.includes}" />
 		</jar>
+		<delete dir="${picode-classes.dir}" />
 	</target>
 
 	<!-- Compile -->
-	<target name="picode-compile">
+	<target name="picode-compile" depends="compile">
 		<mkdir dir="${picode-classes.dir}" />
 		<javac srcdir="${picode-src.dir}" destdir="${picode-classes.dir}"
 				target="1.6"
 				source="1.6"
 				optimize="on"
+				includes="${picode-src.includes}"
 				classpath="${picode-classpath}" />
 	</target>
 

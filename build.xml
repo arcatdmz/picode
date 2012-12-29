@@ -3,78 +3,26 @@
 
   <property name="generated" 
 	    value="${basedir}/generated/processing/mode/java/preproc" />
-  <mkdir dir="${generated}" />
 
   <property name="grammars" 
 	    value="${basedir}/src/processing/mode/java/preproc" />
 
   <property name="antlrjar" 
 	    value="${basedir}/lib/antlr.jar" />
+	
+  <property name="pde.classpath"
+  		value="./lib/core/library/core.jar; ${env.JAVA_HOME}/lib/tools.jar; ./processing/lib/ant.jar; ./processing/lib/ant-launcher.jar; ./processing/lib/antlr.jar; ./processing/lib/apple.jar; ./processing/lib/jdt-core.jar; ./processing/lib/jna.jar; ./processing/lib/org-netbeans-swing-outline.jar"/>
 
   <classloader taskname="antlr">
     <classpath path="lib/antlr.jar" />
   </classloader>
 
   <target name="clean" description="Clean the build directories">
-    <!-- THIS SECTION SHOULD BE REMOVED AFTER A MONTH OR TWO -->
-    <!-- jdf sez: clean up after old layout of generated resources -->
-<!--
-    <delete failonerror="false">
-      <fileset dir="${basedir}/src/antlr">
-	<include name="*.java" />
-	<include name="*.tokens" />
-	<include name="*.txt" />
-	<include name="*.g" />
-	<include name="*.smap" />
-      </fileset>
-    </delete>
-    <delete failonerror="false">
--->
-      <!-- jdf sez: don't name anything FooRecognizer or FooLexer in this package -->
-<!--
-      <fileset dir="${basedir}/src/processing/app/preproc">
-	<include name="*Recognizer.java" />
-	<include name="*Lexer.java" />
-	<include name="*.tokens" />
-	<include name="*.txt" />
-	<include name="*.g" />
-	<include name="*.smap" />
-      </fileset>
-    </delete>
--->
-    <!-- END SECTION TO CLEAN UP AFTER OLD PROJECT LAYOUT -->
-
     <delete dir="bin" />
     <delete file="pde.jar" />
-    <delete>
-      <fileset dir="${generated}">
-	<include name="*.java" />
-	<include name="*.tokens" />
-	<include name="*.txt" />
-	<include name="*.g" />
-	<include name="*.smap" />
-      </fileset>
-    </delete>
   </target>
 
-<!--<target name="preproc" depends="clean" description="Compile ANTLR grammar">-->
-  <target name="preproc" description="Compile ANTLR grammar">
-    <antlr target="${grammars}/java15.g" outputdirectory="${generated}">
-      <classpath path="${antlrjar}" />
-    </antlr>
-    <antlr target="${grammars}/pde.g" 
-	   outputdirectory="${generated}" 
-	   glib="${grammars}/java15.g">
-      <classpath path="${antlrjar}" />
-    </antlr>
-  </target>
-
-  <target name="compile" depends="preproc" description="Compile sources">
-    <condition property="core-built">
-      <available file="../core/library/core.jar" />
-    </condition>
-    <fail unless="core-built" 
-	  message="Please build the core library first and make sure it sits in ../core/library/core.jar" />
+  <target name="compile" description="Compile sources">
 
     <mkdir dir="bin" />
 
@@ -108,13 +56,12 @@
     <javac source="1.6" 
 	   target="1.6" 
 	   destdir="bin" 
-	   excludes="**/tools/format/**" 
 	   encoding="UTF-8" 
 	   includeAntRuntime="false" 
-	   classpath="../core/library/core.jar; ${env.JAVA_HOME}/lib/tools.jar; lib/ant.jar; lib/ant-launcher.jar; lib/antlr.jar; lib/apple.jar; lib/jdt-core.jar; lib/jna.jar; lib/org-netbeans-swing-outline.jar"
+	   classpath="${pde.classpath}"
 	   debug="on">
-      <src path="src" />
-      <src path="generated" />
+      <src path="processing/src" />
+      <src path="processing/generated" />
     </javac>
   </target>
 

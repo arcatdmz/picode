@@ -27,11 +27,13 @@ import processing.core.*;
 
 import java.awt.*;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import javax.swing.*;
 
 import com.phybots.picode.parser.PdeParser;
-import com.phybots.picode.ui.PicodeFrame;
 import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.PicodeSettings;
 
@@ -39,11 +41,108 @@ import com.phybots.picode.ui.PicodeSettings;
 /**
  * Stores information about files in the current sketch
  */
-public class RobokoSketch {
-  private PicodeFrame editor;
-  public static RobokoSketch newInstance(PicodeMain robokoMain) {
-    // TODO Auto-generated method stub
-    return null;
+public class PicodeSketch {
+  private PicodeMain picodeMain;
+
+  static boolean breakTime = false;
+  static String[] months = {
+    "jan", "feb", "mar", "apr", "may", "jun",
+    "jul", "aug", "sep", "oct", "nov", "dec"
+  };
+  static File untitledFolder;
+
+  static {
+
+    // Copied from {@link processing.app.Base#createAndShowGUI(String[])}.
+    // Create a location for untitled sketches
+    try {
+      untitledFolder = Base.createTempFolder("untitled", "sketches", null);
+      untitledFolder.deleteOnExit();
+    } catch (IOException e) {
+      Base.showError("Trouble without a name",
+                     "Could not create a place to store untitled sketches.\n" +
+                     "That's gonna prevent us from continuing.", e);
+    }
+  }
+  
+  /**
+   * Copied from {@link processing.app.Base#handleNew()}.
+   * 
+   * Create a new untitled document.
+   */
+  public static PicodeSketch newInstance(PicodeMain picodeMain) {
+    PicodeSketch sketch = null;
+
+    try {
+      File newbieDir = null;
+      String newbieName = null;
+
+      // In 0126, untitled sketches will begin in the temp folder,
+      // and then moved to a new location because Save will default to Save As.
+//      File sketchbookDir = getSketchbookFolder();
+      File newbieParentDir = untitledFolder;
+
+      String prefix = Preferences.get("editor.untitled.prefix");
+
+      // Use a generic name like sketch_031008a, the date plus a char
+      int index = 0;
+      String format = Preferences.get("editor.untitled.suffix");
+      String suffix = null;
+      if (format == null) {
+        Calendar cal = Calendar.getInstance();
+        int day = cal.get(Calendar.DAY_OF_MONTH);  // 1..31
+        int month = cal.get(Calendar.MONTH);  // 0..11
+        suffix = months[month] + PApplet.nf(day, 2);
+      } else {
+        //SimpleDateFormat formatter = new SimpleDateFormat("yyMMdd");
+        //SimpleDateFormat formatter = new SimpleDateFormat("MMMdd");
+        //String purty = formatter.format(new Date()).toLowerCase();
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        suffix = formatter.format(new Date());
+      }
+      do {
+        if (index == 26) {
+          // In 0159, avoid running past z by sending people outdoors.
+          if (!breakTime) {
+            Base.showWarning("Time for a Break",
+                             "You've reached the limit for auto naming of new sketches\n" +
+                             "for the day. How about going for a walk instead?", null);
+            breakTime = true;
+          } else {
+            Base.showWarning("Sunshine",
+                             "No really, time for some fresh air for you.", null);
+          }
+          return null;
+        }
+        newbieName = prefix + suffix + ((char) ('a' + index));
+        // Also sanitize the name since it might do strange things on
+        // non-English systems that don't use this sort of date format.
+        // http://code.google.com/p/processing/issues/detail?id=283
+        newbieName = Sketch.sanitizeName(newbieName);
+        newbieDir = new File(newbieParentDir, newbieName);
+        index++;
+        // Make sure it's not in the temp folder *and* it's not in the sketchbook
+      } while (newbieDir.exists() || new File(PicodeSettings.getProjectsFolderPath(), newbieName).exists());
+
+      // Make the directory for the new sketch
+      newbieDir.mkdirs();
+
+      // Make an empty pde file
+      File newbieFile =
+        new File(newbieDir, newbieName + "." + getDefaultExtension());
+      if (!newbieFile.createNewFile()) {
+        throw new IOException(newbieFile + " already exists.");
+      }
+      String path = newbieFile.getAbsolutePath();
+      sketch = new PicodeSketch(picodeMain, path);
+      sketch.setUntitled(true);
+
+    } catch (IOException e) {
+      Base.showWarning("That's new to me",
+                       "A strange and unexplainable error occurred\n" +
+                       "while trying to create a new sketch.", e);
+    }
+    return sketch;
   }
 
   /** main pde file for this sketch. */
@@ -108,8 +207,8 @@ public class RobokoSketch {
    * path is location of the main .pde file, because this is also simplest to
    * use when opening the file from the finder/explorer.
    */
-  public RobokoSketch(PicodeMain robokoMain, String path) throws IOException {
-    this.editor = robokoMain != null ? robokoMain.getRobokoFrame() : null;
+  public PicodeSketch(PicodeMain picodeMain, String path) throws IOException {
+    this.picodeMain = picodeMain;
     load(path);
   }
 
@@ -201,7 +300,7 @@ public class RobokoSketch {
     sortCode();
 
     // set the main file to be the current tab
-    if (editor != null) {
+    if (picodeMain != null) {
       setCurrentCode(0);
     }
   }
@@ -284,7 +383,7 @@ public class RobokoSketch {
     }
 
     renamingCode = false;
-    editor.getEditorProxy().statusEdit("Name for new file:", "");
+    picodeMain.getPintegration().statusEdit("Name for new file:", "");
   }
 
 
@@ -324,7 +423,7 @@ public class RobokoSketch {
       "New name for sketch:" : "New name for file:";
     String oldName = (current.isExtension("pde")) ?
       current.getPrettyName() : current.getFileName();
-    editor.getEditorProxy().statusEdit(prompt, oldName);
+    picodeMain.getPintegration().statusEdit(prompt, oldName);
   }
 
 
@@ -470,15 +569,15 @@ public class RobokoSketch {
 //        // having saved everything and renamed the folder and the main .pde,
 //        // use the editor to re-open the sketch to re-init state
 //        // (unfortunately this will kill positions for carets etc)
-//        editor.getSketchListener().handleOpenUnchecked(newMainFilePath,
+//        picodeMain.getEditorProxy().handleOpenUnchecked(newMainFilePath,
 //                                   currentIndex,
-//                                   editor.getSketchListener().getSelectionStart(),
-//                                   editor.getSketchListener().getSelectionStop(),
-//                                   editor.getSketchListener().getScrollPosition());
+//                                   picodeMain.getEditorProxy().getSelectionStart(),
+//                                   picodeMain.getEditorProxy().getSelectionStop(),
+//                                   picodeMain.getEditorProxy().getScrollPosition());
 //
 //        // get the changes into the sketchbook menu
 //        // (re-enabled in 0115 to fix bug #332)
-//        editor.getSketchListener().baseRebuildSketchbookMenusAsync();
+//        picodeMain.getEditorProxy().baseRebuildSketchbookMenusAsync();
 
       } else {  // else if something besides code[0]
         if (!current.renameTo(newFile, newExtension)) {
@@ -513,7 +612,7 @@ public class RobokoSketch {
     setCurrentCode(newName);
 
     // update the tabs
-    editor.getEditorProxy().headerRebuild();
+    picodeMain.getPintegration().headerRebuild();
   }
 
 
@@ -539,7 +638,7 @@ public class RobokoSketch {
     String prompt = (currentIndex == 0) ?
       "Are you sure you want to delete this sketch?" :
       "Are you sure you want to delete \"" + current.getPrettyName() + "\"?";
-    int result = JOptionPane.showOptionDialog(editor,
+    int result = JOptionPane.showOptionDialog(picodeMain.getPicodeFrame(),
                                               prompt,
                                               "Delete",
                                               JOptionPane.YES_NO_OPTION,
@@ -559,9 +658,9 @@ public class RobokoSketch {
         //sketchbook.rebuildMenus();
 
         // make a new sketch, and i think this will rebuild the sketch menu
-        //editor.getSketchListener().handleNewUnchecked();
-        //editor.getSketchListener().handleClose2();
-        editor.getEditorProxy().baseHandleClose(editor, false);
+        //picodeMain.getEditorProxy().handleNewUnchecked();
+        //picodeMain.getEditorProxy().handleClose2();
+        picodeMain.getPintegration().baseHandleClose(picodeMain.getPicodeFrame(), false);
 
       } else {
         // delete the file
@@ -579,7 +678,7 @@ public class RobokoSketch {
         setCurrentCode(0);
 
         // update the tabs
-        editor.getEditorProxy().headerRepaint();
+        picodeMain.getPintegration().headerRepaint();
       }
     }
   }
@@ -641,12 +740,12 @@ public class RobokoSketch {
         break;
       }
     }
-    editor.getEditorProxy().headerRepaint();
+    picodeMain.getPintegration().headerRepaint();
 
     if (Base.isMacOS()) {
       // http://developer.apple.com/qa/qa2001/qa1146.html
       Object modifiedParam = modified ? Boolean.TRUE : Boolean.FALSE;
-      editor.getRootPane().putClientProperty("windowModified", modifiedParam);
+      picodeMain.getPicodeFrame().getRootPane().putClientProperty("windowModified", modifiedParam);
     }
   }
 
@@ -659,7 +758,7 @@ public class RobokoSketch {
   /**
    * Save all code in the current sketch. This just forces the files to save
    * in place, so if it's an untitled (un-saved) sketch, saveAs() should be
-   * called instead. (This is handled inside editor.getSketchListener().handleSave()).
+   * called instead. (This is handled inside picodeMain.getEditorProxy().handleSave()).
    */
   public boolean save() throws IOException {
     // make sure the user didn't hide the sketch folder
@@ -667,7 +766,7 @@ public class RobokoSketch {
 
     // first get the contents of the editor text area
 //    if (current.isModified()) {
-    current.setProgram(editor.getEditorProxy().getText());
+    current.setProgram(picodeMain.getPintegration().getText());
 //    }
 
     // don't do anything if not actually modified
@@ -708,7 +807,7 @@ public class RobokoSketch {
     final String PROMPT = "Save sketch folder as...";
     if (Preferences.getBoolean("chooser.files.native")) {
       // get new name for folder
-      FileDialog fd = new FileDialog(editor, PROMPT, FileDialog.SAVE);
+      FileDialog fd = new FileDialog(picodeMain.getPicodeFrame(), PROMPT, FileDialog.SAVE);
       if (isReadOnly() || isUntitled()) {
         // default to the sketchbook folder
         fd.setDirectory(Preferences.get("sketchbook.path"));
@@ -733,7 +832,7 @@ public class RobokoSketch {
       }
       // can't do this, will try to save into itself by default
       //fc.setSelectedFile(folder);
-      int result = fc.showSaveDialog(editor);
+      int result = fc.showSaveDialog(picodeMain.getPicodeFrame());
       if (result == JFileChooser.APPROVE_OPTION) {
         File selection = fc.getSelectedFile();
         newParentDir = selection.getParent();
@@ -808,7 +907,7 @@ public class RobokoSketch {
     // grab the contents of the current tab before saving
     // first get the contents of the editor text area
     if (current.isModified()) {
-      current.setProgram(editor.getEditorProxy().getText());
+      current.setProgram(picodeMain.getPintegration().getText());
     }
 
     File[] copyItems = folder.listFiles(new FileFilter() {
@@ -857,7 +956,7 @@ public class RobokoSketch {
     // the Recent menu so that it's not sticking around after the rename.
     // If untitled, it won't be in the menu, so there's no point.
     if (!isUntitled()) {
-      editor.getEditorProxy().removeRecent();
+      picodeMain.getPintegration().removeRecent();
     }
 
     // save the main tab with its new name
@@ -870,7 +969,7 @@ public class RobokoSketch {
     setUntitled(false);
 
     // Add this sketch back using the new name
-    editor.getEditorProxy().addRecent();
+    picodeMain.getPintegration().addRecent();
 
     // let Editor know that the save was successful
     return true;
@@ -886,7 +985,7 @@ public class RobokoSketch {
 //  String oldPath = getMainFilePath();
     primaryFile = code[0].getFile();
 //    String newPath = getMainFilePath();
-//    editor.getSketchListener().base.renameRecent(oldPath, newPath);
+//    picodeMain.getEditorProxy().base.renameRecent(oldPath, newPath);
 
     name = sketchName;
     folder = sketchFolder;
@@ -900,9 +999,9 @@ public class RobokoSketch {
     // Name changed, rebuild the sketch menus
     calcModified();
 //    System.out.println("modified is now " + modified);
-    editor.getEditorProxy().updateTitle();
-    editor.getEditorProxy().baseRebuildSketchbookMenus();
-//    editor.getSketchListener().headerRebuild();
+    picodeMain.getPintegration().updateTitle();
+    picodeMain.getPintegration().baseRebuildSketchbookMenus();
+//    picodeMain.getEditorProxy().headerRebuild();
   }
 
 
@@ -928,7 +1027,7 @@ public class RobokoSketch {
     String prompt =
       "Select an image or other data file to copy to your sketch";
     //FileDialog fd = new FileDialog(new Frame(), prompt, FileDialog.LOAD);
-    FileDialog fd = new FileDialog(editor, prompt, FileDialog.LOAD);
+    FileDialog fd = new FileDialog(picodeMain.getPicodeFrame(), prompt, FileDialog.LOAD);
     fd.setVisible(true);
 
     String directory = fd.getDirectory();
@@ -943,7 +1042,7 @@ public class RobokoSketch {
     boolean result = addFile(sourceFile);
 
     if (result) {
-      editor.getEditorProxy().statusNotice("One file added to the sketch.");
+      picodeMain.getPintegration().statusNotice("One file added to the sketch.");
     }
   }
 
@@ -997,7 +1096,7 @@ public class RobokoSketch {
     if (destFile.exists()) {
       Object[] options = { "OK", "Cancel" };
       String prompt = "Replace the existing version of " + filename + "?";
-      int result = JOptionPane.showOptionDialog(editor,
+      int result = JOptionPane.showOptionDialog(picodeMain.getPicodeFrame(),
                                                 prompt,
                                                 "Replace",
                                                 JOptionPane.YES_NO_OPTION,
@@ -1058,7 +1157,7 @@ public class RobokoSketch {
         sortCode();
       }
       setCurrentCode(filename);
-      editor.getEditorProxy().headerRepaint();
+      picodeMain.getPintegration().headerRepaint();
       if (isUntitled()) {  // TODO probably not necessary? problematic?
         // Mark the new code as modified so that the sketch is saved
         current.setModified(true);
@@ -1096,19 +1195,19 @@ public class RobokoSketch {
 
     // get the text currently being edited
     if (current != null) {
-      current.setState(editor.getEditorProxy().getText(),
-                       editor.getEditorProxy().getSelectionStart(),
-                       editor.getEditorProxy().getSelectionStop(),
-                       editor.getEditorProxy().getScrollPosition());
+      current.setState(picodeMain.getPintegration().getText(),
+                       picodeMain.getPintegration().getSelectionStart(),
+                       picodeMain.getPintegration().getSelectionStop(),
+                       picodeMain.getPintegration().getScrollPosition());
     }
 
     current = code[which];
     currentIndex = which;
     current.visited = System.currentTimeMillis();
 
-    editor.getEditorProxy().setCode(current);
-//    editor.getSketchListener().headerRebuild();
-    editor.getEditorProxy().headerRepaint();
+    picodeMain.getPintegration().setCode(current);
+//    picodeMain.getEditorProxy().headerRebuild();
+    picodeMain.getPintegration().headerRepaint();
   }
 
 
@@ -1162,11 +1261,11 @@ public class RobokoSketch {
     // don't do from the command line
     if (editor != null) {
       // make sure any edits have been stored
-      current.setProgram(editor.getSketchListener().getText());
+      current.setProgram(picodeMain.getEditorProxy().getText());
 
       // if an external editor is being used, need to grab the
       // latest version of the code from the file.
-      if (Preferences.getBoolean("editor.getSketchListener().external")) {
+      if (Preferences.getBoolean("picodeMain.getEditorProxy().external")) {
         // set current to null so that the tab gets updated
         // http://dev.processing.org/bugs/show_bug.cgi?id=515
         current = null;
@@ -1216,7 +1315,7 @@ public class RobokoSketch {
                          "Could not properly re-save the sketch. " +
                          "You may be in trouble at this point,\n" +
                          "and it might be time to copy and paste " +
-                         "your code to another text editor.getSketchListener().", e);
+                         "your code to another text picodeMain.getEditorProxy().", e);
       }
     }
   }
@@ -1391,14 +1490,14 @@ public class RobokoSketch {
 
 
   public void setUntitled(boolean untitled) {
-//    editor.getSketchListener().untitled = u;
+//    picodeMain.getEditorProxy().untitled = u;
     this.untitled = untitled;
-    editor.getEditorProxy().updateTitle();
+    picodeMain.getPintegration().updateTitle();
   }
 
 
   public boolean isUntitled() {
-//    return editor.getSketchListener().untitled;
+//    return picodeMain.getEditorProxy().untitled;
     return untitled;
   }
 
@@ -1526,7 +1625,7 @@ public class RobokoSketch {
     return false;
   }
   
-  public String getDefaultExtension() {
+  public static String getDefaultExtension() {
     return "pde";
   }
  

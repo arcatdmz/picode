@@ -8,14 +8,14 @@ import com.phybots.picode.ui.PicodeMain;
 
 public class HideCameraFrameAction extends AbstractAction {
 	private static final long serialVersionUID = -2297070480522312162L;
-	private transient PicodeMain robokoMain;
+	private transient PicodeMain picodeMain;
 
-	public HideCameraFrameAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public HideCameraFrameAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		robokoMain.showCaptureFrame(false);
+		picodeMain.showCaptureFrame(false);
 	}
 }

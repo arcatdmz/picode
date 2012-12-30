@@ -11,7 +11,7 @@ import com.phybots.picode.ui.PicodeSettings;
 
 import processing.app.Base;
 import processing.app.Library;
-import processing.app.RobokoSketch;
+import processing.app.PicodeSketch;
 import processing.app.SketchCode;
 import processing.app.SketchException;
 
@@ -19,7 +19,7 @@ public class Builder {
 
 	public static void main(String[] args) {
 		ProcessingIntegration.init();
-		RobokoSketch sketch = null;
+		PicodeSketch sketch = null;
 		try {
 			sketch = PicodeSettings.getDefaultSketch();
 			Builder builder = new Builder(null, sketch);
@@ -38,15 +38,15 @@ public class Builder {
 
 	private String javaLibraryPath;
 	private String mainClassName;
-	private PicodeMain robokoMain;
-	private RobokoSketch sketch;
+	private PicodeMain picodeMain;
+	private PicodeSketch sketch;
 	
   protected HashMap<String, ArrayList<Library>> importToLibraryTable;
 
 	private File srcFolder;
 
-	public Builder(PicodeMain robokoMain, RobokoSketch sketch) {
-		this.robokoMain = robokoMain;
+	public Builder(PicodeMain picodeMain, PicodeSketch sketch) {
+		this.picodeMain = picodeMain;
 		this.sketch = sketch;
     setSrcFolder(PicodeSettings.getSrcFolderPath());
     setBinFolder(PicodeSettings.getBinFolderPath());
@@ -65,11 +65,11 @@ public class Builder {
     return null;
   }
 
-  public PicodeMain getRobokoMain() {
-    return robokoMain;
+  public PicodeMain getpicodeMain() {
+    return picodeMain;
   }
 
-  RobokoSketch getSketch() {
+  PicodeSketch getSketch() {
     return sketch;
   }
 

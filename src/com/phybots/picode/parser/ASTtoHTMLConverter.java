@@ -7,7 +7,7 @@ import com.phybots.picode.ui.ProcessingIntegration;
 import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.PicodeSettings;
 
-import processing.app.RobokoSketch;
+import processing.app.PicodeSketch;
 import processing.app.SketchException;
 import processing.mode.java.preproc.PdeEmitter;
 import processing.mode.java.preproc.PdePreprocessor;
@@ -31,7 +31,7 @@ public class ASTtoHTMLConverter {
 
 	public static void main(String[] args) {
 		ProcessingIntegration.init();
-		RobokoSketch sketch = null;
+		PicodeSketch sketch = null;
 		try {
 			sketch = PicodeSettings.getDefaultSketch();
 			PdeParser parser = new PdeParser(sketch);
@@ -139,7 +139,7 @@ public class ASTtoHTMLConverter {
 			break;
 
 		case PdeTokenTypes.METHOD_CALL:
-			if (handleRobokoMethodCall(child1, child2, sb)) {
+			if (handlePicodeMethodCall(child1, child2, sb)) {
 				break;
 			}
 		case PdeTokenTypes.MODIFIERS:
@@ -524,12 +524,12 @@ public class ASTtoHTMLConverter {
 		}
 	}
 
-	private boolean handleRobokoMethodCall(AST dot, AST elist, StringBuilder sb) {
+	private boolean handlePicodeMethodCall(AST dot, AST elist, StringBuilder sb) {
 		if (dot.getType() == PdeTokenTypes.DOT &&
 				elist.getType() == PdeTokenTypes.ELIST) {
 			AST className = dot.getFirstChild();
 			AST methodName = className.getNextSibling();
-			if ("Roboko".equals(className.getText())) {
+			if ("Picode".equals(className.getText())) {
 				if ("pose".equals(methodName.getText())) {
 					if (elist.getNumberOfChildren() == 1) {
 						AST parameterExpression = elist.getFirstChild();
@@ -541,7 +541,7 @@ public class ASTtoHTMLConverter {
 								String imageTag = String.format("<img src=\"%s/%s.thumb.png\" border=\"1\" align=\"middle\">",
 										PicodeSettings.getPoseFolderURL(),
 										fileName);
-								// toHTML(dot); // "Roboko.pose("
+								// toHTML(dot); // "Picode.pose("
 								// dumpHiddenBefore(poseFileName); // "("
 
 								sb.append(imageTag);

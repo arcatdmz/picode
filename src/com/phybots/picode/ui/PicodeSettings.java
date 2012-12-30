@@ -3,7 +3,7 @@ package com.phybots.picode.ui;
 import java.io.File;
 import java.io.IOException;
 
-import processing.app.RobokoSketch;
+import processing.app.PicodeSketch;
 
 public class PicodeSettings {
 
@@ -42,20 +42,16 @@ public class PicodeSettings {
 				getPoseFolderPath().replace(File.separator, "/"));
 	}
 
-	public static RobokoSketch getDefaultSketch(PicodeMain robokoMain) throws IOException {
-		return new RobokoSketch(robokoMain, getDefaultSketchPath());
+	public static PicodeSketch getDefaultSketch(PicodeMain picodeMain) throws IOException {
+		return new PicodeSketch(picodeMain, getDefaultSketchPath());
 	}
 
-	public static RobokoSketch getDefaultSketch() throws IOException {
+	public static PicodeSketch getDefaultSketch() throws IOException {
 		return getDefaultSketch(null);
 	}
 
 	public static String getDefaultSketchPath() {
 		return System.getProperty("user.dir") + "\\projects\\HelloWorld\\HelloWorld.pde";
-	}
-
-	public static String getRobokoBinaryPath() {
-		return System.getProperty("user.dir") + "\\bin";
 	}
 
 	public static File getLibrariesFolder() {

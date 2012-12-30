@@ -27,8 +27,8 @@ import com.phybots.picode.action.RunAction;
 import com.phybots.picode.action.SaveSketchAction;
 import com.phybots.picode.action.SaveSketchAsAction;
 import com.phybots.picode.action.StopAction;
-import com.phybots.picode.ui.editor.RobokoEditor;
-import com.phybots.picode.ui.editor.RobokoEditorPane;
+import com.phybots.picode.ui.editor.PicodeEditor;
+import com.phybots.picode.ui.editor.PicodeEditorPane;
 import com.phybots.picode.ui.library.PosePanel;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -43,8 +43,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import processing.app.RobokoSketch;
-import processing.app.RunnerListener;
+import processing.app.PicodeSketch;
 import processing.app.SketchCode;
 
 import java.awt.event.InputEvent;
@@ -69,8 +68,8 @@ public class PicodeFrame extends JFrame {
 	private PosePanel posePanel = null;
 	// private PoseSetPanel poseSetPanel = null;
 
-	private transient PicodeMain robokoMain;
-	private transient ArrayList<RobokoEditorPane> editorPanes;
+	private transient PicodeMain picodeMain;
+	private transient ArrayList<PicodeEditorPane> editorPanes;
 	private JMenuBar menuBar;
 	private JMenu mnSketch;
 	private JMenuItem mntmLoad;
@@ -86,9 +85,9 @@ public class PicodeFrame extends JFrame {
 	/**
 	 * This is the default constructor
 	 */
-	public PicodeFrame(PicodeMain robokoMain) {
+	public PicodeFrame(PicodeMain picodeMain) {
 		super();
-		this.robokoMain = robokoMain;
+		this.picodeMain = picodeMain;
 		initialize();
 	}
 
@@ -119,8 +118,8 @@ public class PicodeFrame extends JFrame {
 	public void applySelectedPose() {
 		Pose pose = getPosePanel().getSelectedPose();
 		if (pose == null ||
-				!robokoMain.getRobot().setPose(pose)) {
-			robokoMain.setStatusText("Setting pose failed.");
+				!picodeMain.getRobot().setPose(pose)) {
+			picodeMain.setStatusText("Setting pose failed.");
 		}
 	}
 
@@ -140,33 +139,33 @@ public class PicodeFrame extends JFrame {
 		getPosePanel().editPoseName(pose);
 	}
 
-	public void addEditor(RobokoEditor robokoEditor) {
-		RobokoEditorPane robokoEditorPane = new RobokoEditorPane(robokoEditor);
-		addEditor(robokoEditorPane);
+	public void addEditor(PicodeEditor picodeEditor) {
+		PicodeEditorPane picodeEditorPane = new PicodeEditorPane(picodeEditor);
+		addEditor(picodeEditorPane);
 	}
 
-	private void addEditor(RobokoEditorPane robokoEditorPane) {
-		editorPanes.add(robokoEditorPane);
-		SketchCode code = robokoEditorPane.getRobokoEditor().getCode();
+	private void addEditor(PicodeEditorPane picodeEditorPane) {
+		editorPanes.add(picodeEditorPane);
+		SketchCode code = picodeEditorPane.getPicodeEditor().getCode();
 		getTabbedPane().addTab(
 				code.isExtension("pde") ? code.getPrettyName() : code.getFileName(),
-				null, robokoEditorPane, null);
+				null, picodeEditorPane, null);
 	}
 
 	public void removeEditor(SketchCode code) {
-		Iterator<RobokoEditorPane> it = editorPanes.iterator();
+		Iterator<PicodeEditorPane> it = editorPanes.iterator();
 		while (it.hasNext()) {
-			RobokoEditorPane robokoEditorPane = it.next();
-			if (robokoEditorPane.getRobokoEditor().getCode() == code) {
+			PicodeEditorPane picodeEditorPane = it.next();
+			if (picodeEditorPane.getPicodeEditor().getCode() == code) {
 				it.remove();
-				getTabbedPane().remove(robokoEditorPane);
+				getTabbedPane().remove(picodeEditorPane);
 				return;
 			}
 		}
 	}
 
-	public RobokoEditor getEditor(int index) {
-		return editorPanes.get(index).getRobokoEditor();
+	public PicodeEditor getEditor(int index) {
+		return editorPanes.get(index).getPicodeEditor();
 	}
 
 	public void showEditor(int index) {
@@ -177,11 +176,11 @@ public class PicodeFrame extends JFrame {
 		return getTabbedPane().getSelectedIndex();
 	}
 
-	public RobokoEditor getCurrentEditor() {
+	public PicodeEditor getCurrentEditor() {
 		Component selectedComponent = getTabbedPane().getSelectedComponent();
 		if (selectedComponent != null &&
-				selectedComponent instanceof RobokoEditorPane) {
-			return ((RobokoEditorPane) selectedComponent).getRobokoEditor();
+				selectedComponent instanceof PicodeEditorPane) {
+			return ((PicodeEditorPane) selectedComponent).getPicodeEditor();
 		}
 		return null;
 	}
@@ -193,147 +192,32 @@ public class PicodeFrame extends JFrame {
 	}
 
 	public void updateTabs() {
-		HashMap<SketchCode, RobokoEditorPane> map
-				= new HashMap<SketchCode, RobokoEditorPane>();
-		for (RobokoEditorPane robokoEditorPane : editorPanes) {
-			getTabbedPane().remove(robokoEditorPane);
-			map.put(robokoEditorPane.getRobokoEditor().getCode(), robokoEditorPane);
+		HashMap<SketchCode, PicodeEditorPane> map
+				= new HashMap<SketchCode, PicodeEditorPane>();
+		for (PicodeEditorPane picodeEditorPane : editorPanes) {
+			getTabbedPane().remove(picodeEditorPane);
+			map.put(picodeEditorPane.getPicodeEditor().getCode(), picodeEditorPane);
 		}
 		editorPanes.clear();
-		RobokoSketch sketch = robokoMain.getSketch();
+		PicodeSketch sketch = picodeMain.getSketch();
 		for (int i = 0; i < sketch.getCodeCount(); i ++) {
 			addEditor(map.get(sketch.getCode(i)));
 		}
 	}
 
 	public void clearEditors() {
-		Iterator<RobokoEditorPane> it = editorPanes.iterator();
+		Iterator<PicodeEditorPane> it = editorPanes.iterator();
 		while (it.hasNext()) {
-			RobokoEditorPane robokoEditorPane = it.next();
-			getTabbedPane().remove(robokoEditorPane);
+			PicodeEditorPane picodeEditorPane = it.next();
+			getTabbedPane().remove(picodeEditorPane);
 			it.remove();
 		}
 	}
-	
-	public EditorProxy getEditorProxy() {
-	  return new EditorProxy();
-	}
 
-  public static class EditorProxy implements RunnerListener {
-
-    public void statusNotice(String string) {
-      // TODO 自動生成されたメソッド・スタブ
-
-    }
-
-    public int getSelectionStart() {
-      // TODO 自動生成されたメソッド・スタブ
-      return 0;
-    }
-
-    public int getSelectionStop() {
-      // TODO 自動生成されたメソッド・スタブ
-      return 0;
-    }
-
-    public int getScrollPosition() {
-      // TODO 自動生成されたメソッド・スタブ
-      return 0;
-    }
-
-    public void setCode(SketchCode current) {
-      // TODO 自動生成されたメソッド・スタブ
-
-    }
-
-    public void statusEdit(String string, String string2) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    public void headerRebuild() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    public void baseHandleClose(PicodeFrame editor, boolean b) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    public void headerRepaint() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    public String getText() {
-      // TODO Auto-generated method stub
-      return null;
-    }
-
-    public void removeRecent() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    public void addRecent() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    public void updateTitle() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    public void baseRebuildSketchbookMenus() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    // Runner listener methods are implemented below:
-    
-    @Override
-    public void statusError(String message) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void statusError(Exception exception) {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void startIndeterminate() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void stopIndeterminate() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public void statusHalt() {
-      // TODO Auto-generated method stub
-      
-    }
-
-    @Override
-    public boolean isHalted() {
-      // TODO Auto-generated method stub
-      return false;
-    }
-  }
-
-	@Override
+  @Override
 	public void dispose() {
 		super.dispose();
-		robokoMain.dispose();
+		picodeMain.dispose();
 	}
 
 	/**
@@ -344,8 +228,8 @@ public class PicodeFrame extends JFrame {
 	private void initialize() {
 		setJMenuBar(getMenuBar_1());
 		this.setContentPane(getContentPanel());
-		this.setTitle("Roboko");
-		editorPanes = new ArrayList<RobokoEditorPane>();
+		this.setTitle("Picode");
+		editorPanes = new ArrayList<PicodeEditorPane>();
 	}
 
 	/**
@@ -399,7 +283,7 @@ public class PicodeFrame extends JFrame {
 	private JButton getRunJButton() {
 		if (runJButton == null) {
 			runJButton = new JButton();
-			runJButton.setAction(new RunAction(robokoMain));
+			runJButton.setAction(new RunAction(picodeMain));
 			runJButton.setText("Run");
 			runJButton.setFont(defaultFont);
 			runJButton.setToolTipText("Compile and run this script");
@@ -415,7 +299,7 @@ public class PicodeFrame extends JFrame {
 	private JButton getStopJButton() {
 		if (stopJButton == null) {
 			stopJButton = new JButton();
-			stopJButton.setAction(new StopAction(robokoMain));
+			stopJButton.setAction(new StopAction(picodeMain));
 			stopJButton.setText("Stop");
 			stopJButton.setFont(defaultFont);
 		}
@@ -480,7 +364,7 @@ public class PicodeFrame extends JFrame {
 
 	private PosePanel getPosePanel() {
 		if (posePanel == null) {
-			posePanel = new PosePanel(robokoMain, this);
+			posePanel = new PosePanel(picodeMain, this);
 		}
 		return posePanel;
 	}
@@ -515,7 +399,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem getMntmNew() {
 		if (mntmNew == null) {
 			mntmNew = new JMenuItem();
-			mntmNew.setAction(new NewSketchAction(robokoMain));
+			mntmNew.setAction(new NewSketchAction(picodeMain));
 			mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
 			mntmNew.setText("New");
 		}
@@ -524,7 +408,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem getMntmLoad() {
 		if (mntmLoad == null) {
 			mntmLoad = new JMenuItem();
-			mntmLoad.setAction(new LoadSketchAction(robokoMain));
+			mntmLoad.setAction(new LoadSketchAction(picodeMain));
 			mntmLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
 			mntmLoad.setText("Load");
 		}
@@ -533,7 +417,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem getMntmSave() {
 		if (mntmSave == null) {
 			mntmSave = new JMenuItem();
-			mntmSave.setAction(new SaveSketchAction(robokoMain));
+			mntmSave.setAction(new SaveSketchAction(picodeMain));
 			mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 			mntmSave.setText("Save");
 		}
@@ -542,7 +426,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem getMntmSaveAs() {
 		if (mntmSaveAs == null) {
 			mntmSaveAs = new JMenuItem();
-			mntmSaveAs.setAction(new SaveSketchAsAction(robokoMain));
+			mntmSaveAs.setAction(new SaveSketchAsAction(picodeMain));
 			mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
 			mntmSaveAs.setText("Save As…");
 		}
@@ -556,7 +440,7 @@ public class PicodeFrame extends JFrame {
 			tabbedPane.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					if (getCurrentEditor() != null) {
-						robokoMain.setNumberOfLines(
+						picodeMain.setNumberOfLines(
 								getCurrentEditor().getCode().getLineCount());
 					}
 				}
@@ -576,7 +460,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem getMntmNew_1() {
 		if (mntmNew_1 == null) {
 			mntmNew_1 = new JMenuItem();
-			mntmNew_1.setAction(new NewFileAction(robokoMain));
+			mntmNew_1.setAction(new NewFileAction(picodeMain));
 			mntmNew_1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
 			mntmNew_1.setText("New");
 		}
@@ -585,7 +469,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem getMntmRename() {
 		if (mntmRename == null) {
 			mntmRename = new JMenuItem();
-			mntmRename.setAction(new RenameFileAction(robokoMain));
+			mntmRename.setAction(new RenameFileAction(picodeMain));
 			mntmRename.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
 			mntmRename.setText("Rename");
 		}
@@ -594,7 +478,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem getMntmDelete() {
 		if (mntmDelete == null) {
 			mntmDelete = new JMenuItem();
-			mntmDelete.setAction(new DeleteFileAction(robokoMain));
+			mntmDelete.setAction(new DeleteFileAction(picodeMain));
 			mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
 			mntmDelete.setText("Delete");
 		}

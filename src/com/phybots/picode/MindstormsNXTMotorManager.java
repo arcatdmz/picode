@@ -17,8 +17,8 @@ import com.phybots.picode.ui.PicodeMain;
 public class MindstormsNXTMotorManager extends MotorManager {
 	private ServiceGroup sg;
 
-	public MindstormsNXTMotorManager(PicodeMain robokoMain, Robot robot) throws InstantiationException {
-		super(robokoMain, robot);
+	public MindstormsNXTMotorManager(PicodeMain picodeMain, Robot robot) throws InstantiationException {
+		super(picodeMain, robot);
 		sg = new ServiceGroup();
 		for (int i = 0; i < 3; i ++) {
 			Task task = new ManageMindstormsNXTMotorState();
@@ -60,8 +60,8 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		}
 	}
 
-	protected CaptureFrameAbstractImpl newCaptureFrameInstance(PicodeMain robokoMain) {
-		return new CaptureFrameAbstractImpl(robokoMain) {
+	protected CaptureFrameAbstractImpl newCaptureFrameInstance(PicodeMain picodeMain) {
+		return new CaptureFrameAbstractImpl(picodeMain) {
 			private static final long serialVersionUID = 7867260841537019765L;
 			protected JComponent getConfigurationComponent() {
 				JPanel motorPanel = new JPanel();

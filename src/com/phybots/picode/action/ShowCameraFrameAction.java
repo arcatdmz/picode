@@ -8,14 +8,14 @@ import com.phybots.picode.ui.PicodeMain;
 
 public class ShowCameraFrameAction extends AbstractAction {
 	private static final long serialVersionUID = -2297070480522312162L;
-	private transient PicodeMain robokoMain;
+	private transient PicodeMain picodeMain;
 
-	public ShowCameraFrameAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public ShowCameraFrameAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		robokoMain.showCaptureFrame(true);
+		picodeMain.showCaptureFrame(true);
 	}
 }

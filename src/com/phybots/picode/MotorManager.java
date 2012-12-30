@@ -6,17 +6,17 @@ import com.phybots.picode.ui.CaptureFrameAbstractImpl;
 import com.phybots.picode.ui.PicodeMain;
 
 public abstract class MotorManager {
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 	private Robot robot;
 	private CaptureFrameAbstractImpl captureFrame;
 
-	public MotorManager(PicodeMain robokoMain, Robot robot) throws InstantiationException {
-		this.robokoMain = robokoMain;
+	public MotorManager(PicodeMain picodeMain, Robot robot) throws InstantiationException {
+		this.picodeMain = picodeMain;
 		this.robot = robot;
 	}
 
-	protected PicodeMain getRobokoMain() {
-		return robokoMain;
+	protected PicodeMain getpicodeMain() {
+		return picodeMain;
 	}
 
 	protected Robot getRobot() {
@@ -32,16 +32,16 @@ public abstract class MotorManager {
 
 	public void showCaptureFrame(boolean show) {
 		if (captureFrame == null) {
-			captureFrame = newCaptureFrameInstance(robokoMain);
+			captureFrame = newCaptureFrameInstance(picodeMain);
 			captureFrame.setSize(800, 580);
 		}
 		captureFrame.setVisible(show);
 	}
 
 	public BufferedImage getImage() {
-		return robokoMain.getCamera().getImage();
+		return picodeMain.getCamera().getImage();
 	}
 
 	protected abstract CaptureFrameAbstractImpl
-			newCaptureFrameInstance(PicodeMain robokoMain);
+			newCaptureFrameInstance(PicodeMain picodeMain);
 }

@@ -4,11 +4,9 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import processing.app.RobokoSketch;
+import processing.app.PicodeSketch;
 import processing.app.SketchCode;
 import processing.app.SketchException;
 import com.phybots.Phybots;
@@ -17,14 +15,14 @@ import com.phybots.picode.Human;
 import com.phybots.picode.Robot;
 import com.phybots.picode.action.RunAction;
 import com.phybots.picode.builder.Launcher;
-import com.phybots.picode.ui.editor.RobokoEditor;
+import com.phybots.picode.ui.editor.PicodeEditor;
 import com.phybots.picode.ui.library.PoseManager;
 
 public class PicodeMain {
 
 	private static final boolean FOR_KINECT = false;
-	private RobokoSketch sketch;
-	private PicodeFrame robokoFrame;
+	private PicodeSketch sketch;
+	private PicodeFrame picodeFrame;
 
 	private Robot robot;
 
@@ -38,6 +36,7 @@ public class PicodeMain {
 		Phybots.getInstance().showDebugFrame();
 		ProcessingIntegration.init();
 
+		// TODO Hard-coded for WISS'12 demonstration.
 		try {
 			if (FOR_KINECT) {
 				robot = new Human(this);
@@ -47,13 +46,10 @@ public class PicodeMain {
 			}
 			poseManager = new PoseManager(this);
 			camera = new Camera();
-			sketch = PicodeSettings.getDefaultSketch(this);
+			sketch = PicodeSketch.newInstance(this);
 		} catch (RuntimeException e) {
 		  e.printStackTrace();
 			System.err.println("Unsupported robot type.");
-			return;
-		} catch (IOException e) {
-			System.err.println("Error while loading the pde file(s).");
 			return;
 		}
 
@@ -69,15 +65,15 @@ public class PicodeMain {
 
 	private void initGUI() {
 
-		robokoFrame = new PicodeFrame(this);
+		picodeFrame = new PicodeFrame(this);
 		setSketch(sketch);
 
 		Dimension d = new Dimension(840, 600);
-		robokoFrame.setPreferredSize(d);
-		robokoFrame.setSize(d);
-		robokoFrame.setVisible(true);
-		// robokoFrame.setDividerLocation(.5);
-		robokoFrame.addWindowListener(new WindowAdapter() {
+		picodeFrame.setPreferredSize(d);
+		picodeFrame.setSize(d);
+		picodeFrame.setVisible(true);
+		// picodeFrame.setDividerLocation(.5);
+		picodeFrame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				Phybots.getInstance().dispose();
@@ -89,10 +85,14 @@ public class PicodeMain {
 	public static void main(String[] args) {
 		new PicodeMain();
 	}
+  
+  public ProcessingIntegration getPintegration() {
+    return new ProcessingIntegration();
+  }
 
-	public void setSketch(RobokoSketch sketch) {
+	public void setSketch(PicodeSketch sketch) {
 		this.sketch = sketch;
-		robokoFrame.clearEditors();
+		picodeFrame.clearEditors();
 		for (int i = 0; i < sketch.getCodeCount(); i ++) {
 			SketchCode code = sketch.getCode(i);
 			addEditor(code);
@@ -104,7 +104,7 @@ public class PicodeMain {
 		// frame.getJScrollPane().setViewport(viewport);
 	}
 
-	public RobokoSketch getSketch() {
+	public PicodeSketch getSketch() {
 		return sketch;
 	}
 
@@ -122,9 +122,9 @@ public class PicodeMain {
 		this.launcher = launcher;
 		if (launcher == null) {
 			robot.connect(); // Reset BlueCove status.
-			robokoFrame.setEnabled(true);
+			picodeFrame.setEnabled(true);
 		} else {
-			robokoFrame.setEnabled(false);
+			picodeFrame.setEnabled(false);
 		}
 	}
 
@@ -135,11 +135,11 @@ public class PicodeMain {
 	public void setKinect(Process kinect) {
 		this.kinect = kinect;
 		if (kinect == null) {
-			robokoFrame.setAlwaysOnTop(true);
-			robokoFrame.setAlwaysOnTop(false);
-			robokoFrame.setEnabled(true);
+			picodeFrame.setAlwaysOnTop(true);
+			picodeFrame.setAlwaysOnTop(false);
+			picodeFrame.setEnabled(true);
 		} else {
-			robokoFrame.setEnabled(false);
+			picodeFrame.setEnabled(false);
 		}
 	}
 
@@ -148,15 +148,15 @@ public class PicodeMain {
 	}
 
 	public void updateTitle() {
-		robokoFrame.setTitle(sketch.getName() + " | Roboko");		
+		picodeFrame.setTitle(sketch.getName() + " | Picode");		
 	}
 
 	public void setStatusText(String statusText) {
-		robokoFrame.setStatusText(statusText);
+		picodeFrame.setStatusText(statusText);
 	}
 
 	public void setNumberOfLines(int lines) {
-		robokoFrame.setNumberOfLines(lines);
+		picodeFrame.setNumberOfLines(lines);
 	}
 
 	/**
@@ -167,7 +167,7 @@ public class PicodeMain {
 		if (title == null)
 			title = "Message";
 
-		JOptionPane.showMessageDialog(robokoFrame, message, title,
+		JOptionPane.showMessageDialog(picodeFrame, message, title,
 				JOptionPane.INFORMATION_MESSAGE);
 	}
 
@@ -189,34 +189,34 @@ public class PicodeMain {
 	}
 
 	public void showEditor(int index) {
-		robokoFrame.showEditor(index);
+		picodeFrame.showEditor(index);
 	}
 
 	public int getCurrentEditorIndex() {
-		return robokoFrame.getEditorIndex();
+		return picodeFrame.getEditorIndex();
 	}
 
-	public RobokoEditor getCurrentEditor() {
-		return robokoFrame.getCurrentEditor();
+	public PicodeEditor getCurrentEditor() {
+		return picodeFrame.getCurrentEditor();
 	}
 
 	public void updateCurrentEditorName() {
-		robokoFrame.updateCurrentEditorName();
+		picodeFrame.updateCurrentEditorName();
 	}
 
 	public void addEditor(SketchCode code) {
-		robokoFrame.addEditor(new RobokoEditor(this, code));
+		picodeFrame.addEditor(new PicodeEditor(this, code));
 	}
 
 	public void removeEditor(SketchCode code) {
-		robokoFrame.removeEditor(code);
+		picodeFrame.removeEditor(code);
 	}
 
 	public void updateTabs() {
-		robokoFrame.updateTabs();
+		picodeFrame.updateTabs();
 	}
 
-	public static String getErrorString(RobokoSketch sketch, SketchException se) {
+	public static String getErrorString(PicodeSketch sketch, SketchException se) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(se.getCodeIndex() < 0 ?
 				"-" :
@@ -242,8 +242,8 @@ public class PicodeMain {
 		return robot;
 	}
 
-	public PicodeFrame getRobokoFrame() {
-		return robokoFrame;
+	public PicodeFrame getPicodeFrame() {
+		return picodeFrame;
 	}
 
 	public PoseManager getPoseManager() {

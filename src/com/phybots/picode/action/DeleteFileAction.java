@@ -7,14 +7,14 @@ import com.phybots.picode.ui.PicodeMain;
 
 public class DeleteFileAction extends AbstractAction {
 	private static final long serialVersionUID = 8648208348407144085L;
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 
-	public DeleteFileAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public DeleteFileAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		robokoMain.getSketch().handleDeleteCode();
+		picodeMain.getSketch().handleDeleteCode();
 	}
 }

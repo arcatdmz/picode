@@ -13,7 +13,7 @@ import java.util.List;
 import com.phybots.picode.ui.ProcessingIntegration;
 import com.phybots.picode.ui.PicodeSettings;
 
-import processing.app.RobokoSketch;
+import processing.app.PicodeSketch;
 import processing.app.SketchCode;
 import processing.app.SketchException;
 import processing.core.PApplet;
@@ -32,7 +32,7 @@ public class PdeParser {
 	private PdePreprocessor pp;
 	private ASTFactory astFactory;
 
-	private RobokoSketch sketch;
+	private PicodeSketch sketch;
 	private Mode mode;
 	private int[] columns;
 
@@ -49,14 +49,14 @@ public class PdeParser {
 		return pp;
 	}
 
-	public PdeParser(RobokoSketch sketch) {
+	public PdeParser(PicodeSketch sketch) {
 		this.sketch = sketch;
 		astFactory = new ASTFactory();
 	}
 
 	public static void main(String[] args) {
 		ProcessingIntegration.init();
-		RobokoSketch sketch = null;
+		PicodeSketch sketch = null;
 		AST ast = null;
 		try {
 			sketch = PicodeSettings.getDefaultSketch();

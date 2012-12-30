@@ -9,16 +9,16 @@ import com.phybots.picode.ui.PicodeMain;
 
 public class SaveSketchAsAction extends AbstractAction {
 	private static final long serialVersionUID = -6036135232665670857L;
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 
-	public SaveSketchAsAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public SaveSketchAsAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		try {
-			robokoMain.getSketch().saveAs();
+			picodeMain.getSketch().saveAs();
 		} catch (IOException e1) {
 			// 
 		}

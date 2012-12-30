@@ -8,14 +8,14 @@ import com.phybots.picode.ui.PicodeFrame;
 
 public class DuplicateSelectedPoseAction extends AbstractAction {
 	private static final long serialVersionUID = -5297099138353745191L;
-	private transient PicodeFrame robokoFrame;
+	private transient PicodeFrame picodeFrame;
 
-	public DuplicateSelectedPoseAction(PicodeFrame robokoFrame) {
-		this.robokoFrame = robokoFrame;
+	public DuplicateSelectedPoseAction(PicodeFrame picodeFrame) {
+		this.picodeFrame = picodeFrame;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		robokoFrame.duplicateSelectedPose();
+		picodeFrame.duplicateSelectedPose();
 	}
 }

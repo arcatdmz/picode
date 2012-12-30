@@ -167,7 +167,7 @@ public abstract class Pose implements Cloneable {
 	}
 
 	public String getCode() {
-		return String.format("Roboko.pose(\"%s\")", getName());
+		return String.format("Picode.pose(\"%s\")", getName());
 	}
 
 	@Override

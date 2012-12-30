@@ -49,8 +49,8 @@ public class PosePanel extends JPanel {
 
 	private static final Font defaultFont = Phybots.getInstance().getDefaultFont();
 
-	private transient final PicodeMain robokoMain;
-	private transient final PicodeFrame robokoFrame;
+	private transient final PicodeMain picodeMain;
+	private transient final PicodeFrame picodeFrame;
 	private JPopupMenu popupMenu;
 	private JMenuItem mntmApplyThisPose;
 	private JMenuItem mntmRenameThisPose;
@@ -59,10 +59,10 @@ public class PosePanel extends JPanel {
 	private JSeparator separator;
 	private JMenuItem mntmOpenPoseFolder;
 
-	public PosePanel(PicodeMain robokoMain, PicodeFrame robokoFrame) {
+	public PosePanel(PicodeMain picodeMain, PicodeFrame picodeFrame) {
 		super();
-		this.robokoMain = robokoMain;
-		this.robokoFrame = robokoFrame;
+		this.picodeMain = picodeMain;
+		this.picodeFrame = picodeFrame;
 		initialize();
 	}
 
@@ -74,7 +74,7 @@ public class PosePanel extends JPanel {
 		if (getJList().getSelectedIndex() != -1) {
 			Pose pose = jList.getSelectedValue();
 			if (pose != null) {
-				robokoMain.getPoseManager().duplicate(pose);
+				picodeMain.getPoseManager().duplicate(pose);
 			}
 		}
 	}
@@ -83,7 +83,7 @@ public class PosePanel extends JPanel {
 		if (getJList().getSelectedIndex() != -1) {
 			Pose pose = jList.getSelectedValue();
 			if (pose != null) {
-				robokoMain.getPoseManager().removeElement(pose);
+				picodeMain.getPoseManager().removeElement(pose);
 			}
 		}
 	}
@@ -142,12 +142,12 @@ public class PosePanel extends JPanel {
 			commandPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 5, 5));
 			JButton btnAddRobotPose = new JButton();
 			btnAddRobotPose.setAction(
-					new ShowCameraFrameAction(robokoMain));
+					new ShowCameraFrameAction(picodeMain));
 			btnAddRobotPose.setText("+");
 			commandPanel.add(btnAddRobotPose, null);
 			JButton btnRemove = new JButton();
 			btnRemove.setAction(
-					new DeleteSelectedPoseAction(robokoFrame));
+					new DeleteSelectedPoseAction(picodeFrame));
 			btnRemove.setText("-");
 			commandPanel.add(btnRemove, null);
 			for (Component component : commandPanel.getComponents()) {
@@ -168,10 +168,10 @@ public class PosePanel extends JPanel {
 
 	private JMutableList<Pose> getJList() {
 		if (jList == null) {
-			jList = new JMutableList<Pose>(robokoMain.getPoseManager());
+			jList = new JMutableList<Pose>(picodeMain.getPoseManager());
 			jList.setListCellEditor(new PoseCellEditor());
 			jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			jList.setCellRenderer(new IconListRenderer(robokoMain.getPoseManager()));
+			jList.setCellRenderer(new IconListRenderer(picodeMain.getPoseManager()));
 			jList.setDragEnabled(true);
 			jList.setDropMode(DropMode.INSERT);
 			addPopup(jList, getPopupMenu());
@@ -255,7 +255,7 @@ public class PosePanel extends JPanel {
 	private JMenuItem getMntmApplyThisPose() {
 		if (mntmApplyThisPose == null) {
 			mntmApplyThisPose = new JMenuItem();
-			mntmApplyThisPose.setAction(new ApplySelectedPoseAction(robokoFrame));
+			mntmApplyThisPose.setAction(new ApplySelectedPoseAction(picodeFrame));
 			mntmApplyThisPose.setText("Apply this pose to the robot");
 			mntmApplyThisPose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0));
 		}
@@ -265,7 +265,7 @@ public class PosePanel extends JPanel {
 	private JMenuItem getMntmRenameThisPose() {
 		if (mntmRenameThisPose == null) {
 			mntmRenameThisPose = new JMenuItem();
-			mntmRenameThisPose.setAction(new EditSelectedPoseNameAction(robokoFrame));
+			mntmRenameThisPose.setAction(new EditSelectedPoseNameAction(picodeFrame));
 			mntmRenameThisPose.setText("Rename this pose");
 			mntmRenameThisPose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, 0));
 		}
@@ -275,7 +275,7 @@ public class PosePanel extends JPanel {
 	private JMenuItem getMntmDeleteThisPose() {
 		if (mntmDeleteThisPose == null) {
 			mntmDeleteThisPose = new JMenuItem();
-			mntmDeleteThisPose.setAction(new DeleteSelectedPoseAction(robokoFrame));
+			mntmDeleteThisPose.setAction(new DeleteSelectedPoseAction(picodeFrame));
 			mntmDeleteThisPose.setText("Delete this pose");
 			mntmDeleteThisPose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
 		}
@@ -285,7 +285,7 @@ public class PosePanel extends JPanel {
 	private JMenuItem getMntmDuplicateThisPose() {
 		if (mntmDuplicateThisPose == null) {
 			mntmDuplicateThisPose = new JMenuItem();
-			mntmDuplicateThisPose.setAction(new DuplicateSelectedPoseAction(robokoFrame));
+			mntmDuplicateThisPose.setAction(new DuplicateSelectedPoseAction(picodeFrame));
 			mntmDuplicateThisPose.setText("Duplicate this pose");
 			mntmDuplicateThisPose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0));
 		}

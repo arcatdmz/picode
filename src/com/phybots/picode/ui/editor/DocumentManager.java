@@ -25,7 +25,7 @@ import com.phybots.picode.parser.PdeWalker;
 import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.editor.Decoration.Type;
 import com.phybots.picode.ui.library.PoseManager;
-import processing.app.RobokoSketch;
+import processing.app.PicodeSketch;
 import processing.app.SketchException;
 import processing.mode.java.preproc.PdeEmitter;
 import processing.mode.java.preproc.PdePreprocessor;
@@ -43,8 +43,8 @@ public class DocumentManager implements DocumentListener {
 	private static SimpleAttributeSet iconAttrs;
 	private static SimpleAttributeSet errorAttrs;
 
-	private PicodeMain robokoMain;
-	private RobokoEditor robokoEditor;
+	private PicodeMain picodeMain;
+	private PicodeEditor picodeEditor;
 
 	private StyleContext sc;
 	private StyledDocument doc;
@@ -53,8 +53,8 @@ public class DocumentManager implements DocumentListener {
 
 	static {
 		defaultAttrs = new SimpleAttributeSet();
-		StyleConstants.setFontFamily(defaultAttrs, RobokoEditor.getDefaultFont().getFamily());
-		StyleConstants.setFontSize(defaultAttrs, RobokoEditor.getDefaultFont().getSize());
+		StyleConstants.setFontFamily(defaultAttrs, PicodeEditor.getDefaultFont().getFamily());
+		StyleConstants.setFontSize(defaultAttrs, PicodeEditor.getDefaultFont().getSize());
 
 		commentAttrs = new SimpleAttributeSet(defaultAttrs);
 		commentAttrs.addAttribute(StyleConstants.Foreground,
@@ -73,9 +73,9 @@ public class DocumentManager implements DocumentListener {
 				new Color(0xcc, 0xcc, 0xcc));
 	}
 
-	public DocumentManager(PicodeMain robokoMain, RobokoEditor robokoEditor) {
-		this.robokoMain = robokoMain;
-		this.robokoEditor = robokoEditor;
+	public DocumentManager(PicodeMain picodeMain, PicodeEditor picodeEditor) {
+		this.picodeMain = picodeMain;
+		this.picodeEditor = picodeEditor;
 		initialize();
 	}
 
@@ -87,19 +87,19 @@ public class DocumentManager implements DocumentListener {
 		sc = new StyleContext();
 		doc = new DefaultStyledDocument(sc);
 		decorations = new TreeSet<Decoration>();
-		parser = robokoMain.getSketch().getParser();
+		parser = picodeMain.getSketch().getParser();
 
-		robokoEditor.setEditorKit(new StyledEditorKit());
-		robokoEditor.setDocument(doc);
+		picodeEditor.setEditorKit(new StyledEditorKit());
+		picodeEditor.setDocument(doc);
 
 		try {
-			String codeString = robokoEditor.getCode().getProgram();
+			String codeString = picodeEditor.getCode().getProgram();
 			doc.insertString(0, codeString, sc.getStyle(StyleContext.DEFAULT_STYLE));
 			updateDecoration();
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} catch (SketchException se) {
-			robokoMain.handleSketchException(se);
+			picodeMain.handleSketchException(se);
 		} finally {
 			doc.addDocumentListener(this);
 		}
@@ -143,28 +143,28 @@ public class DocumentManager implements DocumentListener {
 		} catch (BadLocationException ble) {
 			return;
 		}
-		robokoEditor.getCode().setProgram(newCode);
+		picodeEditor.getCode().setProgram(newCode);
 
-		final RobokoSketch sketch = robokoMain.getSketch();
+		final PicodeSketch sketch = picodeMain.getSketch();
 		sketch.setModified(true);
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// System.out.println("Updating the view...");
-				int caretPosition = robokoEditor.getCaretPosition();
+				int caretPosition = picodeEditor.getCaretPosition();
 				doc.removeDocumentListener(DocumentManager.this);
 				try {
 					if (e.getType() == EventType.REMOVE) {
 						removeDecoration(e, false);
 					}
 					updateDecoration();
-					robokoMain.setStatusText("");
+					picodeMain.setStatusText("");
 				} catch (SketchException se) {
 					removeDecoration(e, true);
 					updateErrorDecoration(se);
-					robokoMain.handleSketchException(se);
+					picodeMain.handleSketchException(se);
 				}
 				doc.addDocumentListener(DocumentManager.this);
-				robokoEditor.setCaretPosition(caretPosition);
+				picodeEditor.setCaretPosition(caretPosition);
 			}
 		});
 	}
@@ -191,8 +191,8 @@ public class DocumentManager implements DocumentListener {
 	}
 
 	private void updateDecoration() throws SketchException {
-		AST ast = parser.parse(robokoEditor.getCode());
-		robokoMain.setNumberOfLines(robokoEditor.getCode().getLineCount());
+		AST ast = parser.parse(picodeEditor.getCode());
+		picodeMain.setNumberOfLines(picodeEditor.getCode().getLineCount());
 
 		decorations.clear();
 		decorate(ast);
@@ -213,7 +213,7 @@ public class DocumentManager implements DocumentListener {
 				attrs = keywordAttrs;
 				break;
 			case POSE:
-				PoseManager poseManager = robokoMain.getPoseManager();
+				PoseManager poseManager = picodeMain.getPoseManager();
 				String poseName = decoration.getOption().toString();
 				if (poseManager.contains(poseName)) {
 					attrs = poseManager.getCharacterAttributes(poseName);
@@ -361,7 +361,7 @@ public class DocumentManager implements DocumentListener {
 			break;
 
 		case PdeTokenTypes.METHOD_CALL:
-			if (handleRobokoMethodCall(child1, child2)) {
+			if (handlePicodeMethodCall(child1, child2)) {
 				break;
 			}
 		case PdeTokenTypes.MODIFIERS:
@@ -605,7 +605,7 @@ public class DocumentManager implements DocumentListener {
 		}
 	}
 
-	private boolean handleRobokoMethodCall(AST dot, AST elist) {
+	private boolean handlePicodeMethodCall(AST dot, AST elist) {
 
 		if (dot.getType() != PdeTokenTypes.DOT
 				|| elist.getType() != PdeTokenTypes.ELIST) {
@@ -613,18 +613,18 @@ public class DocumentManager implements DocumentListener {
 		}
 
 		AST className = dot.getFirstChild();
-		if (!"Roboko".equals(className.getText())) {
+		if (!"Picode".equals(className.getText())) {
 			return false;
 		}
 
 		AST methodName = className.getNextSibling();
 		if ("pose".equals(methodName.getText())) {
-			return handleRobokoPoseMethodCall(className, elist);
+			return handlePicodePoseMethodCall(className, elist);
 		}
 		return false;
 	}
 
-	private boolean handleRobokoPoseMethodCall(AST className, AST elist) {
+	private boolean handlePicodePoseMethodCall(AST className, AST elist) {
 		if (elist.getNumberOfChildren() != 1) {
 			return false;
 		}
@@ -639,13 +639,13 @@ public class DocumentManager implements DocumentListener {
 		String fileName = poseFileName.getText();
 		fileName = fileName.substring(1, fileName.length() - 1);
 		int startIndex = parser.getIndex(className);
-		int length = getRobokoMethodCallLength(className, poseFileName);
+		int length = getPicodeMethodCallLength(className, poseFileName);
 		decorations
 				.add(new Decoration(startIndex, length, Type.POSE, fileName));
 		return true;
 	}
 
-	private int getRobokoMethodCallLength(AST className, AST lastParameter) {
+	private int getPicodeMethodCallLength(AST className, AST lastParameter) {
 		int startIndex = parser.getIndex(className);
 		int endIndex = parser.getIndex(lastParameter)
 				+ lastParameter.getText().length();

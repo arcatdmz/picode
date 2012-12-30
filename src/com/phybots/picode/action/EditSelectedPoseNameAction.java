@@ -8,14 +8,14 @@ import com.phybots.picode.ui.PicodeFrame;
 
 public class EditSelectedPoseNameAction extends AbstractAction {
 	private static final long serialVersionUID = -2067117053119392794L;
-	private transient PicodeFrame robokoFrame;
+	private transient PicodeFrame picodeFrame;
 
-	public EditSelectedPoseNameAction(PicodeFrame robokoFrame) {
-		this.robokoFrame = robokoFrame;
+	public EditSelectedPoseNameAction(PicodeFrame picodeFrame) {
+		this.picodeFrame = picodeFrame;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		robokoFrame.editSelectedPoseName();
+		picodeFrame.editSelectedPoseName();
 	}
 }

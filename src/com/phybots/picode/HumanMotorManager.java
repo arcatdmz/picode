@@ -15,14 +15,14 @@ public class HumanMotorManager extends MotorManager {
 	private BufferedImage image;
 	private float[][] joints;
 
-	public HumanMotorManager(PicodeMain robokoMain, Robot robot) throws InstantiationException {
-		super(robokoMain, robot);
+	public HumanMotorManager(PicodeMain picodeMain, Robot robot) throws InstantiationException {
+		super(picodeMain, robot);
 	}
 
 	public void start() {
 
 		// Check if there's already a running instance of the server.
-		if (getRobokoMain() == null) {
+		if (getpicodeMain() == null) {
 			try {
 				Socket socket = new Socket("localhost", 9000);
 				socket.close();
@@ -58,7 +58,7 @@ public class HumanMotorManager extends MotorManager {
 	}
 
 	private void showCaptureFrame() {
-		final PicodeMain robokoMain = getRobokoMain();
+		final PicodeMain picodeMain = getpicodeMain();
 		if (kinect != null) {
 			hideCaptureFrame();
 		}
@@ -67,8 +67,8 @@ public class HumanMotorManager extends MotorManager {
 					"./kinect/bin/SkeletonServer.exe", "/AutomatedServer"
 			});
 			this.kinect = kinect;
-			if (robokoMain != null) {
-				robokoMain.setKinect(kinect);
+			if (picodeMain != null) {
+				picodeMain.setKinect(kinect);
 			}
 			KinectClient client = new KinectClient() {
 				@Override
@@ -80,8 +80,8 @@ public class HumanMotorManager extends MotorManager {
 						// Do nothing.
 					}
 					HumanMotorManager.this.kinect = null;
-					if (robokoMain != null) {
-						robokoMain.setKinect(null);
+					if (picodeMain != null) {
+						picodeMain.setKinect(null);
 					}
 				}
 			};
@@ -95,8 +95,8 @@ public class HumanMotorManager extends MotorManager {
 				}
 				public void imageUpdated(BufferedImage image) {
 					HumanMotorManager.this.image = image;
-					if (robokoMain != null) {
-						robokoMain.getPoseManager().capture();
+					if (picodeMain != null) {
+						picodeMain.getPoseManager().capture();
 					}
 				}
 				public void bodyUpdated(float[] body) {
@@ -128,7 +128,7 @@ public class HumanMotorManager extends MotorManager {
 	}
 
 	@Override
-	protected CaptureFrameAbstractImpl newCaptureFrameInstance(PicodeMain robokoMain) {
+	protected CaptureFrameAbstractImpl newCaptureFrameInstance(PicodeMain picodeMain) {
 		throw new UnsupportedOperationException();
 	}
 }

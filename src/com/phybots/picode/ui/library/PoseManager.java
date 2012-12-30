@@ -18,17 +18,17 @@ import com.phybots.picode.ui.library.PoseManager;
 public class PoseManager extends IconListModel<Pose> implements IconProvider {
 	private static final long serialVersionUID = 4052983716336989888L;
 	public static final String INITIAL_POSE_NAME = "Initial pose";
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 	private int numPoses;
 
 	/**
 	 * Default constructor.
 	 * When the parameter is null, this manager does not provide functionality to {@link #capture()} new poses.
 	 *
-	 * @param robokoMain
+	 * @param picodeMain
 	 */
-	public PoseManager(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public PoseManager(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 		initialize();
 	}
 
@@ -123,7 +123,7 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 	}
 
 	public Pose capture() {
-		Pose pose = robokoMain.getRobot().getType().newPoseInstance();
+		Pose pose = picodeMain.getRobot().getType().newPoseInstance();
 		while (true) {
 			pose.setName(String.format("New pose (%d)", numPoses ++));
 			if (!new File(
@@ -132,7 +132,7 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 				break;
 			}
 		}
-		MotorManager motorManager = robokoMain.getRobot().getMotorManager();
+		MotorManager motorManager = picodeMain.getRobot().getMotorManager();
 		pose.retrieveFrom(motorManager);
 		pose.setPhoto(motorManager.getImage());
 		try {

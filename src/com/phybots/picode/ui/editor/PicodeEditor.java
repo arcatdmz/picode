@@ -11,10 +11,10 @@ import com.phybots.picode.Pose;
 import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.editor.Decoration.Type;
 
-public class RobokoEditor extends JEditorPane {
+public class PicodeEditor extends JEditorPane {
 	private static final long serialVersionUID = -6366895407636859766L;
 	private static final Font defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, 21);
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 	private DocumentManager documentManager;
 	private SketchCode code;
 
@@ -22,11 +22,11 @@ public class RobokoEditor extends JEditorPane {
 		return defaultFont;
 	}
 
-	public RobokoEditor(PicodeMain robokoMain, SketchCode code) {
+	public PicodeEditor(PicodeMain picodeMain, SketchCode code) {
 
-		this.robokoMain = robokoMain;
+		this.picodeMain = picodeMain;
 		this.code = code;
-		documentManager = new DocumentManager(robokoMain, this);
+		documentManager = new DocumentManager(picodeMain, this);
 		setFont(defaultFont);
 
 		addMouseListener(new MouseAdapter() {
@@ -36,10 +36,10 @@ public class RobokoEditor extends JEditorPane {
 					Decoration decoration = documentManager.getDecoration(index);
 					if (decoration != null &&
 							decoration.getType() == Type.POSE) {
-						PicodeMain robokoMain = RobokoEditor.this.robokoMain;
+						PicodeMain picodeMain = PicodeEditor.this.picodeMain;
 						String poseName = (String) decoration.getOption();
-						Pose pose = robokoMain.getPoseManager().get(poseName);
-						robokoMain.getRobokoFrame().editPoseName(pose);
+						Pose pose = picodeMain.getPoseManager().get(poseName);
+						picodeMain.getPicodeFrame().editPoseName(pose);
 						System.out.println(decoration.getOption());
 					}
 					/*

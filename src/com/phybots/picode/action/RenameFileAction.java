@@ -7,14 +7,14 @@ import com.phybots.picode.ui.PicodeMain;
 
 public class RenameFileAction extends AbstractAction {
 	private static final long serialVersionUID = -301527980746520731L;
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 
-	public RenameFileAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public RenameFileAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		robokoMain.getSketch().handleRenameCode();
+		picodeMain.getSketch().handleRenameCode();
 	}
 }

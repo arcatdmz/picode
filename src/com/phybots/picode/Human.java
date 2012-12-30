@@ -13,8 +13,8 @@ public class Human extends Robot {
 		super(new com.phybots.entity.Human(""));
 	}
 
-	public Human(PicodeMain robokoMain) {
-		super(robokoMain, new com.phybots.entity.Human(""));
+	public Human(PicodeMain picodeMain) {
+		super(picodeMain, new com.phybots.entity.Human(""));
 	}
 
 }

@@ -9,15 +9,15 @@ import com.phybots.picode.ui.PicodeMain;
 
 public class StopAction extends AbstractAction {
 	private static final long serialVersionUID = 7556364882375393913L;
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 
-	public StopAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public StopAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Launcher launcher = robokoMain.getLauncher();
+		Launcher launcher = picodeMain.getLauncher();
 		if (launcher != null) {
 			launcher.close();
 		}

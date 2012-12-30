@@ -27,14 +27,14 @@ public abstract class CaptureFrameAbstractImpl extends JFrame {
 	private JButton btnStart;
 	private JButton btnStop;
 
-	private transient PicodeMain robokoMain;
+	private transient PicodeMain picodeMain;
 	private transient boolean isClosing;
 
-	public CaptureFrameAbstractImpl(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public CaptureFrameAbstractImpl(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 
-		Camera camera = robokoMain.getCamera();
-		PoseManager poseManager = robokoMain.getPoseManager();
+		Camera camera = picodeMain.getCamera();
+		PoseManager poseManager = picodeMain.getPoseManager();
 
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -95,13 +95,13 @@ public abstract class CaptureFrameAbstractImpl extends JFrame {
 
 	private void windowOpening() {
 		((StartPreviewAction) btnStart.getAction()).actionPerformed(null);
-		robokoMain.getRobot().setEditable(true);
-		robokoMain.getRobokoFrame().setEnabled(false);
+		picodeMain.getRobot().setEditable(true);
+		picodeMain.getPicodeFrame().setEnabled(false);
 	}
 
 	private void windowClosing() {
 		((StopPreviewAction) btnStop.getAction()).actionPerformed(null);
-		robokoMain.getRobot().setEditable(false);
-		robokoMain.getRobokoFrame().setEnabled(true);
+		picodeMain.getRobot().setEditable(false);
+		picodeMain.getPicodeFrame().setEnabled(true);
 	}
 }

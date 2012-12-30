@@ -8,7 +8,7 @@ import com.phybots.picode.ui.PicodeMain;
 public class Robot {
 	private static final String DEFAULT_ROBOT = RobotType.MindstormsNXT.toString();
 
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 
 	private com.phybots.entity.Robot robot;
 	private RobotType robotType;
@@ -17,8 +17,8 @@ public class Robot {
 	public Robot(com.phybots.entity.Robot robot) {
 		this(null, robot);
 	}
-	public Robot(PicodeMain robokoMain, com.phybots.entity.Robot robot) {
-		this.robokoMain = robokoMain;
+	public Robot(PicodeMain picodeMain, com.phybots.entity.Robot robot) {
+		this.picodeMain = picodeMain;
 		this.robot = robot;
 		initialize();
 	}
@@ -26,15 +26,15 @@ public class Robot {
 	public Robot(String connectionString) {
 		this((PicodeMain) null, connectionString);
 	}
-	public Robot(PicodeMain robokoMain, String connectionString) {
-		this(robokoMain, DEFAULT_ROBOT, connectionString);
+	public Robot(PicodeMain picodeMain, String connectionString) {
+		this(picodeMain, DEFAULT_ROBOT, connectionString);
 	}
 
 	public Robot(String typeName, String connectionString) {
 		this(null, typeName, connectionString);
 	}
-	public Robot(PicodeMain robokoMain, String typeName, String connectionString) {
-		this.robokoMain = robokoMain;
+	public Robot(PicodeMain picodeMain, String typeName, String connectionString) {
+		this.picodeMain = picodeMain;
 		try {
 			RobotType robotType = RobotType.valueOf(typeName);
 			if (robotType == null) {
@@ -49,7 +49,7 @@ public class Robot {
 
 	private void initialize() {
 		robotType = RobotType.valueOf(robot.getClass());
-		motorManager = robotType.newMotorManagerInstance(robokoMain, this);
+		motorManager = robotType.newMotorManagerInstance(picodeMain, this);
 		motorManager.start();
 	}
 

@@ -10,24 +10,24 @@ import com.phybots.picode.ui.PicodeMain;
 
 public class RunAction extends AbstractAction {
 	private static final long serialVersionUID = -8531811907562726754L;
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 
-	public RunAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public RunAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (robokoMain.getLauncher() != null) {
-			new StopAction(robokoMain).actionPerformed(e);
+		if (picodeMain.getLauncher() != null) {
+			new StopAction(picodeMain).actionPerformed(e);
 		}
-		Builder builder = new Builder(robokoMain, robokoMain.getSketch());
+		Builder builder = new Builder(picodeMain, picodeMain.getSketch());
 		try {
-			robokoMain.getRobot().disconnect();
-			robokoMain.setLauncher(builder.run());
+			picodeMain.getRobot().disconnect();
+			picodeMain.setLauncher(builder.run());
 		} catch (SketchException se) {
-			robokoMain.handleSketchException(se);
-			robokoMain.getRobot().connect();
+			picodeMain.handleSketchException(se);
+			picodeMain.getRobot().connect();
 		}
 	}
 }

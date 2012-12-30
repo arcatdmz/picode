@@ -69,7 +69,7 @@ public enum RobotType {
 	Class<? extends Pose> getPoseClass() {
 		try {
 			return (Class<? extends Pose>)
-					Class.forName(String.format("com.phybots.picode.core.internal.%sPose", this.toString()));
+					Class.forName(String.format("com.phybots.picode.%sPose", this.toString()));
 		} catch (ClassNotFoundException e) {
 			return null;
 		}
@@ -87,17 +87,17 @@ public enum RobotType {
 	Class<? extends MotorManager> getMotorManagerClass() {
 		try {
 			return (Class<? extends MotorManager>)
-					Class.forName(String.format("com.phybots.picode.core.internal.%sMotorManager", this.toString()));
+					Class.forName(String.format("com.phybots.picode.%sMotorManager", this.toString()));
 		} catch (ClassNotFoundException e) {
 			return null;
 		}
 	}
 
-	public MotorManager newMotorManagerInstance(PicodeMain robokoMain, Robot robot) {
+	public MotorManager newMotorManagerInstance(PicodeMain picodeMain, Robot robot) {
 		try {
 			return getMotorManagerClass()
 					.getConstructor(PicodeMain.class, Robot.class)
-					.newInstance(robokoMain, robot);
+					.newInstance(picodeMain, robot);
 		} catch (Exception e) {
 			return null;
 		}

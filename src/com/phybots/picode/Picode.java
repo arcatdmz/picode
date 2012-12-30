@@ -2,15 +2,15 @@ package com.phybots.picode;
 
 import java.io.IOException;
 
-public class Roboko {
-	private static Roboko instance = null;
+public class Picode {
+	private static Picode instance = null;
 
-	private Roboko() {
+	private Picode() {
 	}
 
-	public static Roboko getInstance() {
+	public static Picode getInstance() {
 		if (instance == null) {
-			instance = new Roboko();
+			instance = new Picode();
 		}
 		return instance;
 	}

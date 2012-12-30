@@ -7,24 +7,24 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 
-import processing.app.RobokoSketch;
+import processing.app.PicodeSketch;
 
 import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.PicodeSettings;
 
 public class LoadSketchAction extends AbstractAction {
 	private static final long serialVersionUID = -5270448663489465136L;
-	private PicodeMain robokoMain;
+	private PicodeMain picodeMain;
 
-	public LoadSketchAction(PicodeMain robokoMain) {
-		this.robokoMain = robokoMain;
+	public LoadSketchAction(PicodeMain picodeMain) {
+		this.picodeMain = picodeMain;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		FileDialog fd = new FileDialog(
-				robokoMain.getRobokoFrame(),
-				"Open a Roboko sketch...",
+				picodeMain.getPicodeFrame(),
+				"Open a Picode sketch...",
 				FileDialog.LOAD);
 		fd.setDirectory(PicodeSettings.getProjectsFolderPath());
 		fd.setVisible(true);
@@ -42,9 +42,9 @@ public class LoadSketchAction extends AbstractAction {
 	    String pdeName = parentName + ".pde";
 	    
 	    try {
-			RobokoSketch robokoSketch = new RobokoSketch(robokoMain,
+			PicodeSketch picodeSketch = new PicodeSketch(picodeMain,
 					parentFile.getAbsolutePath() + File.separatorChar + pdeName);
-		    robokoMain.setSketch(robokoSketch);
+		    picodeMain.setSketch(picodeSketch);
 		} catch (IOException e1) {
 			return;
 		}

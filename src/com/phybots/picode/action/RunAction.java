@@ -26,7 +26,7 @@ public class RunAction extends AbstractAction {
 			picodeMain.getRobot().disconnect();
 			picodeMain.setLauncher(builder.run());
 		} catch (SketchException se) {
-			picodeMain.handleSketchException(se);
+			picodeMain.getPintegration().statusError(se);
 			picodeMain.getRobot().connect();
 		}
 	}

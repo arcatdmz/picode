@@ -638,7 +638,7 @@ public class PicodeSketch {
     String prompt = (currentIndex == 0) ?
       "Are you sure you want to delete this sketch?" :
       "Are you sure you want to delete \"" + current.getPrettyName() + "\"?";
-    int result = JOptionPane.showOptionDialog(picodeMain.getPicodeFrame(),
+    int result = JOptionPane.showOptionDialog(picodeMain.getFrame(),
                                               prompt,
                                               "Delete",
                                               JOptionPane.YES_NO_OPTION,
@@ -660,7 +660,7 @@ public class PicodeSketch {
         // make a new sketch, and i think this will rebuild the sketch menu
         //picodeMain.getEditorProxy().handleNewUnchecked();
         //picodeMain.getEditorProxy().handleClose2();
-        picodeMain.getPintegration().baseHandleClose(picodeMain.getPicodeFrame(), false);
+        picodeMain.getPintegration().baseHandleClose(picodeMain.getFrame(), false);
 
       } else {
         // delete the file
@@ -745,7 +745,7 @@ public class PicodeSketch {
     if (Base.isMacOS()) {
       // http://developer.apple.com/qa/qa2001/qa1146.html
       Object modifiedParam = modified ? Boolean.TRUE : Boolean.FALSE;
-      picodeMain.getPicodeFrame().getRootPane().putClientProperty("windowModified", modifiedParam);
+      picodeMain.getFrame().getRootPane().putClientProperty("windowModified", modifiedParam);
     }
   }
 
@@ -807,7 +807,7 @@ public class PicodeSketch {
     final String PROMPT = "Save sketch folder as...";
     if (Preferences.getBoolean("chooser.files.native")) {
       // get new name for folder
-      FileDialog fd = new FileDialog(picodeMain.getPicodeFrame(), PROMPT, FileDialog.SAVE);
+      FileDialog fd = new FileDialog(picodeMain.getFrame(), PROMPT, FileDialog.SAVE);
       if (isReadOnly() || isUntitled()) {
         // default to the sketchbook folder
         fd.setDirectory(Preferences.get("sketchbook.path"));
@@ -832,7 +832,7 @@ public class PicodeSketch {
       }
       // can't do this, will try to save into itself by default
       //fc.setSelectedFile(folder);
-      int result = fc.showSaveDialog(picodeMain.getPicodeFrame());
+      int result = fc.showSaveDialog(picodeMain.getFrame());
       if (result == JFileChooser.APPROVE_OPTION) {
         File selection = fc.getSelectedFile();
         newParentDir = selection.getParent();
@@ -1027,7 +1027,7 @@ public class PicodeSketch {
     String prompt =
       "Select an image or other data file to copy to your sketch";
     //FileDialog fd = new FileDialog(new Frame(), prompt, FileDialog.LOAD);
-    FileDialog fd = new FileDialog(picodeMain.getPicodeFrame(), prompt, FileDialog.LOAD);
+    FileDialog fd = new FileDialog(picodeMain.getFrame(), prompt, FileDialog.LOAD);
     fd.setVisible(true);
 
     String directory = fd.getDirectory();
@@ -1096,7 +1096,7 @@ public class PicodeSketch {
     if (destFile.exists()) {
       Object[] options = { "OK", "Cancel" };
       String prompt = "Replace the existing version of " + filename + "?";
-      int result = JOptionPane.showOptionDialog(picodeMain.getPicodeFrame(),
+      int result = JOptionPane.showOptionDialog(picodeMain.getFrame(),
                                                 prompt,
                                                 "Replace",
                                                 JOptionPane.YES_NO_OPTION,

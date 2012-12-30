@@ -941,7 +941,7 @@ public class PdePreprocessor {
       "processing.event.*",
       "processing.opengl.*",
       "com.phybots.*",
-      "com.phybots.picode.core.*"
+      "com.phybots.picode.*"
     };
   }
 

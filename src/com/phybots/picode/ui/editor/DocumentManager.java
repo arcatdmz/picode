@@ -99,7 +99,7 @@ public class DocumentManager implements DocumentListener {
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		} catch (SketchException se) {
-			picodeMain.handleSketchException(se);
+			picodeMain.getPintegration().statusError(se);
 		} finally {
 			doc.addDocumentListener(this);
 		}
@@ -157,11 +157,11 @@ public class DocumentManager implements DocumentListener {
 						removeDecoration(e, false);
 					}
 					updateDecoration();
-					picodeMain.setStatusText("");
+					picodeMain.getFrame().setStatusText("");
 				} catch (SketchException se) {
 					removeDecoration(e, true);
 					updateErrorDecoration(se);
-					picodeMain.handleSketchException(se);
+					picodeMain.getPintegration().statusError(se);
 				}
 				doc.addDocumentListener(DocumentManager.this);
 				picodeEditor.setCaretPosition(caretPosition);

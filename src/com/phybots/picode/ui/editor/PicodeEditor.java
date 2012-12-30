@@ -39,7 +39,7 @@ public class PicodeEditor extends JEditorPane {
 						PicodeMain picodeMain = PicodeEditor.this.picodeMain;
 						String poseName = (String) decoration.getOption();
 						Pose pose = picodeMain.getPoseManager().get(poseName);
-						picodeMain.getPicodeFrame().editPoseName(pose);
+						picodeMain.getFrame().editPoseName(pose);
 						System.out.println(decoration.getOption());
 					}
 					/*

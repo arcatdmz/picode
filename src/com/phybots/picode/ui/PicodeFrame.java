@@ -119,7 +119,7 @@ public class PicodeFrame extends JFrame {
 		Pose pose = getPosePanel().getSelectedPose();
 		if (pose == null ||
 				!picodeMain.getRobot().setPose(pose)) {
-			picodeMain.setStatusText("Setting pose failed.");
+			picodeMain.getFrame().setStatusText("Setting pose failed.");
 		}
 	}
 

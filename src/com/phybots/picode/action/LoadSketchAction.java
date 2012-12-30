@@ -23,7 +23,7 @@ public class LoadSketchAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		FileDialog fd = new FileDialog(
-				picodeMain.getPicodeFrame(),
+				picodeMain.getFrame(),
 				"Open a Picode sketch...",
 				FileDialog.LOAD);
 		fd.setDirectory(PicodeSettings.getProjectsFolderPath());

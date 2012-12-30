@@ -5,8 +5,10 @@ import processing.app.Platform;
 import processing.app.Preferences;
 import processing.app.RunnerListener;
 import processing.app.SketchCode;
+import processing.app.SketchException;
 
 public class ProcessingIntegration implements RunnerListener {
+  private PicodeMain picodeMain;
 
   public static Platform getPlatform() {
     return Base.getPlatform();
@@ -15,6 +17,10 @@ public class ProcessingIntegration implements RunnerListener {
   public static void init() {
     Base.initPlatform();
     Preferences.init();
+  }
+  
+  public ProcessingIntegration(PicodeMain picodeMain) {
+    this.picodeMain = picodeMain;
   }
 
   public void statusNotice(String string) {
@@ -99,6 +105,12 @@ public class ProcessingIntegration implements RunnerListener {
   public void statusError(Exception exception) {
     // TODO Auto-generated method stub
     
+  }
+
+  public void statusError(SketchException se) {
+    picodeMain.getFrame().setStatusText(
+      PicodeMain.getErrorString(
+        picodeMain.getSketch(), se));
   }
 
   @Override

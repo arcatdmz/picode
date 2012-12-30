@@ -56,7 +56,7 @@ public class Launcher implements MessageConsumer {
 
   private PicodeFrame getpicodeFrame() {
     return builder.getpicodeMain() != null ?
-      builder.getpicodeMain().getPicodeFrame() : null;
+      builder.getpicodeMain().getFrame() : null;
   }
 
   private SketchException placeException(String message, String filename,

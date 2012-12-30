@@ -1,10 +1,8 @@
 package com.phybots.picode.ui;
 
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import processing.app.PicodeSketch;
 import processing.app.SketchCode;
@@ -21,7 +19,10 @@ import com.phybots.picode.ui.library.PoseManager;
 public class PicodeMain {
 
 	private static final boolean FOR_KINECT = false;
-	private PicodeSketch sketch;
+  
+	private ProcessingIntegration pintegration;
+
+  private PicodeSketch sketch;
 	private PicodeFrame picodeFrame;
 
 	private Robot robot;
@@ -57,7 +58,7 @@ public class PicodeMain {
 			public void run() {
 				initGUI();
 				if (!poseManager.hasInitialPose()) {
-					setStatusText("Initial pose not found.");
+					getFrame().setStatusText("Initial pose not found.");
 				}
 			}
 		});
@@ -85,9 +86,12 @@ public class PicodeMain {
 	public static void main(String[] args) {
 		new PicodeMain();
 	}
-  
+
   public ProcessingIntegration getPintegration() {
-    return new ProcessingIntegration();
+    if (pintegration == null) {
+      pintegration = new ProcessingIntegration(this);
+    }
+    return pintegration;
   }
 
 	public void setSketch(PicodeSketch sketch) {
@@ -151,57 +155,12 @@ public class PicodeMain {
 		picodeFrame.setTitle(sketch.getName() + " | Picode");		
 	}
 
-	public void setStatusText(String statusText) {
-		picodeFrame.setStatusText(statusText);
-	}
-
 	public void setNumberOfLines(int lines) {
 		picodeFrame.setNumberOfLines(lines);
 	}
 
-	/**
-	 * "No cookie for you" type messages. Nothing fatal or all that much of a
-	 * bummer, but something to notify the user about.
-	 */
-	public void showMessage(String title, String message) {
-		if (title == null)
-			title = "Message";
-
-		JOptionPane.showMessageDialog(picodeFrame, message, title,
-				JOptionPane.INFORMATION_MESSAGE);
-	}
-
-	/**
-	 * Non-fatal error message with optional stack trace side dish.
-	 */
-	public void showWarning(String title, String message, Exception e) {
-		if (title == null)
-			title = "Warning";
-
-		JOptionPane.showMessageDialog(new Frame(), message, title,
-				JOptionPane.WARNING_MESSAGE);
-		if (e != null)
-			e.printStackTrace();
-	}
-
 	public void showCaptureFrame(boolean show) {
 		robot.getMotorManager().showCaptureFrame(show);
-	}
-
-	public void showEditor(int index) {
-		picodeFrame.showEditor(index);
-	}
-
-	public int getCurrentEditorIndex() {
-		return picodeFrame.getEditorIndex();
-	}
-
-	public PicodeEditor getCurrentEditor() {
-		return picodeFrame.getCurrentEditor();
-	}
-
-	public void updateCurrentEditorName() {
-		picodeFrame.updateCurrentEditorName();
 	}
 
 	public void addEditor(SketchCode code) {
@@ -210,10 +169,6 @@ public class PicodeMain {
 
 	public void removeEditor(SketchCode code) {
 		picodeFrame.removeEditor(code);
-	}
-
-	public void updateTabs() {
-		picodeFrame.updateTabs();
 	}
 
 	public static String getErrorString(PicodeSketch sketch, SketchException se) {
@@ -234,15 +189,11 @@ public class PicodeMain {
 		return sb.toString();
 	}
 
-	public void handleSketchException(SketchException se) {
-		setStatusText(getErrorString(sketch, se));
-	}
-
 	public Robot getRobot() {
 		return robot;
 	}
 
-	public PicodeFrame getPicodeFrame() {
+	public PicodeFrame getFrame() {
 		return picodeFrame;
 	}
 

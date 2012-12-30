@@ -22,10 +22,10 @@ void setup() {
 void draw() {
   boolean right = false;
   boolean both = false;
-  if (human.getPose().eq(Roboko.pose("Rest pose"), 0.04)) {
+  if (human.getPose().eq(Picode.pose("Rest pose"), 0.04)) {
     fill(200);
   } else
-  if (human.getPose().eq(Roboko.pose("Hand up"), 0.04)) {
+  if (human.getPose().eq(Picode.pose("Hand up"), 0.04)) {
     fill(200, 40, 40);
     if (!lastRightHandUp) {
       r.keyPress(java.awt.event.KeyEvent.VK_RIGHT);
@@ -33,7 +33,7 @@ void draw() {
     }
     right = true;
   } else
-  if (human.getPose().eq(Roboko.pose("Both hands up"), 0.04)) {
+  if (human.getPose().eq(Picode.pose("Both hands up"), 0.04)) {
     fill(30, 200, 30);
     if (!lastBothHandsUp) {
       r.keyPress(java.awt.event.KeyEvent.VK_LEFT);

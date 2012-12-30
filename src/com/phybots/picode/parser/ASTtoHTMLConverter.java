@@ -4,7 +4,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import com.phybots.picode.ui.ProcessingIntegration;
-import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.PicodeSettings;
 
 import processing.app.PicodeSketch;
@@ -43,7 +42,7 @@ public class ASTtoHTMLConverter {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SketchException se) {
-			System.err.println(PicodeMain.getErrorString(sketch, se));
+			System.err.println(ProcessingIntegration.getErrorString(sketch, se));
 		}
 	}
 

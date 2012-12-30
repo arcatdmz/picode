@@ -17,9 +17,11 @@ public class NewSketchAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		PicodeSketch picodeSketch = PicodeSketch.newInstance(picodeMain);
-		if (picodeSketch != null) {
-			picodeMain.setSketch(picodeSketch);
-		}
+	  if (picodeMain.getPintegration().checkModified()) {
+  		PicodeSketch picodeSketch = PicodeSketch.newInstance(picodeMain);
+  		if (picodeSketch != null) {
+  			picodeMain.setSketch(picodeSketch);
+  		}
+	  }
 	}
 }

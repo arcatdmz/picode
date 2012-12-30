@@ -50,7 +50,7 @@ public abstract class Editor extends JFrame implements RunnerListener {
 
   // otherwise, if the window is resized with the message label
   // set to blank, it's preferredSize() will be fukered
-  static protected final String EMPTY =
+  public static final String EMPTY =
     "                                                                     " +
     "                                                                     " +
     "                                                                     ";

@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Point;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -91,16 +89,6 @@ public class PicodeFrame extends JFrame {
 		initialize();
 	}
 
-  public void setSketchLocation(Point point) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  public Point getSketchLocation() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
 	public void setStatusText(String statusText) {
 		getStatusLabel().setText(statusText);
 	}
@@ -109,11 +97,6 @@ public class PicodeFrame extends JFrame {
 		getNumLineLabel().setText(String.format("%d lines", lines));
 	}
 	
-  public void updateTitle() {
-    setTitle(String.format("%s | Picode",
-      picodeMain.getSketch().getName()));   
-  }
-
 	/*
 	public void setDividerLocation(double proportionalLocation) {
 		getLibraryPane().setDividerLocation(proportionalLocation);

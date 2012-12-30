@@ -28,7 +28,7 @@ public class Builder {
 			System.err.println(String.format("Can't load Processing code: %s",
 					PicodeSettings.getDefaultSketchPath()));
 		} catch (SketchException se) {
-			System.err.println(PicodeMain.getErrorString(sketch, se));
+			System.err.println(ProcessingIntegration.getErrorString(sketch, se));
 		}
 	}
 	private File binFolder;
@@ -65,7 +65,7 @@ public class Builder {
     return null;
   }
 
-  public PicodeMain getpicodeMain() {
+  public PicodeMain getPicodeMain() {
     return picodeMain;
   }
 

@@ -6,7 +6,6 @@ import java.awt.event.WindowEvent;
 import javax.swing.SwingUtilities;
 import processing.app.PicodeSketch;
 import processing.app.SketchCode;
-import processing.app.SketchException;
 import com.phybots.Phybots;
 import com.phybots.service.Camera;
 import com.phybots.picode.Human;
@@ -21,24 +20,6 @@ public class PicodeMain {
 
   public static void main(String[] args) {
     new PicodeMain();
-  }
-
-  public static String getErrorString(PicodeSketch sketch, SketchException se) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(se.getCodeIndex() < 0 ?
-        "-" :
-        sketch.getCode(se.getCodeIndex()).getFileName());
-    if (se.getCodeLine() >= 0) {
-      sb.append(", L");
-      sb.append(se.getCodeLine() + 1);
-      if (se.getCodeColumn() >= 0) {
-        sb.append(":");
-        sb.append(se.getCodeColumn() + 1);
-      }
-    }
-    sb.append(" ");
-    sb.append(se.getMessage());
-    return sb.toString();
   }
 
 	private ProcessingIntegration pintegration;
@@ -137,7 +118,7 @@ public class PicodeMain {
 			SketchCode code = sketch.getCode(i);
 			getFrame().addEditor(code);
 		}
-		getFrame().updateTitle();
+		getPintegration().updateTitle();
 		// JViewport viewport = frame.getJScrollPane().getViewport();
 		// int caret = editor.getCaretPosition();
 		// editor.setCaretPosition(caret);

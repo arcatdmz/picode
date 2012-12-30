@@ -157,7 +157,7 @@ public class PdeParser {
 				parser.pdeProgram();
 			}
 		} catch (ANTLRException e) {
-			handleParseError(e);
+			handleParseError(e, sketch.getCodeIndex(code));
 		}
 
 		// Count indices of the start character of each line.
@@ -186,25 +186,20 @@ public class PdeParser {
 	}
 
 	/**
-	 * Copied from
+	 * Copied and modified from
 	 * {@link JavaBuild#preprocess(java.io.File, String, PdePreprocessor)}
 	 *
 	 * @param e
 	 */
-	private void handleParseError(ANTLRException ae) throws SketchException {
+	private void handleParseError(ANTLRException ae, int errorFile) throws SketchException {
 		try {
 			throw ae;
 		} catch (antlr.RecognitionException re) {
 			// re also returns a column that we're not bothering with for now
 
-			// first assume that it's the main file
-			// int errorFile = 0;
+		  // Picode: Unlike Processing preprocessing, here we know this is from the specific file.
 			int errorLine = re.getLine() - 1;
-
-			// then search through for anyone else whose preprocName is null,
-			// since they've also been combined into the main pde.
-			int errorFile = findErrorFile(errorLine);
-			errorLine -= sketch.getCode(errorFile).getPreprocOffset();
+			//int errorFile = findErrorFile(errorLine);
 
 			// System.out.println("i found this guy snooping around..");
 			// System.out.println("whatcha want me to do with 'im boss?");
@@ -272,6 +267,8 @@ public class PdeParser {
 				int errorLine = Integer.parseInt(matches[1]) - 1;
 				int errorColumn = Integer.parseInt(matches[2]);
 
+	      // Picode: Unlike Processing preprocessing, here we know this is from the specific file.
+				/*
 				int errorFile = 0;
 				for (int i = 1; i < sketch.getCodeCount(); i++) {
 					SketchCode sc = sketch.getCode(i);
@@ -281,6 +278,7 @@ public class PdeParser {
 					}
 				}
 				errorLine -= sketch.getCode(errorFile).getPreprocOffset();
+				*/
 
 				throw new SketchException(tsre.getMessage(), errorFile,
 						errorLine, errorColumn);

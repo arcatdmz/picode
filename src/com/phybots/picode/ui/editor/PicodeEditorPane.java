@@ -8,6 +8,7 @@ public class PicodeEditorPane extends JScrollPane {
 
 	public PicodeEditorPane(PicodeEditor picodeEditor) {
 		this.picodeEditor = picodeEditor;
+		picodeEditor.setOuterScrollPane(this);
 		setViewportView(picodeEditor);
 	}
 

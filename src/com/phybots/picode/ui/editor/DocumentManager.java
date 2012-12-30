@@ -85,6 +85,7 @@ public class DocumentManager implements DocumentListener {
 
 	private void initialize() {
 		sc = new StyleContext();
+    sc.getStyle(StyleContext.DEFAULT_STYLE).addAttributes(defaultAttrs);
 		doc = new DefaultStyledDocument(sc);
 		decorations = new TreeSet<Decoration>();
 		parser = picodeMain.getSketch().getParser();
@@ -94,7 +95,7 @@ public class DocumentManager implements DocumentListener {
 
 		try {
 			String codeString = picodeEditor.getCode().getProgram();
-			doc.insertString(0, codeString, sc.getStyle(StyleContext.DEFAULT_STYLE));
+			doc.insertString(0, codeString, defaultAttrs);
 			updateDecoration();
 		} catch (BadLocationException e) {
 			e.printStackTrace();
@@ -223,7 +224,8 @@ public class DocumentManager implements DocumentListener {
 					} catch (IOException e) {
 						se = new SketchException(
 								e.getMessage(),
-								0, parser.getLine(startIndex), parser.getColumn(startIndex));
+								picodeMain.getFrame().getCurrentEditorIndex(),
+								parser.getLine(startIndex), parser.getColumn(startIndex));
 					}
 				}
 				break;

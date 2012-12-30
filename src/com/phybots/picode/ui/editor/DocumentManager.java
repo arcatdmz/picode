@@ -192,7 +192,7 @@ public class DocumentManager implements DocumentListener {
 
 	private void updateDecoration() throws SketchException {
 		AST ast = parser.parse(picodeEditor.getCode());
-		picodeMain.setNumberOfLines(picodeEditor.getCode().getLineCount());
+		picodeMain.getFrame().setNumberOfLines(picodeEditor.getCode().getLineCount());
 
 		decorations.clear();
 		decorate(ast);

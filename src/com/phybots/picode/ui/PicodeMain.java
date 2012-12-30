@@ -13,13 +13,34 @@ import com.phybots.picode.Human;
 import com.phybots.picode.Robot;
 import com.phybots.picode.action.RunAction;
 import com.phybots.picode.builder.Launcher;
-import com.phybots.picode.ui.editor.PicodeEditor;
 import com.phybots.picode.ui.library.PoseManager;
 
 public class PicodeMain {
 
 	private static final boolean FOR_KINECT = false;
-  
+
+  public static void main(String[] args) {
+    new PicodeMain();
+  }
+
+  public static String getErrorString(PicodeSketch sketch, SketchException se) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(se.getCodeIndex() < 0 ?
+        "-" :
+        sketch.getCode(se.getCodeIndex()).getFileName());
+    if (se.getCodeLine() >= 0) {
+      sb.append(", L");
+      sb.append(se.getCodeLine() + 1);
+      if (se.getCodeColumn() >= 0) {
+        sb.append(":");
+        sb.append(se.getCodeColumn() + 1);
+      }
+    }
+    sb.append(" ");
+    sb.append(se.getMessage());
+    return sb.toString();
+  }
+
 	private ProcessingIntegration pintegration;
 
   private PicodeSketch sketch;
@@ -83,9 +104,8 @@ public class PicodeMain {
 		});
 	}
 
-	public static void main(String[] args) {
-		new PicodeMain();
-	}
+  public void dispose() {
+  }
 
   public ProcessingIntegration getPintegration() {
     if (pintegration == null) {
@@ -94,14 +114,30 @@ public class PicodeMain {
     return pintegration;
   }
 
+  public Robot getRobot() {
+    return robot;
+  }
+
+  public PicodeFrame getFrame() {
+    return picodeFrame;
+  }
+
+  public PoseManager getPoseManager() {
+    return poseManager;
+  }
+
+  public Camera getCamera() {
+    return camera;
+  }
+
 	public void setSketch(PicodeSketch sketch) {
 		this.sketch = sketch;
-		picodeFrame.clearEditors();
+		getFrame().clearEditors();
 		for (int i = 0; i < sketch.getCodeCount(); i ++) {
 			SketchCode code = sketch.getCode(i);
-			addEditor(code);
+			getFrame().addEditor(code);
 		}
-		updateTitle();
+		getFrame().updateTitle();
 		// JViewport viewport = frame.getJScrollPane().getViewport();
 		// int caret = editor.getCaretPosition();
 		// editor.setCaretPosition(caret);
@@ -150,61 +186,8 @@ public class PicodeMain {
 	public Process getKinect() {
 		return kinect;
 	}
-
-	public void updateTitle() {
-		picodeFrame.setTitle(sketch.getName() + " | Picode");		
-	}
-
-	public void setNumberOfLines(int lines) {
-		picodeFrame.setNumberOfLines(lines);
-	}
-
+	
 	public void showCaptureFrame(boolean show) {
 		robot.getMotorManager().showCaptureFrame(show);
-	}
-
-	public void addEditor(SketchCode code) {
-		picodeFrame.addEditor(new PicodeEditor(this, code));
-	}
-
-	public void removeEditor(SketchCode code) {
-		picodeFrame.removeEditor(code);
-	}
-
-	public static String getErrorString(PicodeSketch sketch, SketchException se) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(se.getCodeIndex() < 0 ?
-				"-" :
-				sketch.getCode(se.getCodeIndex()).getFileName());
-		if (se.getCodeLine() >= 0) {
-			sb.append(", L");
-			sb.append(se.getCodeLine() + 1);
-			if (se.getCodeColumn() >= 0) {
-				sb.append(":");
-				sb.append(se.getCodeColumn() + 1);
-			}
-		}
-		sb.append(" ");
-		sb.append(se.getMessage());
-		return sb.toString();
-	}
-
-	public Robot getRobot() {
-		return robot;
-	}
-
-	public PicodeFrame getFrame() {
-		return picodeFrame;
-	}
-
-	public PoseManager getPoseManager() {
-		return poseManager;
-	}
-
-	public Camera getCamera() {
-		return camera;
-	}
-
-	public void dispose() {
 	}
 }

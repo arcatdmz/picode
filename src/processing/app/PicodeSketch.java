@@ -323,6 +323,8 @@ public class PicodeSketch {
     for (int i = 0; i < codeCount; i++) {
       if (code[i].getFileName().equals(newCode.getFileName())) {
         code[i] = newCode;
+        
+        // Picode: (do nothing.)
         break;
       }
     }
@@ -339,6 +341,9 @@ public class PicodeSketch {
     codeCount++;
     //}
     //code[codeCount++] = newCode;
+    
+    // Picode: add a new editor.
+    picodeMain.getFrame().addEditor(newCode);
   }
 
 
@@ -434,7 +439,7 @@ public class PicodeSketch {
    * cases, so they're kept merged except for right in the middle
    * where they diverge.
    */
-  protected void nameCode(String newName) {
+  public void nameCode(String newName) {
     // make sure the user didn't hide the sketch folder
     ensureExistence();
 

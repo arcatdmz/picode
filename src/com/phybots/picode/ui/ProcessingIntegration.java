@@ -1,5 +1,7 @@
 package com.phybots.picode.ui;
 
+import javax.swing.JOptionPane;
+
 import processing.app.Base;
 import processing.app.Platform;
 import processing.app.Preferences;
@@ -48,14 +50,19 @@ public class ProcessingIntegration implements RunnerListener {
 
   }
 
-  public void statusEdit(String string, String string2) {
-    // TODO Auto-generated method stub
-    
+  public void statusEdit(String message, String defaultValue) {
+    Object result = JOptionPane.showInputDialog(
+      picodeMain.getFrame(), message, null,
+      JOptionPane.QUESTION_MESSAGE, null, null, defaultValue);
+    if (result == null) {
+      return;
+    }
+    String name = result.toString();
+    picodeMain.getSketch().nameCode(name);
   }
 
   public void headerRebuild() {
-    // TODO Auto-generated method stub
-    
+    picodeMain.getFrame().updateTabs();
   }
 
   public void baseHandleClose(PicodeFrame editor, boolean b) {
@@ -68,9 +75,13 @@ public class ProcessingIntegration implements RunnerListener {
     
   }
 
+  /**
+   * Corresponds to {@link processing.app.Editor#getText()}.
+   */
   public String getText() {
-    // TODO Auto-generated method stub
-    return null;
+    // This actually does nothing.
+    // (In Picode, text buffer is always synchronized with the editor state.)
+    return picodeMain.getSketch().getCurrentCode().getProgram();
   }
 
   public void removeRecent() {

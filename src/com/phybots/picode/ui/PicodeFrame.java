@@ -108,6 +108,11 @@ public class PicodeFrame extends JFrame {
 	public void setNumberOfLines(int lines) {
 		getNumLineLabel().setText(String.format("%d lines", lines));
 	}
+	
+  public void updateTitle() {
+    setTitle(String.format("%s | Picode",
+      picodeMain.getSketch().getName()));   
+  }
 
 	/*
 	public void setDividerLocation(double proportionalLocation) {
@@ -138,6 +143,11 @@ public class PicodeFrame extends JFrame {
 	public void editPoseName(Pose pose) {
 		getPosePanel().editPoseName(pose);
 	}
+
+  public void addEditor(SketchCode code) {
+    addEditor(new PicodeEditor(
+      picodeMain, code));
+  }
 
 	public void addEditor(PicodeEditor picodeEditor) {
 		PicodeEditorPane picodeEditorPane = new PicodeEditorPane(picodeEditor);
@@ -440,7 +450,7 @@ public class PicodeFrame extends JFrame {
 			tabbedPane.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					if (getCurrentEditor() != null) {
-						picodeMain.setNumberOfLines(
+						picodeMain.getFrame().setNumberOfLines(
 								getCurrentEditor().getCode().getLineCount());
 					}
 				}

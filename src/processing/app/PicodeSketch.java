@@ -166,8 +166,9 @@ public class PicodeSketch {
   /** code folder location for this sketch (may not exist yet) */
   private File codeFolder;
 
-  private SketchCode current;
-  private int currentIndex;
+  //Picode doesn't use these fields. See {@link PicodeSketch#getCurrentIndex()} etc.
+  // private SketchCode current;
+  // private int currentIndex;
   /**
    * Number of sketchCode objects (tabs) in the current sketch. Note that this
    * will be the same as code.length, because the getCode() method returns
@@ -313,7 +314,7 @@ public class PicodeSketch {
   public void reload() {
     // set current to null so that the tab gets updated
     // http://dev.processing.org/bugs/show_bug.cgi?id=515
-    current = null;
+    setCurrent(null);
     // nuke previous files and settings
     load();
   }
@@ -399,7 +400,7 @@ public class PicodeSketch {
     // make sure the user didn't hide the sketch folder
     ensureExistence();
 
-    if (currentIndex == 0 && isUntitled()) {
+    if (getCurrentIndex() == 0 && isUntitled()) {
       Base.showMessage("Sketch is Untitled",
                        "How about saving the sketch first \n" +
                        "before trying to rename it?");
@@ -424,10 +425,10 @@ public class PicodeSketch {
     // ask for new name of file (internal to window)
     // TODO maybe just popup a text area?
     renamingCode = true;
-    String prompt = (currentIndex == 0) ?
+    String prompt = (getCurrentIndex() == 0) ?
       "New name for sketch:" : "New name for file:";
-    String oldName = (current.isExtension("pde")) ?
-      current.getPrettyName() : current.getFileName();
+    String oldName = (getCurrent().isExtension("pde")) ?
+      getCurrent().getPrettyName() : getCurrent().getFileName();
     picodeMain.getPintegration().statusEdit(prompt, oldName);
   }
 
@@ -454,7 +455,7 @@ public class PicodeSketch {
     // (osx is case insensitive but preserving, windows insensitive,
     // *nix is sensitive and preserving.. argh)
     if (renamingCode) {
-      if (newName.equalsIgnoreCase(current.getFileName())) {
+      if (newName.equalsIgnoreCase(getCurrent().getFileName())) {
         // exit quietly for the 'rename' case.
         // if it's a 'new' then an error will occur down below
         return;
@@ -482,7 +483,7 @@ public class PicodeSketch {
     // Don't let the user create the main tab as a .java file instead of .pde
     if (!isDefaultExtension(newExtension)) {
       if (renamingCode) {  // If creating a new tab, don't show this error
-        if (current == code[0]) {  // If this is the main tab, disallow
+        if (getCurrent() == code[0]) {  // If this is the main tab, disallow
           Base.showWarning("Problem with rename",
                            "The first tab cannot be a ." + newExtension + " file.\n" +
                            "(It may be time for your to graduate to a\n" +
@@ -504,7 +505,7 @@ public class PicodeSketch {
     // If changing the extension of a file from .pde to .java, then it's ok.
     // http://code.google.com/p/processing/issues/detail?id=776
     // A regression introduced by Florian's bug report (below) years earlier.
-    if (!(renamingCode && sanitaryName.equals(current.getPrettyName()))) {
+    if (!(renamingCode && sanitaryName.equals(getCurrent().getPrettyName()))) {
       // Make sure no .pde *and* no .java files with the same name already exist
       // http://processing.org/bugs/bugzilla/543.html
       for (SketchCode c : code) {
@@ -520,7 +521,7 @@ public class PicodeSketch {
     File newFile = new File(folder, newName);
 
     if (renamingCode) {
-      if (currentIndex == 0) {
+      if (getCurrentIndex() == 0) {
         // get the new folder name/location
         String folderName = newName.substring(0, newName.indexOf('.'));
         File newFolder = new File(folder.getParentFile(), folderName);
@@ -538,7 +539,7 @@ public class PicodeSketch {
           return;
         }
         // let this guy know where he's living (at least for a split second)
-        current.setFolder(newFolder);
+        getCurrent().setFolder(newFolder);
         // folder will be set to newFolder by updateInternal()
 
         // unfortunately this can't be a "save as" because that
@@ -553,9 +554,9 @@ public class PicodeSketch {
 
         // This isn't changing folders, just changes the name
         newFile = new File(newFolder, newName);
-        if (!current.renameTo(newFile, newExtension)) {
+        if (!getCurrent().renameTo(newFile, newExtension)) {
           Base.showWarning("Error",
-                           "Could not rename \"" + current.getFileName() +
+                           "Could not rename \"" + getCurrent().getFileName() +
                            "\" to \"" + newFile.getName() + "\"", null);
           return;
         }
@@ -585,9 +586,9 @@ public class PicodeSketch {
 //        picodeMain.getEditorProxy().baseRebuildSketchbookMenusAsync();
 
       } else {  // else if something besides code[0]
-        if (!current.renameTo(newFile, newExtension)) {
+        if (!getCurrent().renameTo(newFile, newExtension)) {
           Base.showWarning("Error",
-                           "Could not rename \"" + current.getFileName() +
+                           "Could not rename \"" + getCurrent().getFileName() +
                            "\" to \"" + newFile.getName() + "\"", null);
           return;
         }
@@ -640,9 +641,9 @@ public class PicodeSketch {
 
     // confirm deletion with user, yes/no
     Object[] options = { "OK", "Cancel" };
-    String prompt = (currentIndex == 0) ?
+    String prompt = (getCurrentIndex() == 0) ?
       "Are you sure you want to delete this sketch?" :
-      "Are you sure you want to delete \"" + current.getPrettyName() + "\"?";
+      "Are you sure you want to delete \"" + getCurrent().getPrettyName() + "\"?";
     int result = JOptionPane.showOptionDialog(picodeMain.getFrame(),
                                               prompt,
                                               "Delete",
@@ -652,7 +653,7 @@ public class PicodeSketch {
                                               options,
                                               options[0]);
     if (result == JOptionPane.YES_OPTION) {
-      if (currentIndex == 0) {
+      if (getCurrentIndex() == 0) {
         // need to unset all the modified flags, otherwise tries
         // to do a save on the handleNew()
 
@@ -669,15 +670,15 @@ public class PicodeSketch {
 
       } else {
         // delete the file
-        if (!current.deleteFile()) {
+        if (!getCurrent().deleteFile()) {
           Base.showMessage("Couldn't do it",
                            "Could not delete \"" +
-                           current.getFileName() + "\".");
+                           getCurrent().getFileName() + "\".");
           return;
         }
 
         // remove code from the list
-        removeCode(current);
+        removeCode(getCurrent());
 
         // just set current tab to the main tab
         setCurrentCode(0);
@@ -699,6 +700,9 @@ public class PicodeSketch {
         }
         codeCount--;
         code = (SketchCode[]) PApplet.shorten(code);
+
+        // Picode: remove the corresponding new editor.
+        picodeMain.getFrame().removeEditor(which);
         return;
       }
     }
@@ -710,7 +714,7 @@ public class PicodeSketch {
    * Move to the previous tab.
    */
   public void handlePrevCode() {
-    int prev = currentIndex - 1;
+    int prev = getCurrentIndex() - 1;
     if (prev < 0) prev = codeCount-1;
     setCurrentCode(prev);
   }
@@ -720,7 +724,7 @@ public class PicodeSketch {
    * Move to the next tab.
    */
   public void handleNextCode() {
-    setCurrentCode((currentIndex + 1) % codeCount);
+    setCurrentCode((getCurrentIndex() + 1) % codeCount);
   }
 
 
@@ -730,8 +734,8 @@ public class PicodeSketch {
   public void setModified(boolean state) {
     //System.out.println("setting modified to " + state);
     //new Exception().printStackTrace(System.out);
-    if (current.isModified() != state) {
-      current.setModified(state);
+    if (getCurrent().isModified() != state) {
+      getCurrent().setModified(state);
       calcModified();
     }
   }
@@ -771,7 +775,7 @@ public class PicodeSketch {
 
     // first get the contents of the editor text area
 //    if (current.isModified()) {
-    current.setProgram(picodeMain.getPintegration().getText());
+    getCurrent().setProgram(picodeMain.getPintegration().getText());
 //    }
 
     // don't do anything if not actually modified
@@ -911,8 +915,8 @@ public class PicodeSketch {
 
     // grab the contents of the current tab before saving
     // first get the contents of the editor text area
-    if (current.isModified()) {
-      current.setProgram(picodeMain.getPintegration().getText());
+    if (getCurrent().isModified()) {
+      getCurrent().setProgram(picodeMain.getPintegration().getText());
     }
 
     File[] copyItems = folder.listFiles(new FileFilter() {
@@ -1165,7 +1169,7 @@ public class PicodeSketch {
       picodeMain.getPintegration().headerRepaint();
       if (isUntitled()) {  // TODO probably not necessary? problematic?
         // Mark the new code as modified so that the sketch is saved
-        current.setModified(true);
+        getCurrent().setModified(true);
       }
 
     } else {
@@ -1194,23 +1198,23 @@ public class PicodeSketch {
 //      System.out.println(current.visited);
 //    }
     // if current is null, then this is the first setCurrent(0)
-    if ((currentIndex == which) && (current != null)) {
+    if ((getCurrentIndex() == which) && (getCurrent() != null)) {
       return;
     }
 
     // get the text currently being edited
-    if (current != null) {
-      current.setState(picodeMain.getPintegration().getText(),
+    if (getCurrent() != null) {
+      getCurrent().setState(picodeMain.getPintegration().getText(),
                        picodeMain.getPintegration().getSelectionStart(),
                        picodeMain.getPintegration().getSelectionStop(),
                        picodeMain.getPintegration().getScrollPosition());
     }
 
-    current = code[which];
-    currentIndex = which;
-    current.visited = System.currentTimeMillis();
+    setCurrent(code[which]);
+    setCurrentIndex(which);
+    code[which].visited = System.currentTimeMillis();
 
-    picodeMain.getPintegration().setCode(current);
+    picodeMain.getPintegration().setCode(getCurrent());
 //    picodeMain.getEditorProxy().headerRebuild();
     picodeMain.getPintegration().headerRepaint();
   }
@@ -1480,12 +1484,12 @@ public class PicodeSketch {
 
 
   public SketchCode getCurrentCode() {
-    return current;
+    return getCurrent();
   }
 
 
   public int getCurrentCodeIndex() {
-    return currentIndex;
+    return getCurrentIndex();
   }
 
 
@@ -1651,5 +1655,26 @@ public class PicodeSketch {
 
   public PdeParser getParser() {
     return parser;
+  }
+
+  private int getCurrentIndex() {
+    return picodeMain.getFrame().getCurrentEditorIndex();
+  }
+
+  private void setCurrentIndex(int currentIndex) {
+    picodeMain.getFrame().setCurrentEditorIndex(currentIndex);
+  }
+
+  private SketchCode getCurrent() {
+    int index = getCurrentIndex();
+    if (index >= 0 && index < code.length) {
+      return getCode(getCurrentIndex());
+    } else {
+      return null;
+    }
+  }
+
+  private void setCurrent(SketchCode current) {
+    // Do nothing.
   }
 }

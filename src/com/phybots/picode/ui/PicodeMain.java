@@ -68,7 +68,6 @@ public class PicodeMain {
 			}
 			poseManager = new PoseManager(this);
 			camera = new Camera();
-			sketch = PicodeSketch.newInstance(this);
 		} catch (RuntimeException e) {
 		  e.printStackTrace();
 			System.err.println("Unsupported robot type.");
@@ -88,6 +87,7 @@ public class PicodeMain {
 	private void initGUI() {
 
 		picodeFrame = new PicodeFrame(this);
+    sketch = PicodeSketch.newInstance(this);
 		setSketch(sketch);
 
 		Dimension d = new Dimension(840, 600);

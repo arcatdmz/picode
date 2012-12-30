@@ -178,11 +178,13 @@ public class PicodeFrame extends JFrame {
 		return editorPanes.get(index).getPicodeEditor();
 	}
 
-	public void showEditor(int index) {
-		getTabbedPane().getModel().setSelectedIndex(index);
+	public void setCurrentEditorIndex(int index) {
+	  if (index >= 0 && index < editorPanes.size()) {
+	    getTabbedPane().getModel().setSelectedIndex(index);
+	  }
 	}
 
-	public int getEditorIndex() {
+	public int getCurrentEditorIndex() {
 		return getTabbedPane().getSelectedIndex();
 	}
 
@@ -197,11 +199,13 @@ public class PicodeFrame extends JFrame {
 
 	public void updateCurrentEditorName() {
 		SketchCode code = getCurrentEditor().getCode();
-		getTabbedPane().setTitleAt(getEditorIndex(),
+		getTabbedPane().setTitleAt(getCurrentEditorIndex(),
 				code.isExtension("pde") ? code.getPrettyName() : code.getFileName());
 	}
 
 	public void updateTabs() {
+	  // TODO Save current selection before clearance.
+	  
 		HashMap<SketchCode, PicodeEditorPane> map
 				= new HashMap<SketchCode, PicodeEditorPane>();
 		for (PicodeEditorPane picodeEditorPane : editorPanes) {

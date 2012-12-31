@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="Microsoft.Samples.Kinect.WpfViewers.KinectSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Name="Root" x:ClassModifier="internal"
+             d:DesignHeight="180" d:DesignWidth="600">
+    <StackPanel Orientation="Horizontal" Background="Black" >
+        <StackPanel.Resources>
+            <Style TargetType="{x:Type Border}">
+                <Setter Property="Margin" Value="3" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="Background" Value="LightSteelBlue" />
+            </Style>
+        </StackPanel.Resources>
+        <!--<Border>
+                <StackPanel >
+                    <Label FontWeight="Bold">.AudioStream</Label>
+                </StackPanel>
+            </Border>-->
+        <Border>
+            <StackPanel Margin="2" Grid.Column="1">
+                <Label FontWeight="Bold" Target="{Binding ElementName=ColorStreamEnable}">._ColorStream</Label>
+                <CheckBox IsChecked="True" Name="ColorStreamEnable"
+                                      Checked="ColorStream_Enabled"
+                                      Unchecked="ColorStream_Enabled"
+                                      >Enabled</CheckBox>
+                <ComboBox Name="colorFormats" SelectionChanged="colorFormats_SelectionChanged" x:FieldModifier="public"/>
+            </StackPanel>
+        </Border>
+        <Border>
+            <StackPanel>
+                <Label FontWeight="Bold" Target="{Binding ElementName=DepthStreamEnable}">._DepthStream</Label>
+                <CheckBox IsChecked="True" Name="DepthStreamEnable"
+                                      Checked="DepthStream_Enabled"
+                                      Unchecked="DepthStream_Enabled"
+                                      >Enabled</CheckBox>
+                <ComboBox Name="depthFormats"  SelectionChanged="depthFormats_SelectionChanged"  x:FieldModifier="public"/>
+                <StackPanel Orientation="Horizontal" >
+                    <Label Target="{Binding ElementName=depthRanges}" VerticalAlignment="Center">_Range:</Label>
+                    <ComboBox Name="depthRanges" SelectionChanged="depthRanges_SelectionChanged"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"  >
+                    <CheckBox Name="tooFar" VerticalAlignment="Center" Margin="5" Checked="tooFar_Checked" Unchecked="tooFar_Checked">
+                        _IsTooFarRangeEnabled
+                    </CheckBox>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+        <Border>
+            <StackPanel>
+                <Label FontWeight="Bold" Target="{Binding ElementName=showSkeletons}">._SkeletonStream</Label>
+                <CheckBox Checked="Skeletons_Checked" 
+                      Name="showSkeletons" Unchecked="Skeletons_Checked">Enabled</CheckBox>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Grid.Row="3" Margin="5">
+                    <Label Target="{Binding ElementName=trackingModes}" >_Tracking Mode:</Label>
+                    <ComboBox Name="trackingModes" VerticalAlignment="Center" SelectionChanged="trackingModes_SelectionChanged"  x:FieldModifier="public"/>
+                </StackPanel>
+
+                <!-- KINECTSDK TODO: Databinding path isn't working.
+                <Label>FloorClipPlane:</Label>
+                <TextBlock Text="{Binding ElementName=Root,Path=DiagViewer.KinectSkeletonViewerOnColor.FloorClipPlane}" />
+                <Label>NormalToGravity:</Label>
+                <TextBlock Text="{Binding ElementName=Root,Path=DiagViewer.KinectSkeletonViewerOnDepth.NormalToGravity}" />
+                -->
+            </StackPanel>
+        </Border>
+        <Border>
+            <StackPanel >
+                <Label FontWeight="Bold" Target="{Binding ElementName=ElevationAngle}">._ElevationAngle</Label>
+                <TextBox Text="{Binding ElementName=ElevationAngle,Path=Value}"/>
+                <Slider Name="ElevationAngle" Orientation="Vertical" Minimum="-27" Maximum="27" Height="100" HorizontalAlignment="Center" 
+                        TickFrequency="1" TickPlacement="BottomRight" 
+                        ValueChanged="ElevationAngle_Changed" IsSnapToTickEnabled="True" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,38 @@
+﻿<Canvas x:Class="Microsoft.Samples.Kinect.WpfViewers.KinectSkeleton"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="480" d:DesignWidth="640"
+     ClipToBounds="True" >
+    <Polyline Points="362,49 310,121 311,266 311,295" Stroke="Green" StrokeThickness="5" />
+    <Polyline Points="286,326 311,295 335,324" Stroke="Green" StrokeThickness="5" />
+    <Polyline Points="249,159 310,121 364,179" Stroke="Green" StrokeThickness="5" />
+    <Polyline Points="249,159 208,257 276,234 319,187" Stroke="Green" StrokeThickness="5" />
+    <Polyline Points="364,179 397,270 474,298 510,310" Stroke="Green" StrokeThickness="5" />
+    <Polyline Points="286,326 264,468 237,620 252,668" Stroke="Green" StrokeThickness="5" />
+    <Polyline Points="335,324 354,436 372,576 399,613" Stroke="Green" StrokeThickness="5" />
+    <Line X1="308" Y1="295" X2="314" Y2="295" Stroke="Green" StrokeThickness="6" />
+    <Line X1="308" Y1="266" X2="314" Y2="266" Stroke="Green" StrokeThickness="6" />
+    <Line X1="307" Y1="121" X2="313" Y2="121" Stroke="Green" StrokeThickness="6" />
+    <Line X1="359" Y1="49" X2="365" Y2="49" Stroke="Green" StrokeThickness="6" />
+    <Line X1="246" Y1="159" X2="252" Y2="159" Stroke="Green" StrokeThickness="6" />
+    <Line X1="205" Y1="257" X2="211" Y2="257" Stroke="Green" StrokeThickness="6" />
+    <Line X1="273" Y1="234" X2="279" Y2="234" Stroke="Green" StrokeThickness="6" />
+    <Line X1="316" Y1="187" X2="322" Y2="187" Stroke="Green" StrokeThickness="6" />
+    <Line X1="361" Y1="179" X2="367" Y2="179" Stroke="Green" StrokeThickness="6" />
+    <Line X1="394" Y1="270" X2="400" Y2="270" Stroke="Green" StrokeThickness="6" />
+    <Line X1="471" Y1="298" X2="477" Y2="298" Stroke="Green" StrokeThickness="6" />
+    <Line X1="507" Y1="310" X2="513" Y2="310" Stroke="Green" StrokeThickness="6" />
+    <Line X1="283" Y1="326" X2="289" Y2="326" Stroke="Green" StrokeThickness="6" />
+    <Line X1="261" Y1="468" X2="267" Y2="468" Stroke="Green" StrokeThickness="6" />
+    <Line X1="234" Y1="620" X2="240" Y2="620" Stroke="Green" StrokeThickness="6" />
+    <Line X1="249" Y1="668" X2="255" Y2="668" Stroke="Green" StrokeThickness="6" />
+    <Line X1="332" Y1="324" X2="338" Y2="324" Stroke="Green" StrokeThickness="6" />
+    <Line X1="351" Y1="436" X2="357" Y2="436" Stroke="Green" StrokeThickness="6" />
+    <Line X1="369" Y1="576" X2="375" Y2="576" Stroke="Green" StrokeThickness="6" />
+    <Line X1="396" Y1="613" X2="402" Y2="613" Stroke="Green" StrokeThickness="6" />
+    <Ellipse x:Name="centerPosition" Stroke="Blue" StrokeThickness="20"/>
+</Canvas>
+

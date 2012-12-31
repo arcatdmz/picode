@@ -5,7 +5,7 @@
 *.pydevproject
 .project
 .metadata
-bin/
+#bin/
 tmp/
 *.tmp
 *.bak
@@ -98,6 +98,7 @@ publish
 
 # Others
 [Bb]in
+!kinect/bin/
 [Oo]bj
 sql
 TestResults
@@ -140,7 +141,7 @@ dist
 build
 eggs
 parts
-bin
+#bin
 var
 sdist
 develop-eggs

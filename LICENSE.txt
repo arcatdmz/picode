@@ -1,0 +1,5 @@
+For the Processing 'core' library, it's LGPL.
+For the Processing IDE code, it's GPL.
+For everything else, it's MPL 1.1/GPL 2.0/LGPL 2.1 triple license.
+
+Please refer to processing/license.txt and lib/phybots/library/LICENSE_phybots.txt for the details.

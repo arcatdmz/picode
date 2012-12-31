@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="picode" default="picode-jar" basedir=".">
-	<import file="./build.xml" />
 
 	<!-- ****Properties**** -->
 
@@ -9,6 +8,7 @@
 	<property name="picode-version" value="0.1.0" />
 
 	<!-- Dependent class pathes -->
+	<property name="pde.classpath" value="./lib/core/library/core.jar; ${env.JAVA_HOME}/lib/tools.jar; ./processing/lib/ant.jar; ./processing/lib/ant-launcher.jar; ./processing/lib/antlr.jar; ./processing/lib/apple.jar; ./processing/lib/jdt-core.jar; ./processing/lib/jna.jar; ./processing/lib/org-netbeans-swing-outline.jar"/>
 	<property name="picode-classpath" value="${pde.classpath}; ./bin; ./lib/phybots/library/phybots-core-1.0.0.jar; ./lib/phybots/library/connector-1.0.4.jar; ./lib/phybots/library/bluecove-2.1.1-SNAPSHOT.jar" />
 
 	<!-- Source directory -->
@@ -39,7 +39,7 @@
 	</target>
 
 	<!-- Compile -->
-	<target name="picode-compile" depends="compile">
+	<target name="picode-compile">
 		<mkdir dir="${picode-classes.dir}" />
 		<javac srcdir="${picode-src.dir}" destdir="${picode-classes.dir}"
 				target="1.6"

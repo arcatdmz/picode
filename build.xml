@@ -1,25 +1,10 @@
 <?xml version="1.0"?>
 <project name="Processing PDE" default="build">
-
-  <property name="generated" 
-	    value="${basedir}/generated/processing/mode/java/preproc" />
-
-  <property name="grammars" 
-	    value="${basedir}/src/processing/mode/java/preproc" />
-
-  <property name="antlrjar" 
-	    value="${basedir}/lib/antlr.jar" />
-	
-  <property name="pde.classpath"
-  		value="./lib/core/library/core.jar; ${env.JAVA_HOME}/lib/tools.jar; ./processing/lib/ant.jar; ./processing/lib/ant-launcher.jar; ./processing/lib/antlr.jar; ./processing/lib/apple.jar; ./processing/lib/jdt-core.jar; ./processing/lib/jna.jar; ./processing/lib/org-netbeans-swing-outline.jar"/>
-
-  <classloader taskname="antlr">
-    <classpath path="lib/antlr.jar" />
-  </classloader>
+  <import file="build-core.xml" />
 
   <target name="clean" description="Clean the build directories">
     <delete dir="bin" />
-    <delete file="pde.jar" />
+    <delete file="picode.jar" />
   </target>
 
   <target name="compile" description="Compile sources">
@@ -58,14 +43,15 @@
 	   destdir="bin" 
 	   encoding="UTF-8" 
 	   includeAntRuntime="false" 
-	   classpath="${pde.classpath}"
+	   classpath="${picode-classpath}"
 	   debug="on">
+      <src path="src" />
       <src path="processing/src" />
       <src path="processing/generated" />
     </javac>
   </target>
 
   <target name="build" depends="compile" description="Build PDE">
-    <jar basedir="bin" destfile="pde.jar" />
+    <jar basedir="bin" destfile="picode.jar" />
   </target>
 </project>

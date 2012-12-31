@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -35,7 +38,6 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import javax.swing.JSeparator;
-import java.awt.GridLayout;
 
 public class PosePanel extends JPanel {
 	private static final long serialVersionUID = 5622163966849443710L;
@@ -121,12 +123,27 @@ public class PosePanel extends JPanel {
 	private JPanel getJPanel() {
 		if (jPanel == null) {
 			jPanel = new JPanel();
-			jPanel.setLayout(new GridLayout(2, 2, 0, 0));
+      jPanel.setLayout(new GridBagLayout());
+
+      GridBagConstraints gbc = new GridBagConstraints();
+      gbc.gridx = 0;
+      gbc.gridy = 0;
+      gbc.weightx = 1.0;
+      gbc.weighty = 1.0;
+      gbc.insets = new Insets(5, 5, 5, 0);
+      gbc.fill = GridBagConstraints.BOTH;
 			JLabel jLabel = new JLabel("Pose library");
 			jLabel.setFont(
 					defaultFont.deriveFont(Font.BOLD));
-			jPanel.add(jLabel);
-			jPanel.add(getCommandPanel());
+			jPanel.add(jLabel, gbc);
+
+			GridBagConstraints gbc2 = new GridBagConstraints();
+      gbc2.gridx = 1;
+      gbc2.gridy = 0;
+      gbc2.weightx = .0;
+      gbc2.weighty = 1.0;
+      gbc2.fill = GridBagConstraints.BOTH;
+			jPanel.add(getCommandPanel(), gbc2);
 		}
 		return jPanel;
 	}

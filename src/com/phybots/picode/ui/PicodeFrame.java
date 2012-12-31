@@ -89,7 +89,15 @@ public class PicodeFrame extends JFrame {
 		initialize();
 	}
 
-	public void setStatusText(String statusText) {
+  public void setRunnable(boolean isRunnable) {
+    getMnFile().setEnabled(isRunnable);
+    getMnSketch().setEnabled(isRunnable);
+    getRunJButton().setEnabled(isRunnable);
+    getStopJButton().setEnabled(!isRunnable);
+    getPosePanel().setRunnable(isRunnable);
+  }
+
+  public void setStatusText(String statusText) {
 		getStatusLabel().setText(statusText);
 	}
 

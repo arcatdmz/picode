@@ -345,9 +345,11 @@ public class ProcessingIntegration implements RunnerListener {
     
   }
 
+  /**
+   * Close a sketch.
+   */
   public void baseHandleClose(PicodeFrame editor, boolean b) {
-    // TODO Auto-generated method stub
-    
+    picodeMain.setSketch(PicodeSketch.newInstance(picodeMain));
   }
 
   // ProcessingHeader methods are implemented below.

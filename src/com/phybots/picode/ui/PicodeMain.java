@@ -16,10 +16,8 @@ import com.phybots.picode.ui.library.PoseManager;
 
 public class PicodeMain {
 
-	private static final boolean FOR_KINECT = false;
-
   public static void main(String[] args) {
-    new PicodeMain();
+    new PicodeMain(args);
   }
 
 	private ProcessingIntegration pintegration;
@@ -34,19 +32,42 @@ public class PicodeMain {
 	private Process kinect;
 	private Camera camera;
 
-	public PicodeMain() {
+	public PicodeMain(String[] args) {
 
-		Phybots.getInstance().showDebugFrame();
 		ProcessingIntegration.init();
 
-		// TODO Hard-coded for WISS'12 demonstration.
+		// Get parameters
+    String robotType = null;
+		String address = null;
+		boolean debug = false;
+		for (int i = 0; i < args.length; i ++) {
+      if (args[i].equals("-debug")) {
+        debug = true;
+      } else if (i + 1 < args.length) {
+  		  if (args[i].equals("-type")) {
+  		    robotType = args[++ i];
+  		  } else if (args[i].equals("-address")) {
+  		    address = args[++ i];
+  		  }
+		  }
+		}
+		if (robotType == null ||
+		    (!robotType.equals("Human") && address == null)) {
+		  System.err.println("Usage: picode -type RobotTypeName -address btspp://deadbeaf");
+		  return;
+		}
+		if (debug) {
+	    Phybots.getInstance().showDebugFrame();
+		}
+
+		// Set up configuration
 		try {
-			if (FOR_KINECT) {
-				robot = new Human(this);
-			} else {
-				robot = new Robot(this, "MindstormsNXT", "btspp://001653055d42");
-				robot.connect();
-			}
+	    if (robotType.equals("Human")) {
+	      robot = new Human(this);
+	    } else {
+	      robot = new Robot(this, robotType, address);
+	      robot.connect();
+	    }
 			poseManager = new PoseManager(this);
 			camera = new Camera();
 		} catch (RuntimeException e) {
@@ -55,6 +76,7 @@ public class PicodeMain {
 			return;
 		}
 
+		// Launch main UI
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				initGUI();
@@ -68,8 +90,8 @@ public class PicodeMain {
 	private void initGUI() {
 
 		picodeFrame = new PicodeFrame(this);
-    sketch = PicodeSketch.newInstance(this);
-		setSketch(sketch);
+		setSketch(PicodeSketch.newInstance(this));
+    picodeFrame.setRunnable(true);
 
 		Dimension d = new Dimension(840, 600);
 		picodeFrame.setPreferredSize(d);
@@ -142,10 +164,10 @@ public class PicodeMain {
 	public void setLauncher(Launcher launcher) {
 		this.launcher = launcher;
 		if (launcher == null) {
-			robot.connect(); // Reset BlueCove status.
-			picodeFrame.setEnabled(true);
+			robot.connect();
+			picodeFrame.setRunnable(true);
 		} else {
-			picodeFrame.setEnabled(false);
+      picodeFrame.setRunnable(false);
 		}
 	}
 

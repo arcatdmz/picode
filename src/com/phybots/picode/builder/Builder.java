@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.phybots.Phybots;
 import com.phybots.picode.ui.ProcessingIntegration;
 import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.PicodeSettings;
@@ -52,17 +53,19 @@ public class Builder {
     setBinFolder(PicodeSettings.getBinFolderPath());
 	}
 
-  public Launcher run() throws SketchException {
+  public void run() throws SketchException {
     Preprocessor preprocessor = new Preprocessor(this);
     String mainClassName = preprocessor.preprocess(false);
     setMainClassName(mainClassName);
     Compiler compiler = new Compiler(this);
     if (compiler.compile()) {
-      Launcher launcher = new Launcher(this);
-      launcher.launch(false);
-      return launcher;
+      final Launcher launcher = new Launcher(this);
+      Phybots.getInstance().submit(new Runnable() {
+        public void run() {
+          launcher.launch(false);
+        }
+      });
     }
-    return null;
   }
 
   public PicodeMain getPicodeMain() {

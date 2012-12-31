@@ -4,9 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -38,12 +35,15 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import javax.swing.JSeparator;
+import java.awt.GridLayout;
 
 public class PosePanel extends JPanel {
 	private static final long serialVersionUID = 5622163966849443710L;
 
 	private JPanel jPanel;
 	private JPanel commandPanel;
+  private JButton btnAddRobotPose;
+  private JButton btnRemove;
 	private JScrollPane jScrollPane;
 	private JMutableList<Pose> jList;
 
@@ -58,13 +58,23 @@ public class PosePanel extends JPanel {
 	private JMenuItem mntmDuplicateThisPose;
 	private JSeparator separator;
 	private JMenuItem mntmOpenPoseFolder;
+	
+	private boolean isRunnable;
 
 	public PosePanel(PicodeMain picodeMain, PicodeFrame picodeFrame) {
 		super();
 		this.picodeMain = picodeMain;
 		this.picodeFrame = picodeFrame;
+		this.isRunnable = true;
 		initialize();
 	}
+
+  public void setRunnable(boolean isRunnable) {
+    getBtnAddRobotPose().setEnabled(isRunnable);
+    getBtnRemove().setEnabled(isRunnable);
+    getJList().setEnabled(isRunnable);
+    this.isRunnable = isRunnable;
+  }
 
 	public Pose getSelectedPose() {
 		return getJList().getSelectedValue();
@@ -111,27 +121,12 @@ public class PosePanel extends JPanel {
 	private JPanel getJPanel() {
 		if (jPanel == null) {
 			jPanel = new JPanel();
-			jPanel.setLayout(new GridBagLayout());
-
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.weightx = 1.0;
-			gbc.weighty = 1.0;
-			gbc.insets = new Insets(5, 5, 5, 0);
-			gbc.fill = GridBagConstraints.BOTH;
+			jPanel.setLayout(new GridLayout(2, 2, 0, 0));
 			JLabel jLabel = new JLabel("Pose library");
 			jLabel.setFont(
 					defaultFont.deriveFont(Font.BOLD));
-			jPanel.add(jLabel, gbc);
-
-			GridBagConstraints gbc2 = new GridBagConstraints();
-			gbc.gridx = 1;
-			gbc.gridy = 0;
-			gbc.weightx = .0;
-			gbc.weighty = 1.0;
-			gbc.fill = GridBagConstraints.BOTH;
-			jPanel.add(getCommandPanel(), gbc2);
+			jPanel.add(jLabel);
+			jPanel.add(getCommandPanel());
 		}
 		return jPanel;
 	}
@@ -140,22 +135,34 @@ public class PosePanel extends JPanel {
 		if (commandPanel == null) {
 			commandPanel = new JPanel();
 			commandPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 5, 5));
-			JButton btnAddRobotPose = new JButton();
-			btnAddRobotPose.setAction(
-					new ShowCameraFrameAction(picodeMain));
-			btnAddRobotPose.setText("+");
-			commandPanel.add(btnAddRobotPose, null);
-			JButton btnRemove = new JButton();
-			btnRemove.setAction(
-					new DeleteSelectedPoseAction(picodeFrame));
-			btnRemove.setText("-");
-			commandPanel.add(btnRemove, null);
+			commandPanel.add(getBtnAddRobotPose(), null);
+			commandPanel.add(getBtnRemove(), null);
 			for (Component component : commandPanel.getComponents()) {
 				component.setFont(defaultFont);
 			}
 		}
 		return commandPanel;
 	}
+
+	private JButton getBtnAddRobotPose() {
+    if (btnAddRobotPose == null) {
+      btnAddRobotPose = new JButton();
+      btnAddRobotPose.setAction(
+          new ShowCameraFrameAction(picodeMain));
+      btnAddRobotPose.setText("+");
+    }
+    return btnAddRobotPose;
+  }
+
+  private JButton getBtnRemove() {
+    if (btnRemove == null) {
+      btnRemove = new JButton();
+      btnRemove.setAction(
+          new DeleteSelectedPoseAction(picodeFrame));
+      btnRemove.setText("-");
+    }
+    return btnRemove;
+  }
 
 	private JScrollPane getJScrollPane() {
 		if (jScrollPane == null) {
@@ -227,7 +234,7 @@ public class PosePanel extends JPanel {
 		return popupMenu;
 	}
 
-	private static void addPopup(final Component component, final JPopupMenu popup) {
+	private void addPopup(final Component component, final JPopupMenu popup) {
 		component.addMouseListener(new MouseAdapter() {
 			public void mousePressed(MouseEvent e) {
 				if (e.isPopupTrigger()) {
@@ -247,7 +254,9 @@ public class PosePanel extends JPanel {
 						jList.setSelectedIndex(index);
 					}
 				}
-				popup.show(e.getComponent(), e.getX(), e.getY());
+				if (isRunnable) {
+				  popup.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 		});
 	}

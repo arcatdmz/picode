@@ -1,6 +1,8 @@
 package com.phybots.picode;
 
 
+import jp.digitalmuseum.connector.BluetoothConnector;
+
 import com.intel.bluetooth.BlueCoveImpl;
 
 import com.phybots.picode.ui.PicodeMain;
@@ -50,7 +52,7 @@ public class Robot {
 	private void initialize() {
 		robotType = RobotType.valueOf(robot.getClass());
 		motorManager = robotType.newMotorManagerInstance(picodeMain, this);
-		motorManager.start();
+    motorManager.start();
 	}
 
 	public void dispose() {
@@ -71,18 +73,21 @@ public class Robot {
 
 	public boolean setPose(Pose pose) {
 		if (pose.getClass().equals(robotType.getPoseClass())) {
+		  ensureConnected();
 			return pose.applyTo(motorManager);
 		}
 		return false;
 	}
 
 	public Pose getPose() {
+    ensureConnected();
 		Pose pose = robotType.newPoseInstance();
 		pose.retrieveFrom(motorManager);
 		return pose;
 	}
 
 	public void setEditable(boolean isEditable) {
+    ensureConnected();
 		motorManager.setEditable(isEditable);
 	}
 
@@ -97,8 +102,20 @@ public class Robot {
 
 	public void disconnect() {
 		((com.phybots.entity.PhysicalRobot) robot).disconnect();
-		BlueCoveImpl.shutdown();
+    if (((com.phybots.entity.PhysicalRobot) robot).getConnector() instanceof BluetoothConnector) {
+      BlueCoveImpl.shutdown();
+    }
 	}
+	
+  public boolean isConnected() {
+    return ((com.phybots.entity.PhysicalRobot) robot).isConnected();
+  }
+  
+  private void ensureConnected() {
+    if (!isConnected()) {
+      connect();
+    }
+  }
 	
 	public Action action() {
 		Action action = new Action(this);

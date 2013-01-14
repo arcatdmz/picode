@@ -23,88 +23,92 @@ public class PicodeMain {
     new PicodeMain(args);
   }
 
-	private ProcessingIntegration pintegration;
+  private ProcessingIntegration pintegration;
 
   private PicodeSketch sketch;
-	private PicodeFrame picodeFrame;
 
-	private Robot activeRobot;
-	private List<Robot> robots;
+  private PicodeFrame picodeFrame;
 
-	private PoseManager poseManager;
-	private Launcher launcher;
-	private Process kinect;
-	private Camera camera;
+  private Robot activeRobot;
 
-	public PicodeMain(String[] args) {
+  private List<Robot> robots;
 
-		ProcessingIntegration.init();
+  private PoseManager poseManager;
 
-		// Get parameters
+  private Launcher launcher;
+
+  private Process kinect;
+
+  private Camera camera;
+
+  public PicodeMain(String[] args) {
+
+    ProcessingIntegration.init();
+
+    // Get parameters
     String robotType = null;
-		String address = null;
-		boolean debug = false;
-		for (int i = 0; i < args.length; i ++) {
+    String address = null;
+    boolean debug = false;
+    for (int i = 0; i < args.length; i++) {
       if (args[i].equals("-debug")) {
         debug = true;
       } else if (i + 1 < args.length) {
-  		  if (args[i].equals("-type")) {
-  		    robotType = args[++ i];
-  		  } else if (args[i].equals("-address")) {
-  		    address = args[++ i];
-  		  }
-		  }
-		}
-		if (debug) {
-	    Phybots.getInstance().showDebugFrame();
-		}
+        if (args[i].equals("-type")) {
+          robotType = args[++i];
+        } else if (args[i].equals("-address")) {
+          address = args[++i];
+        }
+      }
+    }
+    if (debug) {
+      Phybots.getInstance().showDebugFrame();
+    }
 
-		// Set up configuration
-		robots = new ArrayList<Robot>();
-		try {
-	    if (robotType != null &&
-        (robotType.equals("Human") || address != null)) {
-  	    if (robotType.equals("Human")) {
-  	      activeRobot = new Human(this);
-  	    } else {
-  	      activeRobot = new Robot(this, robotType, address);
-  	    }
-  	    // connectActiveRobot();
-	    }
-			poseManager = new PoseManager(this);
-			camera = new Camera();
-		} catch (RuntimeException e) {
-		  e.printStackTrace();
-			System.err.println("Unsupported robot type.");
-		}
+    // Set up configuration
+    robots = new ArrayList<Robot>();
+    try {
+      if (robotType != null && (robotType.equals("Human") || address != null)) {
+        if (robotType.equals("Human")) {
+          activeRobot = new Human(this);
+        } else {
+          activeRobot = new Robot(this, robotType, address);
+        }
+        // connectActiveRobot();
+      }
+      poseManager = new PoseManager(this);
+      camera = new Camera();
+    } catch (RuntimeException e) {
+      e.printStackTrace();
+      System.err.println("Unsupported robot type.");
+    }
 
-		// Launch main UI
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				initGUI();
-			}
-		});
-	}
+    // Launch main UI
+    SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        initGUI();
+      }
+    });
+  }
 
-	private void initGUI() {
+  private void initGUI() {
 
-		picodeFrame = new PicodeFrame(this);
-		setSketch(PicodeSketch.newInstance(this));
+    picodeFrame = new PicodeFrame(this);
+    setSketch(PicodeSketch.newInstance(this));
     picodeFrame.setRunnable(true);
 
-		Dimension d = new Dimension(840, 600);
-		picodeFrame.setPreferredSize(d);
-		picodeFrame.setSize(d);
-		picodeFrame.setVisible(true);
-		// picodeFrame.setDividerLocation(.5);
-		picodeFrame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				Phybots.getInstance().dispose();
-				e.getWindow().dispose();
-			}
-		});
-	}
+    Dimension d = new Dimension(840, 600);
+    picodeFrame.setPreferredSize(d);
+    picodeFrame.setSize(d);
+    picodeFrame.setVisible(true);
+    // picodeFrame.setDividerLocation(.5);
+    picodeFrame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent e) {
+        Phybots.getInstance().dispose();
+        e.getWindow().dispose();
+      }
+    });
+  }
 
   public void dispose() {
   }
@@ -119,16 +123,19 @@ public class PicodeMain {
   public Robot getActiveRobot() {
     return activeRobot;
   }
-  
+
   public void setActiveRobot(Robot robot) {
     disconnectActiveRobot();
     activeRobot = robot;
     // connectActiveRobot();
   }
-  
+
+  public boolean activeRobotIsConnected() {
+    return activeRobot != null && activeRobot.isConnected();
+  }
+
   public void disconnectActiveRobot() {
-    if (activeRobot != null
-        && !(activeRobot instanceof Human)) {
+    if (activeRobot != null && !(activeRobot instanceof Human)) {
       activeRobot.disconnect();
     }
   }
@@ -143,12 +150,12 @@ public class PicodeMain {
   public List<Robot> getRobots() {
     return new ArrayList<Robot>(robots);
   }
-  
+
   public void addRobot(Robot robot) {
     robots.add(robot);
     picodeFrame.updateRobotList();
   }
-  
+
   public void removeRobot(Robot robot) {
     if (robots.remove(robot)) {
       robot.dispose();
@@ -168,66 +175,62 @@ public class PicodeMain {
     return camera;
   }
 
-	public void setSketch(PicodeSketch sketch) {
-		this.sketch = sketch;
-		getFrame().clearEditors();
-		for (int i = 0; i < sketch.getCodeCount(); i ++) {
-			SketchCode code = sketch.getCode(i);
-			getFrame().addEditor(code);
-		}
-		getPintegration().updateTitle();
-		// JViewport viewport = frame.getJScrollPane().getViewport();
-		// int caret = editor.getCaretPosition();
-		// editor.setCaretPosition(caret);
-		// frame.getJScrollPane().setViewport(viewport);
-	}
+  public void setSketch(PicodeSketch sketch) {
+    this.sketch = sketch;
+    getFrame().clearEditors();
+    for (int i = 0; i < sketch.getCodeCount(); i++) {
+      SketchCode code = sketch.getCode(i);
+      getFrame().addEditor(code);
+    }
+    getPintegration().updateTitle();
+    // JViewport viewport = frame.getJScrollPane().getViewport();
+    // int caret = editor.getCaretPosition();
+    // editor.setCaretPosition(caret);
+    // frame.getJScrollPane().setViewport(viewport);
+  }
 
-	public PicodeSketch getSketch() {
-		return sketch;
-	}
+  public PicodeSketch getSketch() {
+    return sketch;
+  }
 
-	/**
-	 * VMを起動させるためのLauncherオブジェクトへの参照を更新する。
-	 * 引数がnullでないときはVMが起動したときで、
-	 * 引数がnullのときはVMがシャットダウンしたときである。
-	 * 後者の場合はロボットとの接続を回復する。
-	 * 
-	 * @param launcher
-	 * @see RunAction#actionPerformed(java.awt.event.ActionEvent)
-	 * @see Launcher#launch(boolean)
-	 */
-	public void setLauncher(Launcher launcher) {
-		this.launcher = launcher;
-		if (launcher == null) {
-		  // connectActiveRobot();
-			picodeFrame.setRunnable(true);
-		} else {
+  /**
+   * VMを起動させるためのLauncherオブジェクトへの参照を更新する。 引数がnullでないときはVMが起動したときで、
+   * 引数がnullのときはVMがシャットダウンしたときである。 後者の場合はロボットとの接続を回復する。
+   * 
+   * @param launcher
+   * @see RunAction#actionPerformed(java.awt.event.ActionEvent)
+   * @see Launcher#launch(boolean)
+   */
+  public void setLauncher(Launcher launcher) {
+    this.launcher = launcher;
+    if (launcher == null) {
+      // connectActiveRobot();
+      picodeFrame.setRunnable(true);
+    } else {
       picodeFrame.setRunnable(false);
-		}
-	}
+    }
+  }
 
-	public Launcher getLauncher() {
-		return launcher;
-	}
+  public Launcher getLauncher() {
+    return launcher;
+  }
 
-	public void setKinect(Process kinect) {
-		this.kinect = kinect;
-		if (kinect == null) {
-			picodeFrame.setAlwaysOnTop(true);
-			picodeFrame.setAlwaysOnTop(false);
-			picodeFrame.setEnabled(true);
-		} else {
-			picodeFrame.setEnabled(false);
-		}
-	}
+  public void setKinect(Process kinect) {
+    this.kinect = kinect;
+    if (kinect == null) {
+      picodeFrame.setAlwaysOnTop(true);
+      picodeFrame.setAlwaysOnTop(false);
+      picodeFrame.setEnabled(true);
+    } else {
+      picodeFrame.setEnabled(false);
+    }
+  }
 
-	public Process getKinect() {
-		return kinect;
-	}
-	
-	public void showCaptureFrame(boolean show) {
-	  System.out.println(activeRobot);
-	  System.out.println(activeRobot.getMotorManager());
-		activeRobot.getMotorManager().showCaptureFrame(show);
-	}
+  public Process getKinect() {
+    return kinect;
+  }
+
+  public void showCaptureFrame(boolean show) {
+    activeRobot.getMotorManager().showCaptureFrame(show);
+  }
 }

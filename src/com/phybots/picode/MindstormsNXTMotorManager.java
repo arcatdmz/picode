@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import com.phybots.service.Service;
 import com.phybots.service.ServiceGroup;
 import com.phybots.task.ManageMindstormsNXTMotorState;
-import com.phybots.task.Task;
+import com.phybots.task.ManageMindstormsNXTMotorState.PowerFunction;
 import com.phybots.picode.ui.CaptureFrameAbstractImpl;
 import com.phybots.picode.ui.PicodeMain;
 
@@ -21,7 +21,15 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		super(picodeMain, robot);
 		sg = new ServiceGroup();
 		for (int i = 0; i < 3; i ++) {
-			Task task = new ManageMindstormsNXTMotorState();
+			ManageMindstormsNXTMotorState task = new ManageMindstormsNXTMotorState();
+			task.setPowerFunction(new PowerFunction() {
+        @Override
+        public int getPowerFromAngleDiff(int diffAbs) {
+          return 16;
+        }
+      });
+      task.setRotationThreshold(3);
+      task.setRotationErrorThreshold(10);
 			task.assign(robot.getCore());
 			sg.add(task);
 		}

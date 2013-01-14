@@ -3,7 +3,6 @@ package com.phybots.picode.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -335,8 +334,9 @@ public class PicodeFrame extends JFrame {
 			gbc_lblActiveRobotLabel.gridy = 0;
 			menuPanel.add(getLblActiveRobotLabel(), gbc_lblActiveRobotLabel);
 			GridBagConstraints gbc_comboBox = new GridBagConstraints();
+			gbc_comboBox.weightx = 0.8;
 			gbc_comboBox.insets = new Insets(5, 0, 5, 5);
-			gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
+			gbc_comboBox.fill = GridBagConstraints.BOTH;
 			gbc_comboBox.gridx = 3;
 			gbc_comboBox.gridy = 0;
 			menuPanel.add(getComboBox(), gbc_comboBox);
@@ -444,7 +444,7 @@ public class PicodeFrame extends JFrame {
 	private PosePanel getPosePanel() {
 		if (posePanel == null) {
 			posePanel = new PosePanel(picodeMain, this);
-			posePanel.setBorder(new EmptyBorder(5, 5, 0, 5));
+			posePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		}
 		return posePanel;
 	}
@@ -516,7 +516,7 @@ public class PicodeFrame extends JFrame {
 	private JTabbedPane getTabbedPane() {
 		if (tabbedPane == null) {
 			tabbedPane = new JTabbedPane(SwingConstants.TOP);
-			tabbedPane.setBorder(new EmptyBorder(5, 5, 0, 5));
+			tabbedPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 			tabbedPane.setFont(defaultFont);
 			tabbedPane.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
@@ -575,12 +575,6 @@ public class PicodeFrame extends JFrame {
   private JComboBox getComboBox() {
     if (comboBox == null) {
     	comboBox = new JComboBox();
-    	Dimension preferredSize = comboBox.getPreferredSize();
-    	if (preferredSize == null) {
-    	  preferredSize = new Dimension();
-    	}
-    	preferredSize.setSize(150, preferredSize.getHeight());
-      comboBox.setPreferredSize(preferredSize);
     	comboBox.setFont(defaultFont);
     	comboBox.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {

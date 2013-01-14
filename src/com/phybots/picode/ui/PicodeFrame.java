@@ -3,6 +3,7 @@ package com.phybots.picode.ui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,6 +18,7 @@ import java.awt.FlowLayout;
 import com.phybots.Phybots;
 import com.phybots.picode.Pose;
 import com.phybots.picode.Robot;
+import com.phybots.picode.action.DeleteActiveRobotAction;
 import com.phybots.picode.action.DeleteFileAction;
 import com.phybots.picode.action.LoadSketchAction;
 import com.phybots.picode.action.NewFileAction;
@@ -90,7 +92,7 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem mntmSaveAs;
 	private JLabel lblActiveRobotLabel;
 	private JComboBox comboBox;
-	//private JButton minusButton;
+	private JButton minusButton;
 	private JButton plusButton;
 
 	/**
@@ -327,13 +329,11 @@ public class PicodeFrame extends JFrame {
 			gbc_plusButton.gridx = 4;
 			gbc_plusButton.gridy = 0;
 			menuPanel.add(getPlusButton(), gbc_plusButton);
-			/*
 			GridBagConstraints gbc_minusButton = new GridBagConstraints();
 			gbc_minusButton.insets = new Insets(5, 0, 5, 5);
 			gbc_minusButton.gridx = 5;
 			gbc_minusButton.gridy = 0;
 			menuPanel.add(getMinusButton(), gbc_minusButton);
-			*/
 		}
 		return menuPanel;
 	}
@@ -557,6 +557,12 @@ public class PicodeFrame extends JFrame {
   private JComboBox getComboBox() {
     if (comboBox == null) {
     	comboBox = new JComboBox();
+    	Dimension preferredSize = comboBox.getPreferredSize();
+    	if (preferredSize == null) {
+    	  preferredSize = new Dimension();
+    	}
+    	preferredSize.setSize(150, preferredSize.getHeight());
+      comboBox.setPreferredSize(preferredSize);
     	comboBox.setFont(defaultFont);
     	comboBox.addItemListener(new ItemListener() {
         public void itemStateChanged(ItemEvent e) {
@@ -568,15 +574,15 @@ public class PicodeFrame extends JFrame {
     }
     return comboBox;
   }
-  /*
   private JButton getMinusButton() {
     if (minusButton == null) {
-    	minusButton = new JButton("-");
+    	minusButton = new JButton();
+    	minusButton.setAction(new DeleteActiveRobotAction(picodeMain));
     	minusButton.setFont(defaultFont);
+    	minusButton.setText("-");
     }
     return minusButton;
   }
-  */
   private JButton getPlusButton() {
     if (plusButton == null) {
     	plusButton = new JButton();

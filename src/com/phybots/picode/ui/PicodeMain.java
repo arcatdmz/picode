@@ -154,6 +154,7 @@ public class PicodeMain {
   
   public void removeRobot(Robot robot) {
     if (robots.remove(robot)) {
+      robot.dispose();
       picodeFrame.updateRobotList();
     }
   }

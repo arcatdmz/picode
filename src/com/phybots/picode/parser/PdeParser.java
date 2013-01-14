@@ -130,10 +130,15 @@ public class PdeParser {
 		}
 		PdePreprocessor.checkForUnterminatedMultilineComment(program);
 
-		// Parse the program
+		// ---
+		// Parse the program: copied from {@link PdePreprocessor#write(String, PrintWriter)}
+
+		// Match on the uncommented version, otherwise code inside comments used
+    // http://code.google.com/p/processing/issues/detail?id=1404
+    String uncomment = PdePreprocessor.scrubComments(program);
 		PdeRecognizer parser = pp.createParser(program);
 		try {
-			if (PdePreprocessor.PUBLIC_CLASS.matcher(program).find()) {
+			if (PdePreprocessor.PUBLIC_CLASS.matcher(uncomment).find()) {
 				try {
 					final PrintStream saved = System.err;
 					try {
@@ -150,7 +155,7 @@ public class PdeParser {
 					parser = pp.createParser(program);
 					parser.pdeProgram();
 				}
-			} else if (PdePreprocessor.FUNCTION_DECL.matcher(program).find()) {
+			} else if (PdePreprocessor.FUNCTION_DECL.matcher(uncomment).find()) {
 				setMode(Mode.ACTIVE);
 				parser.activeProgram();
 			} else {
@@ -159,6 +164,7 @@ public class PdeParser {
 		} catch (ANTLRException e) {
 			handleParseError(e, sketch.getCodeIndex(code));
 		}
+		// ---
 
 		// Count indices of the start character of each line.
 		BufferedReader reader = new BufferedReader(new StringReader(program));

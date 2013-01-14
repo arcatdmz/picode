@@ -231,6 +231,7 @@ public class PdeWalker implements PdeTokenTypes {
   }
 
   private void printMethodDef(final AST ast) throws SketchException {
+    /*
     final AST modifiers = ast.getFirstChild();
     final AST typeParameters, type;
     if (modifiers.getNextSibling().getType() == TYPE_PARAMETERS) {
@@ -245,6 +246,7 @@ public class PdeWalker implements PdeTokenTypes {
 //      pdePreprocessor.setFoundMain(true);
 //    }
     pdePreprocessor.addMethod(methodName.getText());
+    */
     printChildren(ast);
   }
 

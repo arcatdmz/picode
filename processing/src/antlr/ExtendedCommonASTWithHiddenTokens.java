@@ -18,12 +18,27 @@ import antlr.collections.*;
 public class ExtendedCommonASTWithHiddenTokens 
     extends CommonASTWithHiddenTokens {
 
+  /**
+   * Added for Picode to recover line and column numbers.
+   * @see <a href="http://tech.puredanger.com/2007/02/01/recovering-line-and-column-numbers-in-your-antlr-ast/">Recovering line and column numbers in your Antlr AST</a>
+   */
+  private int line = 0, column = 0;
+  
+  public int getLine() { return line; }
+  public int getColumn() { return column; }
+
     public ExtendedCommonASTWithHiddenTokens() {
         super();
     }
 
     public ExtendedCommonASTWithHiddenTokens(Token tok) {
         super(tok);
+    }
+
+    public void initialize(Token tok) {
+      super.initialize(tok);
+      line = tok.getLine();
+      column = tok.getColumn();
     }
 
     public void initialize(AST ast) {

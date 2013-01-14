@@ -216,6 +216,7 @@ public class DocumentManager implements DocumentListener {
 			case POSE:
 				PoseManager poseManager = picodeMain.getPoseManager();
 				String poseName = decoration.getOption().toString();
+				System.out.println("Pose " + poseName);
 				if (poseManager.contains(poseName)) {
 					attrs = poseManager.getCharacterAttributes(poseName);
 				} else {
@@ -850,8 +851,8 @@ public class DocumentManager implements DocumentListener {
 		// what could be simpler?
 		final AST elsePath = thenPath.getNextSibling();
 		if (elsePath != null) {
-			decorateKeyword(elsePath); // TODO is this OK?
 			final AST bestPrintableNode = getBestPrintableNode(elsePath, true);
+      decorateKeyword(elsePath); // TODO Fix this!
 			dumpHiddenBefore(bestPrintableNode);
 			final CommonHiddenStreamToken hiddenBefore = ((CommonASTWithHiddenTokens) elsePath)
 					.getHiddenBefore();

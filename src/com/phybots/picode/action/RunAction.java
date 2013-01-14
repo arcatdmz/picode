@@ -23,11 +23,11 @@ public class RunAction extends AbstractAction {
 		}
 		Builder builder = new Builder(picodeMain, picodeMain.getSketch());
 		try {
-			picodeMain.getRobot().disconnect();
+			picodeMain.disconnectActiveRobot();
 			builder.run();
 		} catch (SketchException se) {
 			picodeMain.getPintegration().statusError(se);
-			picodeMain.getRobot().connect();
+			// picodeMain.connectActiveRobot();
 		}
 	}
 }

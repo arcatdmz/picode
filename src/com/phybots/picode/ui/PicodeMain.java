@@ -3,6 +3,9 @@ package com.phybots.picode.ui;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.SwingUtilities;
 import processing.app.PicodeSketch;
 import processing.app.SketchCode;
@@ -25,7 +28,8 @@ public class PicodeMain {
   private PicodeSketch sketch;
 	private PicodeFrame picodeFrame;
 
-	private Robot robot;
+	private Robot activeRobot;
+	private List<Robot> robots;
 
 	private PoseManager poseManager;
 	private Launcher launcher;
@@ -51,29 +55,27 @@ public class PicodeMain {
   		  }
 		  }
 		}
-		if (robotType == null ||
-		    (!robotType.equals("Human") && address == null)) {
-		  System.err.println("Usage: picode -type RobotTypeName -address btspp://deadbeaf");
-		  return;
-		}
 		if (debug) {
 	    Phybots.getInstance().showDebugFrame();
 		}
 
 		// Set up configuration
+		robots = new ArrayList<Robot>();
 		try {
-	    if (robotType.equals("Human")) {
-	      robot = new Human(this);
-	    } else {
-	      robot = new Robot(this, robotType, address);
-	      robot.connect();
+	    if (robotType != null &&
+        (robotType.equals("Human") || address != null)) {
+  	    if (robotType.equals("Human")) {
+  	      activeRobot = new Human(this);
+  	    } else {
+  	      activeRobot = new Robot(this, robotType, address);
+  	    }
+  	    // connectActiveRobot();
 	    }
 			poseManager = new PoseManager(this);
 			camera = new Camera();
 		} catch (RuntimeException e) {
 		  e.printStackTrace();
 			System.err.println("Unsupported robot type.");
-			return;
 		}
 
 		// Launch main UI
@@ -117,8 +119,43 @@ public class PicodeMain {
     return pintegration;
   }
 
-  public Robot getRobot() {
-    return robot;
+  public Robot getActiveRobot() {
+    return activeRobot;
+  }
+  
+  public void setActiveRobot(Robot robot) {
+    disconnectActiveRobot();
+    activeRobot = robot;
+    // connectActiveRobot();
+  }
+  
+  public void disconnectActiveRobot() {
+    if (activeRobot != null
+        && !(activeRobot instanceof Human)) {
+      activeRobot.disconnect();
+    }
+  }
+
+  public void connectActiveRobot() {
+    if (activeRobot instanceof Human) {
+      return;
+    }
+    activeRobot.connect();
+  }
+
+  public List<Robot> getRobots() {
+    return new ArrayList<Robot>(robots);
+  }
+  
+  public void addRobot(Robot robot) {
+    robots.add(robot);
+    picodeFrame.updateRobotList();
+  }
+  
+  public void removeRobot(Robot robot) {
+    if (robots.remove(robot)) {
+      picodeFrame.updateRobotList();
+    }
   }
 
   public PicodeFrame getFrame() {
@@ -164,7 +201,7 @@ public class PicodeMain {
 	public void setLauncher(Launcher launcher) {
 		this.launcher = launcher;
 		if (launcher == null) {
-			robot.connect();
+		  // connectActiveRobot();
 			picodeFrame.setRunnable(true);
 		} else {
       picodeFrame.setRunnable(false);
@@ -191,6 +228,8 @@ public class PicodeMain {
 	}
 	
 	public void showCaptureFrame(boolean show) {
-		robot.getMotorManager().showCaptureFrame(show);
+	  System.out.println(activeRobot);
+	  System.out.println(activeRobot.getMotorManager());
+		activeRobot.getMotorManager().showCaptureFrame(show);
 	}
 }

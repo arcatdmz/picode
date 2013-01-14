@@ -16,6 +16,8 @@ public class ShowCameraFrameAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		picodeMain.showCaptureFrame(true);
+	  if (picodeMain.getActiveRobot() != null) {
+	    picodeMain.showCaptureFrame(true);
+	  }
 	}
 }

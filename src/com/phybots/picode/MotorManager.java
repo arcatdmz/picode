@@ -15,7 +15,7 @@ public abstract class MotorManager {
 		this.robot = robot;
 	}
 
-	protected PicodeMain getpicodeMain() {
+	protected PicodeMain getPicodeMain() {
 		return picodeMain;
 	}
 

@@ -52,10 +52,19 @@ public enum RobotType {
 		}
 	}
 
+	public com.phybots.entity.Robot newRobotInstance() throws InstantiationException {
+	  return newRobotInstance(null);
+	}
+
 	public com.phybots.entity.Robot newRobotInstance(String connectionString) throws InstantiationException {
 		Class<?> robotClass = getRobotClass();
 		try {
-			com.phybots.entity.Robot robot = (com.phybots.entity.Robot) robotClass.getConstructor(String.class).newInstance(connectionString);
+		  com.phybots.entity.Robot robot = null;
+		  if (connectionString == null) {
+        robot = (com.phybots.entity.Robot) robotClass.getConstructor().newInstance();
+		  } else {
+		    robot = (com.phybots.entity.Robot) robotClass.getConstructor(String.class).newInstance(connectionString);
+		  }
 			if (handler != null) {
 				handler.handleInstantiation(robot);
 			}

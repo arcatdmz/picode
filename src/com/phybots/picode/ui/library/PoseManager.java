@@ -123,7 +123,7 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 	}
 
 	public Pose capture() {
-		Pose pose = picodeMain.getRobot().getType().newPoseInstance();
+		Pose pose = picodeMain.getActiveRobot().getType().newPoseInstance();
 		while (true) {
 			pose.setName(String.format("New pose (%d)", numPoses ++));
 			if (!new File(
@@ -132,7 +132,7 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 				break;
 			}
 		}
-		MotorManager motorManager = picodeMain.getRobot().getMotorManager();
+		MotorManager motorManager = picodeMain.getActiveRobot().getMotorManager();
 		pose.retrieveFrom(motorManager);
 		pose.setPhoto(motorManager.getImage());
 		try {

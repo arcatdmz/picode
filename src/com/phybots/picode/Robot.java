@@ -104,4 +104,9 @@ public class Robot {
 		Action action = new Action(this);
 		return action;
 	}
+	
+	@Override
+	public String toString() {
+	  return robot.toString();
+	}
 }

@@ -71,6 +71,7 @@ public class ManageMindstormsNXTMotorState extends TaskAbstractImpl {
 	private int rotationErrorThreshold = DEFAULT_ROTATION_ERROR_THRESHOLD;
 	private int rotationThreshold = DEFAULT_ROTATION_THRESHOLD;
 	private int timeThreshold = DEFAULT_TIME_THRESHOLD;
+	private PowerFunction powerFunction = new DefaultPowerFunction();
 
 	private OutputState outputState;
 
@@ -207,11 +208,17 @@ public class ManageMindstormsNXTMotorState extends TaskAbstractImpl {
 		setRelativeRotation(diff);
 	}
 
-	private void setRelativeRotation(int diff) {
+	public PowerFunction getPowerFunction() {
+    return powerFunction;
+  }
+
+  public void setPowerFunction(PowerFunction powerFunction) {
+    this.powerFunction = powerFunction;
+  }
+
+  private void setRelativeRotation(int diff) {
 		int diffAbs = abs(diff);
-		int power = diffAbs > 90 ? 20 :
-			(diffAbs > 45 ? 10 :
-				(diffAbs > 20 ? 5 : 3));
+		int power = getPowerFunction().getPowerFromAngleDiff(diffAbs);
 		// System.out.println(ext.getPort() + ": " + diff + " /w pow " + power);
 		ext.setOutputState(
 				(byte) (diff > 0 ? power : -power),
@@ -248,5 +255,16 @@ public class ManageMindstormsNXTMotorState extends TaskAbstractImpl {
 	@Override
 	public JComponent getConfigurationComponent() {
 		return ext == null ? super.getConfigurationComponent() : ext.getConfigurationComponent();
+	}
+	
+	public static interface PowerFunction {
+	  public int getPowerFromAngleDiff(int diffAbs);
+	}
+	public static class DefaultPowerFunction implements PowerFunction {
+	  public int getPowerFromAngleDiff(int diffAbs) {
+	    return diffAbs > 90 ? 20 :
+	      (diffAbs > 45 ? 10 :
+	        (diffAbs > 20 ? 5 : 3));
+	  }
 	}
 }

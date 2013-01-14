@@ -22,7 +22,7 @@ public class HumanMotorManager extends MotorManager {
 	public void start() {
 
 		// Check if there's already a running instance of the server.
-		if (getpicodeMain() == null) {
+		if (getPicodeMain() == null) {
 			try {
 				Socket socket = new Socket("localhost", 9000);
 				socket.close();
@@ -58,7 +58,7 @@ public class HumanMotorManager extends MotorManager {
 	}
 
 	private void showCaptureFrame() {
-		final PicodeMain picodeMain = getpicodeMain();
+		final PicodeMain picodeMain = getPicodeMain();
 		if (kinect != null) {
 			hideCaptureFrame();
 		}

@@ -95,13 +95,13 @@ public abstract class CaptureFrameAbstractImpl extends JFrame {
 
 	private void windowOpening() {
 		((StartPreviewAction) btnStart.getAction()).actionPerformed(null);
-		picodeMain.getRobot().setEditable(true);
+		picodeMain.getActiveRobot().setEditable(true);
 		picodeMain.getFrame().setEnabled(false);
 	}
 
 	private void windowClosing() {
 		((StopPreviewAction) btnStop.getAction()).actionPerformed(null);
-		picodeMain.getRobot().setEditable(false);
+		picodeMain.getActiveRobot().setEditable(false);
 		picodeMain.getFrame().setEnabled(true);
 	}
 }

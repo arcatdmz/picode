@@ -17,4 +17,8 @@ public class Human extends Robot {
 		super(picodeMain, new com.phybots.entity.Human(""));
 	}
 
+	@Override
+	public String toString() {
+	  return "Human (Kinect)";
+	}
 }

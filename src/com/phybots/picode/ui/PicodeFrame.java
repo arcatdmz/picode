@@ -29,6 +29,7 @@ import com.phybots.picode.action.RunAction;
 import com.phybots.picode.action.SaveSketchAction;
 import com.phybots.picode.action.SaveSketchAsAction;
 import com.phybots.picode.action.StopAction;
+import com.phybots.picode.builder.Launcher;
 import com.phybots.picode.ui.editor.PicodeEditor;
 import com.phybots.picode.ui.editor.PicodeEditorPane;
 import com.phybots.picode.ui.library.PosePanel;
@@ -40,6 +41,8 @@ import javax.swing.KeyStroke;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -67,8 +70,8 @@ public class PicodeFrame extends JFrame {
 	private JSplitPane splitPane = null;
 
 	private JPanel menuPanel = null;
-	private JButton runJButton = null;
-	private JButton stopJButton = null;
+	private JButton btnRun = null;
+	private JButton btnStop = null;
 
 	private JPanel statusPanel = null;
 	private JLabel statusLabel = null;
@@ -108,8 +111,11 @@ public class PicodeFrame extends JFrame {
   public void setRunnable(boolean isRunnable) {
     getMnFile().setEnabled(isRunnable);
     getMnSketch().setEnabled(isRunnable);
-    getRunJButton().setEnabled(isRunnable);
-    getStopJButton().setEnabled(!isRunnable);
+    getComboBox().setEnabled(isRunnable);
+    getBtnRun().setEnabled(isRunnable);
+    getBtnStop().setEnabled(!isRunnable);
+    getBtnAddRobot().setEnabled(isRunnable);
+    getBtnDeleteRobot().setEnabled(isRunnable);
     getPosePanel().setRunnable(isRunnable);
   }
 
@@ -260,6 +266,15 @@ public class PicodeFrame extends JFrame {
 		this.setContentPane(getContentPanel());
 		this.setTitle("Picode");
 		editorPanes = new ArrayList<PicodeEditorPane>();
+		addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowClosing(WindowEvent e) {
+        Launcher launcher = picodeMain.getLauncher();
+        if (launcher != null) {
+          launcher.close();
+        }
+      }
+    });
 	}
 
 	/**
@@ -305,14 +320,14 @@ public class PicodeFrame extends JFrame {
 			gbc_runJButton.insets = new Insets(5, 5, 5, 5);
 			gbc_runJButton.gridx = 0;
 			gbc_runJButton.gridy = 0;
-			menuPanel.add(getRunJButton(), gbc_runJButton);
+			menuPanel.add(getBtnRun(), gbc_runJButton);
 			GridBagConstraints gbc_stopJButton = new GridBagConstraints();
 			gbc_stopJButton.weightx = 1.0;
 			gbc_stopJButton.insets = new Insets(5, 0, 5, 5);
 			gbc_stopJButton.anchor = GridBagConstraints.NORTHWEST;
 			gbc_stopJButton.gridx = 1;
 			gbc_stopJButton.gridy = 0;
-			menuPanel.add(getStopJButton(), gbc_stopJButton);
+			menuPanel.add(getBtnStop(), gbc_stopJButton);
 			GridBagConstraints gbc_lblActiveRobotLabel = new GridBagConstraints();
 			gbc_lblActiveRobotLabel.anchor = GridBagConstraints.EAST;
 			gbc_lblActiveRobotLabel.insets = new Insets(5, 0, 5, 5);
@@ -344,15 +359,15 @@ public class PicodeFrame extends JFrame {
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getRunJButton() {
-		if (runJButton == null) {
-			runJButton = new JButton();
-			runJButton.setAction(new RunAction(picodeMain));
-			runJButton.setText("Run");
-			runJButton.setFont(defaultFont);
-			runJButton.setToolTipText("Compile and run this script");
+	private JButton getBtnRun() {
+		if (btnRun == null) {
+			btnRun = new JButton();
+			btnRun.setAction(new RunAction(picodeMain));
+			btnRun.setText("Run");
+			btnRun.setFont(defaultFont);
+			btnRun.setToolTipText("Compile and run this script");
 		}
-		return runJButton;
+		return btnRun;
 	}
 
 	/**
@@ -360,14 +375,14 @@ public class PicodeFrame extends JFrame {
 	 *
 	 * @return javax.swing.JButton
 	 */
-	private JButton getStopJButton() {
-		if (stopJButton == null) {
-			stopJButton = new JButton();
-			stopJButton.setAction(new StopAction(picodeMain));
-			stopJButton.setText("Stop");
-			stopJButton.setFont(defaultFont);
+	private JButton getBtnStop() {
+		if (btnStop == null) {
+			btnStop = new JButton();
+			btnStop.setAction(new StopAction(picodeMain));
+			btnStop.setText("Stop");
+			btnStop.setFont(defaultFont);
 		}
-		return stopJButton;
+		return btnStop;
 	}
 
 	/**

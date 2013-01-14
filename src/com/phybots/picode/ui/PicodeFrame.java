@@ -56,6 +56,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JComboBox;
+import javax.swing.border.EmptyBorder;
 
 public class PicodeFrame extends JFrame {
 	private static final long serialVersionUID = -7081881044895496089L;
@@ -92,8 +93,8 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem mntmSaveAs;
 	private JLabel lblActiveRobotLabel;
 	private JComboBox comboBox;
-	private JButton minusButton;
-	private JButton plusButton;
+  private JButton btnAddRobot;
+	private JButton btnDeleteRobot;
 
 	/**
 	 * This is the default constructor
@@ -328,12 +329,12 @@ public class PicodeFrame extends JFrame {
 			gbc_plusButton.insets = new Insets(5, 0, 5, 5);
 			gbc_plusButton.gridx = 4;
 			gbc_plusButton.gridy = 0;
-			menuPanel.add(getPlusButton(), gbc_plusButton);
+			menuPanel.add(getBtnAddRobot(), gbc_plusButton);
 			GridBagConstraints gbc_minusButton = new GridBagConstraints();
 			gbc_minusButton.insets = new Insets(5, 0, 5, 5);
 			gbc_minusButton.gridx = 5;
 			gbc_minusButton.gridy = 0;
-			menuPanel.add(getMinusButton(), gbc_minusButton);
+			menuPanel.add(getBtnDeleteRobot(), gbc_minusButton);
 		}
 		return menuPanel;
 	}
@@ -428,6 +429,7 @@ public class PicodeFrame extends JFrame {
 	private PosePanel getPosePanel() {
 		if (posePanel == null) {
 			posePanel = new PosePanel(picodeMain, this);
+			posePanel.setBorder(new EmptyBorder(5, 5, 0, 5));
 		}
 		return posePanel;
 	}
@@ -499,6 +501,7 @@ public class PicodeFrame extends JFrame {
 	private JTabbedPane getTabbedPane() {
 		if (tabbedPane == null) {
 			tabbedPane = new JTabbedPane(SwingConstants.TOP);
+			tabbedPane.setBorder(new EmptyBorder(5, 5, 0, 5));
 			tabbedPane.setFont(defaultFont);
 			tabbedPane.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
@@ -574,22 +577,22 @@ public class PicodeFrame extends JFrame {
     }
     return comboBox;
   }
-  private JButton getMinusButton() {
-    if (minusButton == null) {
-    	minusButton = new JButton();
-    	minusButton.setAction(new DeleteActiveRobotAction(picodeMain));
-    	minusButton.setFont(defaultFont);
-    	minusButton.setText("-");
+  private JButton getBtnDeleteRobot() {
+    if (btnDeleteRobot == null) {
+    	btnDeleteRobot = new JButton();
+    	btnDeleteRobot.setAction(new DeleteActiveRobotAction(picodeMain));
+    	btnDeleteRobot.setFont(defaultFont);
+    	btnDeleteRobot.setText("-");
     }
-    return minusButton;
+    return btnDeleteRobot;
   }
-  private JButton getPlusButton() {
-    if (plusButton == null) {
-    	plusButton = new JButton();
-    	plusButton.setAction(new NewRobotAction(picodeMain));
-    	plusButton.setFont(defaultFont);
-    	plusButton.setText("+");
+  private JButton getBtnAddRobot() {
+    if (btnAddRobot == null) {
+    	btnAddRobot = new JButton();
+    	btnAddRobot.setAction(new NewRobotAction(picodeMain));
+    	btnAddRobot.setFont(defaultFont);
+    	btnAddRobot.setText("+");
     }
-    return plusButton;
+    return btnAddRobot;
   }
 }

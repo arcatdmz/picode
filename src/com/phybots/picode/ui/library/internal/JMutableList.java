@@ -73,6 +73,7 @@ public class JMutableList<T> extends JList implements CellEditorListener {
 		boolean isSelected = isSelectedIndex(index);
 		Component comp = editor.getListCellEditorComponent(this, value,
 				isSelected, index);
+		comp.setFont(getFont());
 		/*
 		 * if (comp instanceof JComponent) { JComponent jComp = (JComponent)
 		 * comp; if (jComp.getNextFocusableComponent() == null) {

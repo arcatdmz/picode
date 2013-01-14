@@ -2,7 +2,6 @@ package com.phybots.picode.ui.library;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -43,9 +42,8 @@ public class PosePanel extends JPanel {
 	private static final long serialVersionUID = 5622163966849443710L;
 
 	private JPanel jPanel;
-	private JPanel commandPanel;
-  private JButton btnAddRobotPose;
-  private JButton btnRemove;
+  private JButton btnAddPose;
+  private JButton btnDeletePose;
 	private JScrollPane jScrollPane;
 	private JMutableList<Pose> jList;
 
@@ -72,8 +70,8 @@ public class PosePanel extends JPanel {
 	}
 
   public void setRunnable(boolean isRunnable) {
-    getBtnAddRobotPose().setEnabled(isRunnable);
-    getBtnRemove().setEnabled(isRunnable);
+    getBtnAddPose().setEnabled(isRunnable);
+    getBtnDeletePose().setEnabled(isRunnable);
     getJList().setEnabled(isRunnable);
     this.isRunnable = isRunnable;
   }
@@ -137,48 +135,47 @@ public class PosePanel extends JPanel {
 					defaultFont.deriveFont(Font.BOLD));
 			jPanel.add(jLabel, gbc);
 
-			GridBagConstraints gbc2 = new GridBagConstraints();
+      GridBagConstraints gbc2 = new GridBagConstraints();
+      gbc2.insets = new Insets(5, 5, 5, 0);
       gbc2.gridx = 1;
       gbc2.gridy = 0;
       gbc2.weightx = .0;
       gbc2.weighty = 1.0;
       gbc2.fill = GridBagConstraints.BOTH;
-			jPanel.add(getCommandPanel(), gbc2);
+      jPanel.add(getBtnAddPose(), gbc2);
+      
+      GridBagConstraints gbc3 = new GridBagConstraints();
+      gbc3.insets = new Insets(5, 5, 5, 0);
+      gbc3.gridx = 2;
+      gbc3.gridy = 0;
+      gbc3.weightx = .0;
+      gbc3.weighty = 1.0;
+      gbc3.fill = GridBagConstraints.BOTH;
+      jPanel.add(getBtnDeletePose(), gbc3);
 		}
 		return jPanel;
 	}
 
-	private JPanel getCommandPanel() {
-		if (commandPanel == null) {
-			commandPanel = new JPanel();
-			commandPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 5, 5));
-			commandPanel.add(getBtnAddRobotPose(), null);
-			commandPanel.add(getBtnRemove(), null);
-			for (Component component : commandPanel.getComponents()) {
-				component.setFont(defaultFont);
-			}
-		}
-		return commandPanel;
-	}
-
-	private JButton getBtnAddRobotPose() {
-    if (btnAddRobotPose == null) {
-      btnAddRobotPose = new JButton();
-      btnAddRobotPose.setAction(
+	private JButton getBtnAddPose() {
+    if (btnAddPose == null) {
+      btnAddPose = new JButton();
+      btnAddPose.setAction(
           new ShowCameraFrameAction(picodeMain));
-      btnAddRobotPose.setText("+");
+      btnAddPose.setText("+");
+      btnAddPose.setFont(defaultFont);
     }
-    return btnAddRobotPose;
+    return btnAddPose;
   }
 
-  private JButton getBtnRemove() {
-    if (btnRemove == null) {
-      btnRemove = new JButton();
-      btnRemove.setAction(
+  private JButton getBtnDeletePose() {
+    if (btnDeletePose == null) {
+      btnDeletePose = new JButton();
+      btnDeletePose.setAction(
           new DeleteSelectedPoseAction(picodeFrame));
-      btnRemove.setText("-");
+      btnDeletePose.setText("-");
+      btnDeletePose.setFont(defaultFont);
     }
-    return btnRemove;
+    return btnDeletePose;
   }
 
 	private JScrollPane getJScrollPane() {
@@ -198,6 +195,7 @@ public class PosePanel extends JPanel {
 			jList.setCellRenderer(new IconListRenderer(picodeMain.getPoseManager()));
 			jList.setDragEnabled(true);
 			jList.setDropMode(DropMode.INSERT);
+			jList.setFont(defaultFont);
 			addPopup(jList, getPopupMenu());
 		}
 		return jList;

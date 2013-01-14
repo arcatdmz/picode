@@ -82,9 +82,6 @@ public class PicodeMain {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				initGUI();
-				if (!poseManager.hasInitialPose()) {
-					getFrame().setStatusText("Initial pose not found.");
-				}
 			}
 		});
 	}

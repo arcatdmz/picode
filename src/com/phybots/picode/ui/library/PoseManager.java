@@ -17,7 +17,6 @@ import com.phybots.picode.ui.library.PoseManager;
 
 public class PoseManager extends IconListModel<Pose> implements IconProvider {
 	private static final long serialVersionUID = 4052983716336989888L;
-	public static final String INITIAL_POSE_NAME = "Initial pose";
 	private PicodeMain picodeMain;
 	private int numPoses;
 
@@ -49,10 +48,6 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 				// e.printStackTrace();
 			}
 		}
-	}
-
-	public boolean hasInitialPose() {
-		return get(INITIAL_POSE_NAME) != null;
 	}
 
 	public Pose load(String poseName) throws IOException {

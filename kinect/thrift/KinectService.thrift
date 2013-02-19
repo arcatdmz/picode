@@ -35,15 +35,17 @@ struct Joint {
 
 struct Frame {
   1: required i32 frameId,
-  2: required list<i32> image,
+  2: required list<byte> image,
   3: required list<Joint> joints,
   4: optional set<string> keywords
 }
 
 service KinectService {
   oneway void addKeyword(1:string text),
-  list<string> getKeywords(),
+	oneway void removeKeyword(1:string text),
+  set<string> getKeywords(),
   oneway void setAngle(1:i32 angle),
   i32 getAngle(),
-  Frame getFrame()
+  Frame getFrame(),
+  oneway void stop();
 }

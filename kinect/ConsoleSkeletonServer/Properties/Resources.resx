@@ -138,7 +138,4 @@
   <data name="NotReady" xml:space="preserve">
     <value>Kinect is attached to PC, but an error occured, so it isn't ready.</value>
   </data>
-  <data name="Vocabulary" xml:space="preserve">
-    <value>Say something out loud to control the game!     Say colors and shapes like: "Green Circles"   "Yellow Stars"   "Black Triangles"   "All Colors"     Or say commands like: "Speed Up"   "Slow Down"   "Bigger"   "Smaller"   "Stop"   "Go"   "Giant"        Or say "Reset" to start over!</value>
-  </data>
 </root>

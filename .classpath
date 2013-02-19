@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="processing/generated"/>
 	<classpathentry kind="src" path="processing/src"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="kinect/thrift/gen-java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/library/core.jar"/>
 	<classpathentry kind="lib" path="lib/core/library/gluegen-rt-natives-windows-amd64.jar"/>
@@ -24,5 +25,8 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="processing/lib/ecj.jar"/>
 	<classpathentry kind="lib" path="lib/kinect/library/libthrift-0.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/slf4j-log4j12-1.5.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

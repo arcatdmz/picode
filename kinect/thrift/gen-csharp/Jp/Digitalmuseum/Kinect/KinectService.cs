@@ -817,12 +817,12 @@ namespace Jp.Digitalmuseum.Kinect
               if (field.Type == TType.Set) {
                 {
                   Success = new THashSet<string>();
-                  TSet _set12 = iprot.ReadSetBegin();
-                  for( int _i13 = 0; _i13 < _set12.Count; ++_i13)
+                  TSet _set8 = iprot.ReadSetBegin();
+                  for( int _i9 = 0; _i9 < _set8.Count; ++_i9)
                   {
-                    string _elem14 = null;
-                    _elem14 = iprot.ReadString();
-                    Success.Add(_elem14);
+                    string _elem10 = null;
+                    _elem10 = iprot.ReadString();
+                    Success.Add(_elem10);
                   }
                   iprot.ReadSetEnd();
                 }
@@ -852,9 +852,9 @@ namespace Jp.Digitalmuseum.Kinect
             oprot.WriteFieldBegin(field);
             {
               oprot.WriteSetBegin(new TSet(TType.String, Success.Count));
-              foreach (string _iter15 in Success)
+              foreach (string _iter11 in Success)
               {
-                oprot.WriteString(_iter15);
+                oprot.WriteString(_iter11);
               }
               oprot.WriteSetEnd();
             }

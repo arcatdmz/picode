@@ -1,5 +1,16 @@
 package jp.digitalmuseum.kinect;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -13,6 +24,30 @@ public class ConsoleClient {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+		final BufferedImage image = new BufferedImage(640, 480, BufferedImage.TYPE_INT_BGR);
+		DataBufferInt dataBuffer = (DataBufferInt) image.getRaster().getDataBuffer();
+		IntBuffer intBuffer = IntBuffer.wrap(dataBuffer.getData());
+		final ByteBuffer byteBuffer = ByteBuffer.allocate(640*480*4);
+
+		final JPanel panel = new JPanel() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.drawImage(image,
+						(getWidth() - image.getWidth())/2,
+						(getHeight() - image.getHeight())/2,
+						null);
+			}
+		};
+		panel.setPreferredSize(new Dimension(640, 480));
+		
+		final JFrame window = new JFrame();
+		window.add(panel);
+		window.setVisible(true);
+		
 		TTransport transport = new TSocket("localhost", 9090);
 		TProtocol protocol = new TBinaryProtocol(transport);
 		KinectService.Client client = new KinectService.Client(protocol);
@@ -34,6 +69,19 @@ public class ConsoleClient {
 				Thread.sleep(100);
 			}
 			client.setAngle(angle);
+			
+			for (int i = 0; i < 300; i ++) {
+				Frame frame = client.getFrame();
+				byte[] imageData = frame.getImage();
+				byteBuffer.put((byte)0);
+				byteBuffer.put(imageData, 0, imageData.length - 1);
+				byteBuffer.rewind();
+				intBuffer.put(byteBuffer.asIntBuffer());
+				intBuffer.rewind();
+				panel.repaint();
+				Thread.sleep(33);
+			}
+			
 		} catch (TException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -41,6 +89,13 @@ public class ConsoleClient {
 		}
 		
 		transport.close();
+		SwingUtilities.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				window.dispose();
+			}
+		});
 	}
 
 }

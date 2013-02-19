@@ -24,7 +24,7 @@ namespace Jp.Digitalmuseum.Kinect
   public partial class Frame : TBase
   {
     private int _frameId;
-    private List<byte> _image;
+    private byte[] _image;
     private List<Joint> _joints;
     private THashSet<string> _keywords;
 
@@ -41,7 +41,7 @@ namespace Jp.Digitalmuseum.Kinect
       }
     }
 
-    public List<byte> Image
+    public byte[] Image
     {
       get
       {
@@ -115,18 +115,8 @@ namespace Jp.Digitalmuseum.Kinect
             }
             break;
           case 2:
-            if (field.Type == TType.List) {
-              {
-                Image = new List<byte>();
-                TList _list0 = iprot.ReadListBegin();
-                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
-                {
-                  byte _elem2 = 0;
-                  _elem2 = iprot.ReadByte();
-                  Image.Add(_elem2);
-                }
-                iprot.ReadListEnd();
-              }
+            if (field.Type == TType.String) {
+              Image = iprot.ReadBinary();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -135,13 +125,13 @@ namespace Jp.Digitalmuseum.Kinect
             if (field.Type == TType.List) {
               {
                 Joints = new List<Joint>();
-                TList _list3 = iprot.ReadListBegin();
-                for( int _i4 = 0; _i4 < _list3.Count; ++_i4)
+                TList _list0 = iprot.ReadListBegin();
+                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
                 {
-                  Joint _elem5 = new Joint();
-                  _elem5 = new Joint();
-                  _elem5.Read(iprot);
-                  Joints.Add(_elem5);
+                  Joint _elem2 = new Joint();
+                  _elem2 = new Joint();
+                  _elem2.Read(iprot);
+                  Joints.Add(_elem2);
                 }
                 iprot.ReadListEnd();
               }
@@ -153,12 +143,12 @@ namespace Jp.Digitalmuseum.Kinect
             if (field.Type == TType.Set) {
               {
                 Keywords = new THashSet<string>();
-                TSet _set6 = iprot.ReadSetBegin();
-                for( int _i7 = 0; _i7 < _set6.Count; ++_i7)
+                TSet _set3 = iprot.ReadSetBegin();
+                for( int _i4 = 0; _i4 < _set3.Count; ++_i4)
                 {
-                  string _elem8 = null;
-                  _elem8 = iprot.ReadString();
-                  Keywords.Add(_elem8);
+                  string _elem5 = null;
+                  _elem5 = iprot.ReadString();
+                  Keywords.Add(_elem5);
                 }
                 iprot.ReadSetEnd();
               }
@@ -189,17 +179,10 @@ namespace Jp.Digitalmuseum.Kinect
       }
       if (Image != null && __isset.image) {
         field.Name = "image";
-        field.Type = TType.List;
+        field.Type = TType.String;
         field.ID = 2;
         oprot.WriteFieldBegin(field);
-        {
-          oprot.WriteListBegin(new TList(TType.Byte, Image.Count));
-          foreach (byte _iter9 in Image)
-          {
-            oprot.WriteByte(_iter9);
-          }
-          oprot.WriteListEnd();
-        }
+        oprot.WriteBinary(Image);
         oprot.WriteFieldEnd();
       }
       if (Joints != null && __isset.joints) {
@@ -209,9 +192,9 @@ namespace Jp.Digitalmuseum.Kinect
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteListBegin(new TList(TType.Struct, Joints.Count));
-          foreach (Joint _iter10 in Joints)
+          foreach (Joint _iter6 in Joints)
           {
-            _iter10.Write(oprot);
+            _iter6.Write(oprot);
           }
           oprot.WriteListEnd();
         }
@@ -224,9 +207,9 @@ namespace Jp.Digitalmuseum.Kinect
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteSetBegin(new TSet(TType.String, Keywords.Count));
-          foreach (string _iter11 in Keywords)
+          foreach (string _iter7 in Keywords)
           {
-            oprot.WriteString(_iter11);
+            oprot.WriteString(_iter7);
           }
           oprot.WriteSetEnd();
         }

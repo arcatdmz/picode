@@ -35,7 +35,7 @@ struct Joint {
 
 struct Frame {
   1: required i32 frameId,
-  2: required list<byte> image,
+  2: required binary image,
   3: required list<Joint> joints,
   4: optional set<string> keywords
 }

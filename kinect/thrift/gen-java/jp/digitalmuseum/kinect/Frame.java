@@ -34,7 +34,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Frame");
 
   private static final org.apache.thrift.protocol.TField FRAME_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("frameId", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField IMAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("image", org.apache.thrift.protocol.TType.LIST, (short)2);
+  private static final org.apache.thrift.protocol.TField IMAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("image", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField JOINTS_FIELD_DESC = new org.apache.thrift.protocol.TField("joints", org.apache.thrift.protocol.TType.LIST, (short)3);
   private static final org.apache.thrift.protocol.TField KEYWORDS_FIELD_DESC = new org.apache.thrift.protocol.TField("keywords", org.apache.thrift.protocol.TType.SET, (short)4);
 
@@ -45,7 +45,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   }
 
   public int frameId; // required
-  public List<Byte> image; // required
+  public ByteBuffer image; // required
   public List<Joint> joints; // required
   public Set<String> keywords; // optional
 
@@ -126,8 +126,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     tmpMap.put(_Fields.FRAME_ID, new org.apache.thrift.meta_data.FieldMetaData("frameId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.IMAGE, new org.apache.thrift.meta_data.FieldMetaData("image", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     tmpMap.put(_Fields.JOINTS, new org.apache.thrift.meta_data.FieldMetaData("joints", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Joint.class))));
@@ -143,7 +142,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
 
   public Frame(
     int frameId,
-    List<Byte> image,
+    ByteBuffer image,
     List<Joint> joints)
   {
     this();
@@ -160,11 +159,8 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     __isset_bitfield = other.__isset_bitfield;
     this.frameId = other.frameId;
     if (other.isSetImage()) {
-      List<Byte> __this__image = new ArrayList<Byte>();
-      for (Byte other_element : other.image) {
-        __this__image.add(other_element);
-      }
-      this.image = __this__image;
+      this.image = org.apache.thrift.TBaseHelper.copyBinary(other.image);
+;
     }
     if (other.isSetJoints()) {
       List<Joint> __this__joints = new ArrayList<Joint>();
@@ -218,26 +214,21 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FRAMEID_ISSET_ID, value);
   }
 
-  public int getImageSize() {
-    return (this.image == null) ? 0 : this.image.size();
+  public byte[] getImage() {
+    setImage(org.apache.thrift.TBaseHelper.rightSize(image));
+    return image == null ? null : image.array();
   }
 
-  public java.util.Iterator<Byte> getImageIterator() {
-    return (this.image == null) ? null : this.image.iterator();
+  public ByteBuffer bufferForImage() {
+    return image;
   }
 
-  public void addToImage(byte elem) {
-    if (this.image == null) {
-      this.image = new ArrayList<Byte>();
-    }
-    this.image.add(elem);
+  public Frame setImage(byte[] image) {
+    setImage(image == null ? (ByteBuffer)null : ByteBuffer.wrap(image));
+    return this;
   }
 
-  public List<Byte> getImage() {
-    return this.image;
-  }
-
-  public Frame setImage(List<Byte> image) {
+  public Frame setImage(ByteBuffer image) {
     this.image = image;
     return this;
   }
@@ -349,7 +340,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       if (value == null) {
         unsetImage();
       } else {
-        setImage((List<Byte>)value);
+        setImage((ByteBuffer)value);
       }
       break;
 
@@ -542,7 +533,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     if (this.image == null) {
       sb.append("null");
     } else {
-      sb.append(this.image);
+      org.apache.thrift.TBaseHelper.toString(this.image, sb);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -624,18 +615,8 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
             }
             break;
           case 2: // IMAGE
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.image = new ArrayList<Byte>(_list0.size);
-                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
-                {
-                  byte _elem2; // required
-                  _elem2 = iprot.readByte();
-                  struct.image.add(_elem2);
-                }
-                iprot.readListEnd();
-              }
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.image = iprot.readBinary();
               struct.setImageIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -644,14 +625,14 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
           case 3: // JOINTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.joints = new ArrayList<Joint>(_list3.size);
-                for (int _i4 = 0; _i4 < _list3.size; ++_i4)
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.joints = new ArrayList<Joint>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
                 {
-                  Joint _elem5; // required
-                  _elem5 = new Joint();
-                  _elem5.read(iprot);
-                  struct.joints.add(_elem5);
+                  Joint _elem2; // required
+                  _elem2 = new Joint();
+                  _elem2.read(iprot);
+                  struct.joints.add(_elem2);
                 }
                 iprot.readListEnd();
               }
@@ -663,13 +644,13 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
           case 4: // KEYWORDS
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set6 = iprot.readSetBegin();
-                struct.keywords = new HashSet<String>(2*_set6.size);
-                for (int _i7 = 0; _i7 < _set6.size; ++_i7)
+                org.apache.thrift.protocol.TSet _set3 = iprot.readSetBegin();
+                struct.keywords = new HashSet<String>(2*_set3.size);
+                for (int _i4 = 0; _i4 < _set3.size; ++_i4)
                 {
-                  String _elem8; // required
-                  _elem8 = iprot.readString();
-                  struct.keywords.add(_elem8);
+                  String _elem5; // required
+                  _elem5 = iprot.readString();
+                  struct.keywords.add(_elem5);
                 }
                 iprot.readSetEnd();
               }
@@ -701,23 +682,16 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       oprot.writeFieldEnd();
       if (struct.image != null) {
         oprot.writeFieldBegin(IMAGE_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.BYTE, struct.image.size()));
-          for (byte _iter9 : struct.image)
-          {
-            oprot.writeByte(_iter9);
-          }
-          oprot.writeListEnd();
-        }
+        oprot.writeBinary(struct.image);
         oprot.writeFieldEnd();
       }
       if (struct.joints != null) {
         oprot.writeFieldBegin(JOINTS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.joints.size()));
-          for (Joint _iter10 : struct.joints)
+          for (Joint _iter6 : struct.joints)
           {
-            _iter10.write(oprot);
+            _iter6.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -728,9 +702,9 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
           oprot.writeFieldBegin(KEYWORDS_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.keywords.size()));
-            for (String _iter11 : struct.keywords)
+            for (String _iter7 : struct.keywords)
             {
-              oprot.writeString(_iter11);
+              oprot.writeString(_iter7);
             }
             oprot.writeSetEnd();
           }
@@ -755,18 +729,12 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     public void write(org.apache.thrift.protocol.TProtocol prot, Frame struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeI32(struct.frameId);
-      {
-        oprot.writeI32(struct.image.size());
-        for (byte _iter12 : struct.image)
-        {
-          oprot.writeByte(_iter12);
-        }
-      }
+      oprot.writeBinary(struct.image);
       {
         oprot.writeI32(struct.joints.size());
-        for (Joint _iter13 : struct.joints)
+        for (Joint _iter8 : struct.joints)
         {
-          _iter13.write(oprot);
+          _iter8.write(oprot);
         }
       }
       BitSet optionals = new BitSet();
@@ -777,9 +745,9 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       if (struct.isSetKeywords()) {
         {
           oprot.writeI32(struct.keywords.size());
-          for (String _iter14 : struct.keywords)
+          for (String _iter9 : struct.keywords)
           {
-            oprot.writeString(_iter14);
+            oprot.writeString(_iter9);
           }
         }
       }
@@ -790,39 +758,30 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.frameId = iprot.readI32();
       struct.setFrameIdIsSet(true);
-      {
-        org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
-        struct.image = new ArrayList<Byte>(_list15.size);
-        for (int _i16 = 0; _i16 < _list15.size; ++_i16)
-        {
-          byte _elem17; // required
-          _elem17 = iprot.readByte();
-          struct.image.add(_elem17);
-        }
-      }
+      struct.image = iprot.readBinary();
       struct.setImageIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.joints = new ArrayList<Joint>(_list18.size);
-        for (int _i19 = 0; _i19 < _list18.size; ++_i19)
+        org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.joints = new ArrayList<Joint>(_list10.size);
+        for (int _i11 = 0; _i11 < _list10.size; ++_i11)
         {
-          Joint _elem20; // required
-          _elem20 = new Joint();
-          _elem20.read(iprot);
-          struct.joints.add(_elem20);
+          Joint _elem12; // required
+          _elem12 = new Joint();
+          _elem12.read(iprot);
+          struct.joints.add(_elem12);
         }
       }
       struct.setJointsIsSet(true);
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TSet _set21 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.keywords = new HashSet<String>(2*_set21.size);
-          for (int _i22 = 0; _i22 < _set21.size; ++_i22)
+          org.apache.thrift.protocol.TSet _set13 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.keywords = new HashSet<String>(2*_set13.size);
+          for (int _i14 = 0; _i14 < _set13.size; ++_i14)
           {
-            String _elem23; // required
-            _elem23 = iprot.readString();
-            struct.keywords.add(_elem23);
+            String _elem15; // required
+            _elem15 = iprot.readString();
+            struct.keywords.add(_elem15);
           }
         }
         struct.setKeywordsIsSet(true);

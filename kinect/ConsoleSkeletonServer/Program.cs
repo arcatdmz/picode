@@ -26,6 +26,7 @@ namespace ConsoleSkeletonServer
             }
             catch (Exception e) {
                 Console.WriteLine(e.StackTrace);
+                throw e;
             }
             Console.WriteLine("done.");
         }

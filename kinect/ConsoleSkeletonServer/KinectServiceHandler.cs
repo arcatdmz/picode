@@ -29,7 +29,10 @@ namespace ConsoleSkeletonServer
         public KinectServiceHandler()
         {
             KinectStart();
-            InitializeSpeechRecognition(Kinect);
+            if (Kinect != null)
+            {
+                InitializeSpeechRecognition(Kinect);
+            }
         }
 
         public void addKeyword(string text)
@@ -393,7 +396,9 @@ namespace ConsoleSkeletonServer
             using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
             {
                 colorImageFrame.CopyPixelDataTo(imageData);
-                frame.Image = new List<byte>(imageData);
+                frame.FrameId = colorImageFrame.FrameNumber;
+                frame.Image = imageData;
+                frame.Joints = new List<Jp.Digitalmuseum.Kinect.Joint>();
                 /*
                 if (skeletonFrame != null && depthImageFrame != null)
                 {

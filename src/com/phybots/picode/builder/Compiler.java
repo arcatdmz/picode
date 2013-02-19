@@ -7,6 +7,8 @@ import java.io.StringReader;
 import java.io.Writer;
 import java.lang.reflect.Method;
 
+import org.eclipse.jdt.core.compiler.batch.BatchCompiler;
+
 import processing.app.Base;
 import processing.app.SketchException;
 import processing.core.PApplet;
@@ -101,9 +103,11 @@ public class Compiler {
       // Version that's not dynamically loaded
       //CompilationProgress progress = null;
       //success = BatchCompiler.compile(command, outWriter, writer, progress);
+      success = BatchCompiler.compile(command, outWriter, writer, null);
       
       // Version that *is* dynamically loaded. First gets the mode class loader
       // so that it can grab the compiler JAR files from it.
+      /*
       ClassLoader loader = builder.getClassLoader();
       try {
         Class batchClass = 
@@ -119,6 +123,7 @@ public class Compiler {
         e.printStackTrace();
         throw new SketchException("Unknown error inside the compiler.");
       }
+      */
       
       // Close out the stream for good measure
       writer.flush();

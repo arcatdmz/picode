@@ -53,6 +53,8 @@
     <Compile Include="Joint.cs" />
     <Compile Include="JointType.cs" />
     <Compile Include="KinectService.cs" />
+    <Compile Include="Position2D.cs" />
+    <Compile Include="Position3D.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="KinectServiceHandler.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

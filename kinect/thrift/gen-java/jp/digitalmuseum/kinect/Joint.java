@@ -34,11 +34,8 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Joint");
 
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField X_FIELD_DESC = new org.apache.thrift.protocol.TField("x", org.apache.thrift.protocol.TType.DOUBLE, (short)2);
-  private static final org.apache.thrift.protocol.TField Y_FIELD_DESC = new org.apache.thrift.protocol.TField("y", org.apache.thrift.protocol.TType.DOUBLE, (short)3);
-  private static final org.apache.thrift.protocol.TField Z_FIELD_DESC = new org.apache.thrift.protocol.TField("z", org.apache.thrift.protocol.TType.DOUBLE, (short)4);
-  private static final org.apache.thrift.protocol.TField SX_FIELD_DESC = new org.apache.thrift.protocol.TField("sx", org.apache.thrift.protocol.TType.DOUBLE, (short)5);
-  private static final org.apache.thrift.protocol.TField SY_FIELD_DESC = new org.apache.thrift.protocol.TField("sy", org.apache.thrift.protocol.TType.DOUBLE, (short)6);
+  private static final org.apache.thrift.protocol.TField POSITION_FIELD_DESC = new org.apache.thrift.protocol.TField("position", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField SCREEN_POSITION_FIELD_DESC = new org.apache.thrift.protocol.TField("screenPosition", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -51,11 +48,8 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
    * @see JointType
    */
   public JointType type; // required
-  public double x; // required
-  public double y; // required
-  public double z; // required
-  public double sx; // required
-  public double sy; // required
+  public Position3D position; // required
+  public Position2D screenPosition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -64,11 +58,8 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
      * @see JointType
      */
     TYPE((short)1, "type"),
-    X((short)2, "x"),
-    Y((short)3, "y"),
-    Z((short)4, "z"),
-    SX((short)5, "sx"),
-    SY((short)6, "sy");
+    POSITION((short)2, "position"),
+    SCREEN_POSITION((short)3, "screenPosition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -85,16 +76,10 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
       switch(fieldId) {
         case 1: // TYPE
           return TYPE;
-        case 2: // X
-          return X;
-        case 3: // Y
-          return Y;
-        case 4: // Z
-          return Z;
-        case 5: // SX
-          return SX;
-        case 6: // SY
-          return SY;
+        case 2: // POSITION
+          return POSITION;
+        case 3: // SCREEN_POSITION
+          return SCREEN_POSITION;
         default:
           return null;
       }
@@ -135,27 +120,15 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
   }
 
   // isset id assignments
-  private static final int __X_ISSET_ID = 0;
-  private static final int __Y_ISSET_ID = 1;
-  private static final int __Z_ISSET_ID = 2;
-  private static final int __SX_ISSET_ID = 3;
-  private static final int __SY_ISSET_ID = 4;
-  private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, JointType.class)));
-    tmpMap.put(_Fields.X, new org.apache.thrift.meta_data.FieldMetaData("x", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
-    tmpMap.put(_Fields.Y, new org.apache.thrift.meta_data.FieldMetaData("y", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
-    tmpMap.put(_Fields.Z, new org.apache.thrift.meta_data.FieldMetaData("z", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
-    tmpMap.put(_Fields.SX, new org.apache.thrift.meta_data.FieldMetaData("sx", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
-    tmpMap.put(_Fields.SY, new org.apache.thrift.meta_data.FieldMetaData("sy", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.DOUBLE)));
+    tmpMap.put(_Fields.POSITION, new org.apache.thrift.meta_data.FieldMetaData("position", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Position3D.class)));
+    tmpMap.put(_Fields.SCREEN_POSITION, new org.apache.thrift.meta_data.FieldMetaData("screenPosition", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Position2D.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Joint.class, metaDataMap);
   }
@@ -165,39 +138,28 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
 
   public Joint(
     JointType type,
-    double x,
-    double y,
-    double z,
-    double sx,
-    double sy)
+    Position3D position,
+    Position2D screenPosition)
   {
     this();
     this.type = type;
-    this.x = x;
-    setXIsSet(true);
-    this.y = y;
-    setYIsSet(true);
-    this.z = z;
-    setZIsSet(true);
-    this.sx = sx;
-    setSxIsSet(true);
-    this.sy = sy;
-    setSyIsSet(true);
+    this.position = position;
+    this.screenPosition = screenPosition;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
   public Joint(Joint other) {
-    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetType()) {
       this.type = other.type;
     }
-    this.x = other.x;
-    this.y = other.y;
-    this.z = other.z;
-    this.sx = other.sx;
-    this.sy = other.sy;
+    if (other.isSetPosition()) {
+      this.position = new Position3D(other.position);
+    }
+    if (other.isSetScreenPosition()) {
+      this.screenPosition = new Position2D(other.screenPosition);
+    }
   }
 
   public Joint deepCopy() {
@@ -207,16 +169,8 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
   @Override
   public void clear() {
     this.type = null;
-    setXIsSet(false);
-    this.x = 0.0;
-    setYIsSet(false);
-    this.y = 0.0;
-    setZIsSet(false);
-    this.z = 0.0;
-    setSxIsSet(false);
-    this.sx = 0.0;
-    setSyIsSet(false);
-    this.sy = 0.0;
+    this.position = null;
+    this.screenPosition = null;
   }
 
   /**
@@ -251,119 +205,52 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
     }
   }
 
-  public double getX() {
-    return this.x;
+  public Position3D getPosition() {
+    return this.position;
   }
 
-  public Joint setX(double x) {
-    this.x = x;
-    setXIsSet(true);
+  public Joint setPosition(Position3D position) {
+    this.position = position;
     return this;
   }
 
-  public void unsetX() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __X_ISSET_ID);
+  public void unsetPosition() {
+    this.position = null;
   }
 
-  /** Returns true if field x is set (has been assigned a value) and false otherwise */
-  public boolean isSetX() {
-    return EncodingUtils.testBit(__isset_bitfield, __X_ISSET_ID);
+  /** Returns true if field position is set (has been assigned a value) and false otherwise */
+  public boolean isSetPosition() {
+    return this.position != null;
   }
 
-  public void setXIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __X_ISSET_ID, value);
+  public void setPositionIsSet(boolean value) {
+    if (!value) {
+      this.position = null;
+    }
   }
 
-  public double getY() {
-    return this.y;
+  public Position2D getScreenPosition() {
+    return this.screenPosition;
   }
 
-  public Joint setY(double y) {
-    this.y = y;
-    setYIsSet(true);
+  public Joint setScreenPosition(Position2D screenPosition) {
+    this.screenPosition = screenPosition;
     return this;
   }
 
-  public void unsetY() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __Y_ISSET_ID);
+  public void unsetScreenPosition() {
+    this.screenPosition = null;
   }
 
-  /** Returns true if field y is set (has been assigned a value) and false otherwise */
-  public boolean isSetY() {
-    return EncodingUtils.testBit(__isset_bitfield, __Y_ISSET_ID);
+  /** Returns true if field screenPosition is set (has been assigned a value) and false otherwise */
+  public boolean isSetScreenPosition() {
+    return this.screenPosition != null;
   }
 
-  public void setYIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __Y_ISSET_ID, value);
-  }
-
-  public double getZ() {
-    return this.z;
-  }
-
-  public Joint setZ(double z) {
-    this.z = z;
-    setZIsSet(true);
-    return this;
-  }
-
-  public void unsetZ() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __Z_ISSET_ID);
-  }
-
-  /** Returns true if field z is set (has been assigned a value) and false otherwise */
-  public boolean isSetZ() {
-    return EncodingUtils.testBit(__isset_bitfield, __Z_ISSET_ID);
-  }
-
-  public void setZIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __Z_ISSET_ID, value);
-  }
-
-  public double getSx() {
-    return this.sx;
-  }
-
-  public Joint setSx(double sx) {
-    this.sx = sx;
-    setSxIsSet(true);
-    return this;
-  }
-
-  public void unsetSx() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SX_ISSET_ID);
-  }
-
-  /** Returns true if field sx is set (has been assigned a value) and false otherwise */
-  public boolean isSetSx() {
-    return EncodingUtils.testBit(__isset_bitfield, __SX_ISSET_ID);
-  }
-
-  public void setSxIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SX_ISSET_ID, value);
-  }
-
-  public double getSy() {
-    return this.sy;
-  }
-
-  public Joint setSy(double sy) {
-    this.sy = sy;
-    setSyIsSet(true);
-    return this;
-  }
-
-  public void unsetSy() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SY_ISSET_ID);
-  }
-
-  /** Returns true if field sy is set (has been assigned a value) and false otherwise */
-  public boolean isSetSy() {
-    return EncodingUtils.testBit(__isset_bitfield, __SY_ISSET_ID);
-  }
-
-  public void setSyIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SY_ISSET_ID, value);
+  public void setScreenPositionIsSet(boolean value) {
+    if (!value) {
+      this.screenPosition = null;
+    }
   }
 
   public void setFieldValue(_Fields field, Object value) {
@@ -376,43 +263,19 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
       }
       break;
 
-    case X:
+    case POSITION:
       if (value == null) {
-        unsetX();
+        unsetPosition();
       } else {
-        setX((Double)value);
+        setPosition((Position3D)value);
       }
       break;
 
-    case Y:
+    case SCREEN_POSITION:
       if (value == null) {
-        unsetY();
+        unsetScreenPosition();
       } else {
-        setY((Double)value);
-      }
-      break;
-
-    case Z:
-      if (value == null) {
-        unsetZ();
-      } else {
-        setZ((Double)value);
-      }
-      break;
-
-    case SX:
-      if (value == null) {
-        unsetSx();
-      } else {
-        setSx((Double)value);
-      }
-      break;
-
-    case SY:
-      if (value == null) {
-        unsetSy();
-      } else {
-        setSy((Double)value);
+        setScreenPosition((Position2D)value);
       }
       break;
 
@@ -424,20 +287,11 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
     case TYPE:
       return getType();
 
-    case X:
-      return Double.valueOf(getX());
+    case POSITION:
+      return getPosition();
 
-    case Y:
-      return Double.valueOf(getY());
-
-    case Z:
-      return Double.valueOf(getZ());
-
-    case SX:
-      return Double.valueOf(getSx());
-
-    case SY:
-      return Double.valueOf(getSy());
+    case SCREEN_POSITION:
+      return getScreenPosition();
 
     }
     throw new IllegalStateException();
@@ -452,16 +306,10 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
     switch (field) {
     case TYPE:
       return isSetType();
-    case X:
-      return isSetX();
-    case Y:
-      return isSetY();
-    case Z:
-      return isSetZ();
-    case SX:
-      return isSetSx();
-    case SY:
-      return isSetSy();
+    case POSITION:
+      return isSetPosition();
+    case SCREEN_POSITION:
+      return isSetScreenPosition();
     }
     throw new IllegalStateException();
   }
@@ -488,48 +336,21 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
         return false;
     }
 
-    boolean this_present_x = true;
-    boolean that_present_x = true;
-    if (this_present_x || that_present_x) {
-      if (!(this_present_x && that_present_x))
+    boolean this_present_position = true && this.isSetPosition();
+    boolean that_present_position = true && that.isSetPosition();
+    if (this_present_position || that_present_position) {
+      if (!(this_present_position && that_present_position))
         return false;
-      if (this.x != that.x)
-        return false;
-    }
-
-    boolean this_present_y = true;
-    boolean that_present_y = true;
-    if (this_present_y || that_present_y) {
-      if (!(this_present_y && that_present_y))
-        return false;
-      if (this.y != that.y)
+      if (!this.position.equals(that.position))
         return false;
     }
 
-    boolean this_present_z = true;
-    boolean that_present_z = true;
-    if (this_present_z || that_present_z) {
-      if (!(this_present_z && that_present_z))
+    boolean this_present_screenPosition = true && this.isSetScreenPosition();
+    boolean that_present_screenPosition = true && that.isSetScreenPosition();
+    if (this_present_screenPosition || that_present_screenPosition) {
+      if (!(this_present_screenPosition && that_present_screenPosition))
         return false;
-      if (this.z != that.z)
-        return false;
-    }
-
-    boolean this_present_sx = true;
-    boolean that_present_sx = true;
-    if (this_present_sx || that_present_sx) {
-      if (!(this_present_sx && that_present_sx))
-        return false;
-      if (this.sx != that.sx)
-        return false;
-    }
-
-    boolean this_present_sy = true;
-    boolean that_present_sy = true;
-    if (this_present_sy || that_present_sy) {
-      if (!(this_present_sy && that_present_sy))
-        return false;
-      if (this.sy != that.sy)
+      if (!this.screenPosition.equals(that.screenPosition))
         return false;
     }
 
@@ -559,52 +380,22 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetX()).compareTo(typedOther.isSetX());
+    lastComparison = Boolean.valueOf(isSetPosition()).compareTo(typedOther.isSetPosition());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetX()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.x, typedOther.x);
+    if (isSetPosition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.position, typedOther.position);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetY()).compareTo(typedOther.isSetY());
+    lastComparison = Boolean.valueOf(isSetScreenPosition()).compareTo(typedOther.isSetScreenPosition());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetY()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.y, typedOther.y);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetZ()).compareTo(typedOther.isSetZ());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetZ()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.z, typedOther.z);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetSx()).compareTo(typedOther.isSetSx());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetSx()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sx, typedOther.sx);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetSy()).compareTo(typedOther.isSetSy());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetSy()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sy, typedOther.sy);
+    if (isSetScreenPosition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.screenPosition, typedOther.screenPosition);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -637,24 +428,20 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("x:");
-    sb.append(this.x);
+    sb.append("position:");
+    if (this.position == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.position);
+    }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("y:");
-    sb.append(this.y);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("z:");
-    sb.append(this.z);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("sx:");
-    sb.append(this.sx);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("sy:");
-    sb.append(this.sy);
+    sb.append("screenPosition:");
+    if (this.screenPosition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.screenPosition);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -665,12 +452,19 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
     if (type == null) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'type' was not present! Struct: " + toString());
     }
-    // alas, we cannot check 'x' because it's a primitive and you chose the non-beans generator.
-    // alas, we cannot check 'y' because it's a primitive and you chose the non-beans generator.
-    // alas, we cannot check 'z' because it's a primitive and you chose the non-beans generator.
-    // alas, we cannot check 'sx' because it's a primitive and you chose the non-beans generator.
-    // alas, we cannot check 'sy' because it's a primitive and you chose the non-beans generator.
+    if (position == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'position' was not present! Struct: " + toString());
+    }
+    if (screenPosition == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'screenPosition' was not present! Struct: " + toString());
+    }
     // check for sub-struct validity
+    if (position != null) {
+      position.validate();
+    }
+    if (screenPosition != null) {
+      screenPosition.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -683,8 +477,6 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -717,42 +509,20 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // X
-            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
-              struct.x = iprot.readDouble();
-              struct.setXIsSet(true);
+          case 2: // POSITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.position = new Position3D();
+              struct.position.read(iprot);
+              struct.setPositionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // Y
-            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
-              struct.y = iprot.readDouble();
-              struct.setYIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 4: // Z
-            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
-              struct.z = iprot.readDouble();
-              struct.setZIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 5: // SX
-            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
-              struct.sx = iprot.readDouble();
-              struct.setSxIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 6: // SY
-            if (schemeField.type == org.apache.thrift.protocol.TType.DOUBLE) {
-              struct.sy = iprot.readDouble();
-              struct.setSyIsSet(true);
+          case 3: // SCREEN_POSITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.screenPosition = new Position2D();
+              struct.screenPosition.read(iprot);
+              struct.setScreenPositionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -765,21 +535,6 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
       iprot.readStructEnd();
 
       // check for required fields of primitive type, which can't be checked in the validate method
-      if (!struct.isSetX()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'x' was not found in serialized data! Struct: " + toString());
-      }
-      if (!struct.isSetY()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'y' was not found in serialized data! Struct: " + toString());
-      }
-      if (!struct.isSetZ()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'z' was not found in serialized data! Struct: " + toString());
-      }
-      if (!struct.isSetSx()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'sx' was not found in serialized data! Struct: " + toString());
-      }
-      if (!struct.isSetSy()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'sy' was not found in serialized data! Struct: " + toString());
-      }
       struct.validate();
     }
 
@@ -792,21 +547,16 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
         oprot.writeI32(struct.type.getValue());
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(X_FIELD_DESC);
-      oprot.writeDouble(struct.x);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(Y_FIELD_DESC);
-      oprot.writeDouble(struct.y);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(Z_FIELD_DESC);
-      oprot.writeDouble(struct.z);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(SX_FIELD_DESC);
-      oprot.writeDouble(struct.sx);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(SY_FIELD_DESC);
-      oprot.writeDouble(struct.sy);
-      oprot.writeFieldEnd();
+      if (struct.position != null) {
+        oprot.writeFieldBegin(POSITION_FIELD_DESC);
+        struct.position.write(oprot);
+        oprot.writeFieldEnd();
+      }
+      if (struct.screenPosition != null) {
+        oprot.writeFieldBegin(SCREEN_POSITION_FIELD_DESC);
+        struct.screenPosition.write(oprot);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -825,11 +575,8 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
     public void write(org.apache.thrift.protocol.TProtocol prot, Joint struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeI32(struct.type.getValue());
-      oprot.writeDouble(struct.x);
-      oprot.writeDouble(struct.y);
-      oprot.writeDouble(struct.z);
-      oprot.writeDouble(struct.sx);
-      oprot.writeDouble(struct.sy);
+      struct.position.write(oprot);
+      struct.screenPosition.write(oprot);
     }
 
     @Override
@@ -837,16 +584,12 @@ public class Joint implements org.apache.thrift.TBase<Joint, Joint._Fields>, jav
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.type = JointType.findByValue(iprot.readI32());
       struct.setTypeIsSet(true);
-      struct.x = iprot.readDouble();
-      struct.setXIsSet(true);
-      struct.y = iprot.readDouble();
-      struct.setYIsSet(true);
-      struct.z = iprot.readDouble();
-      struct.setZIsSet(true);
-      struct.sx = iprot.readDouble();
-      struct.setSxIsSet(true);
-      struct.sy = iprot.readDouble();
-      struct.setSyIsSet(true);
+      struct.position = new Position3D();
+      struct.position.read(iprot);
+      struct.setPositionIsSet(true);
+      struct.screenPosition = new Position2D();
+      struct.screenPosition.read(iprot);
+      struct.setScreenPositionIsSet(true);
     }
   }
 

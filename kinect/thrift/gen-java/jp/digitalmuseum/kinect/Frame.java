@@ -35,8 +35,9 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
 
   private static final org.apache.thrift.protocol.TField FRAME_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("frameId", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField IMAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("image", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField JOINTS_FIELD_DESC = new org.apache.thrift.protocol.TField("joints", org.apache.thrift.protocol.TType.LIST, (short)3);
-  private static final org.apache.thrift.protocol.TField KEYWORDS_FIELD_DESC = new org.apache.thrift.protocol.TField("keywords", org.apache.thrift.protocol.TType.SET, (short)4);
+  private static final org.apache.thrift.protocol.TField POSITION_FIELD_DESC = new org.apache.thrift.protocol.TField("position", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+  private static final org.apache.thrift.protocol.TField JOINTS_FIELD_DESC = new org.apache.thrift.protocol.TField("joints", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField KEYWORDS_FIELD_DESC = new org.apache.thrift.protocol.TField("keywords", org.apache.thrift.protocol.TType.SET, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -46,6 +47,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
 
   public int frameId; // required
   public ByteBuffer image; // required
+  public Position3D position; // required
   public List<Joint> joints; // required
   public Set<String> keywords; // optional
 
@@ -53,8 +55,9 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     FRAME_ID((short)1, "frameId"),
     IMAGE((short)2, "image"),
-    JOINTS((short)3, "joints"),
-    KEYWORDS((short)4, "keywords");
+    POSITION((short)3, "position"),
+    JOINTS((short)4, "joints"),
+    KEYWORDS((short)5, "keywords");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -73,9 +76,11 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
           return FRAME_ID;
         case 2: // IMAGE
           return IMAGE;
-        case 3: // JOINTS
+        case 3: // POSITION
+          return POSITION;
+        case 4: // JOINTS
           return JOINTS;
-        case 4: // KEYWORDS
+        case 5: // KEYWORDS
           return KEYWORDS;
         default:
           return null;
@@ -127,6 +132,8 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.IMAGE, new org.apache.thrift.meta_data.FieldMetaData("image", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
+    tmpMap.put(_Fields.POSITION, new org.apache.thrift.meta_data.FieldMetaData("position", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Position3D.class)));
     tmpMap.put(_Fields.JOINTS, new org.apache.thrift.meta_data.FieldMetaData("joints", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Joint.class))));
@@ -143,12 +150,14 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   public Frame(
     int frameId,
     ByteBuffer image,
+    Position3D position,
     List<Joint> joints)
   {
     this();
     this.frameId = frameId;
     setFrameIdIsSet(true);
     this.image = image;
+    this.position = position;
     this.joints = joints;
   }
 
@@ -161,6 +170,9 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     if (other.isSetImage()) {
       this.image = org.apache.thrift.TBaseHelper.copyBinary(other.image);
 ;
+    }
+    if (other.isSetPosition()) {
+      this.position = new Position3D(other.position);
     }
     if (other.isSetJoints()) {
       List<Joint> __this__joints = new ArrayList<Joint>();
@@ -187,6 +199,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     setFrameIdIsSet(false);
     this.frameId = 0;
     this.image = null;
+    this.position = null;
     this.joints = null;
     this.keywords = null;
   }
@@ -245,6 +258,30 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   public void setImageIsSet(boolean value) {
     if (!value) {
       this.image = null;
+    }
+  }
+
+  public Position3D getPosition() {
+    return this.position;
+  }
+
+  public Frame setPosition(Position3D position) {
+    this.position = position;
+    return this;
+  }
+
+  public void unsetPosition() {
+    this.position = null;
+  }
+
+  /** Returns true if field position is set (has been assigned a value) and false otherwise */
+  public boolean isSetPosition() {
+    return this.position != null;
+  }
+
+  public void setPositionIsSet(boolean value) {
+    if (!value) {
+      this.position = null;
     }
   }
 
@@ -344,6 +381,14 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       }
       break;
 
+    case POSITION:
+      if (value == null) {
+        unsetPosition();
+      } else {
+        setPosition((Position3D)value);
+      }
+      break;
+
     case JOINTS:
       if (value == null) {
         unsetJoints();
@@ -371,6 +416,9 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     case IMAGE:
       return getImage();
 
+    case POSITION:
+      return getPosition();
+
     case JOINTS:
       return getJoints();
 
@@ -392,6 +440,8 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       return isSetFrameId();
     case IMAGE:
       return isSetImage();
+    case POSITION:
+      return isSetPosition();
     case JOINTS:
       return isSetJoints();
     case KEYWORDS:
@@ -428,6 +478,15 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       if (!(this_present_image && that_present_image))
         return false;
       if (!this.image.equals(that.image))
+        return false;
+    }
+
+    boolean this_present_position = true && this.isSetPosition();
+    boolean that_present_position = true && that.isSetPosition();
+    if (this_present_position || that_present_position) {
+      if (!(this_present_position && that_present_position))
+        return false;
+      if (!this.position.equals(that.position))
         return false;
     }
 
@@ -485,6 +544,16 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPosition()).compareTo(typedOther.isSetPosition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPosition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.position, typedOther.position);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetJoints()).compareTo(typedOther.isSetJoints());
     if (lastComparison != 0) {
       return lastComparison;
@@ -537,6 +606,14 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("position:");
+    if (this.position == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.position);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("joints:");
     if (this.joints == null) {
       sb.append("null");
@@ -564,10 +641,16 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     if (image == null) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'image' was not present! Struct: " + toString());
     }
+    if (position == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'position' was not present! Struct: " + toString());
+    }
     if (joints == null) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'joints' was not present! Struct: " + toString());
     }
     // check for sub-struct validity
+    if (position != null) {
+      position.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -622,7 +705,16 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // JOINTS
+          case 3: // POSITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.position = new Position3D();
+              struct.position.read(iprot);
+              struct.setPositionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // JOINTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -641,7 +733,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // KEYWORDS
+          case 5: // KEYWORDS
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
                 org.apache.thrift.protocol.TSet _set3 = iprot.readSetBegin();
@@ -683,6 +775,11 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       if (struct.image != null) {
         oprot.writeFieldBegin(IMAGE_FIELD_DESC);
         oprot.writeBinary(struct.image);
+        oprot.writeFieldEnd();
+      }
+      if (struct.position != null) {
+        oprot.writeFieldBegin(POSITION_FIELD_DESC);
+        struct.position.write(oprot);
         oprot.writeFieldEnd();
       }
       if (struct.joints != null) {
@@ -730,6 +827,7 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeI32(struct.frameId);
       oprot.writeBinary(struct.image);
+      struct.position.write(oprot);
       {
         oprot.writeI32(struct.joints.size());
         for (Joint _iter8 : struct.joints)
@@ -760,6 +858,9 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       struct.setFrameIdIsSet(true);
       struct.image = iprot.readBinary();
       struct.setImageIsSet(true);
+      struct.position = new Position3D();
+      struct.position.read(iprot);
+      struct.setPositionIsSet(true);
       {
         org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
         struct.joints = new ArrayList<Joint>(_list10.size);

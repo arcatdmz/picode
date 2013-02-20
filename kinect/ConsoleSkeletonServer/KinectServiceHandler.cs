@@ -1,4 +1,4 @@
-﻿using Jp.Digitalmuseum.Kinect;
+﻿using T = Jp.Digitalmuseum.Kinect;
 using Microsoft.Kinect;
 using Microsoft.Speech.AudioFormat;
 using Microsoft.Speech.Recognition;
@@ -13,7 +13,7 @@ using Thrift.Collections;
 
 namespace ConsoleSkeletonServer
 {
-    class KinectServiceHandler : KinectService.Iface
+    class KinectServiceHandler : T.KinectService.Iface
     {
         #region Private State
         private SpeechRecognitionEngine sre;
@@ -22,7 +22,7 @@ namespace ConsoleSkeletonServer
         private HashSet<string> keywords;
         private byte[] imageData;
         private Skeleton[] skeletonData;
-        private Frame frame;
+        private T.Frame frame;
         #endregion Private State
 
         #region Thrift server implementation
@@ -47,7 +47,8 @@ namespace ConsoleSkeletonServer
             UpdateGrammar();
         }
 
-        private void UpdateGrammar() {
+        private void UpdateGrammar()
+        {
             GrammarBuilder gb = new GrammarBuilder();
 
             // This is needed to ensure that it will work on machines with any culture, not just en-us.
@@ -62,7 +63,8 @@ namespace ConsoleSkeletonServer
         public THashSet<string> getKeywords()
         {
             var keywords = new THashSet<string>();
-            foreach (string keyword in this.keywords) {
+            foreach (string keyword in this.keywords)
+            {
                 keywords.Add(keyword);
             }
             return keywords;
@@ -73,7 +75,8 @@ namespace ConsoleSkeletonServer
         {
             new Thread(() =>
             {
-                lock (Kinect) {
+                lock (Kinect)
+                {
                     currentAngle = Kinect.ElevationAngle;
                     Kinect.ElevationAngle = angle;
                     currentAngle = int.MaxValue;
@@ -83,13 +86,14 @@ namespace ConsoleSkeletonServer
 
         public int getAngle()
         {
-            if (currentAngle != int.MaxValue) {
+            if (currentAngle != int.MaxValue)
+            {
                 return currentAngle;
             }
             return Kinect.ElevationAngle;
         }
 
-        public Frame getFrame()
+        public T.Frame getFrame()
         {
             recognizedPhrases.Clear();
             return frame;
@@ -154,7 +158,7 @@ namespace ConsoleSkeletonServer
             // Application should enable all streams first.
             sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
             sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
-            imageData = new byte[640*480*4];
+            imageData = new byte[640 * 480 * 4];
 
             // sensor.SkeletonStream.TransformSmooth = true;
             sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(AllFramesReady);
@@ -390,17 +394,18 @@ namespace ConsoleSkeletonServer
         void AllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
             // Construct data.
-            Frame frame = new Frame();
+            T.Frame frame = new T.Frame();
             using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
-            using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
             {
-                colorImageFrame.CopyPixelDataTo(imageData);
-                frame.FrameId = colorImageFrame.FrameNumber;
-                frame.Image = imageData;
+                if (colorImageFrame != null)
+                {
+                    colorImageFrame.CopyPixelDataTo(imageData);
+                    frame.FrameId = colorImageFrame.FrameNumber;
+                    frame.Image = imageData;
+                }
                 frame.Joints = new List<Jp.Digitalmuseum.Kinect.Joint>();
-                /*
-                if (skeletonFrame != null && depthImageFrame != null)
+                if (skeletonFrame != null)
                 {
                     if ((skeletonData == null) || (skeletonData.Length != skeletonFrame.SkeletonArrayLength))
                     {
@@ -411,69 +416,85 @@ namespace ConsoleSkeletonServer
                     {
                         if (SkeletonTrackingState.Tracked == skeleton.TrackingState)
                         {
-                            string header = String.Format("{0:D} {1:D}",
-                                skeletonFrame.FrameNumber,
-                                skeleton.TrackingId);
-
-                            // 3D position data
-                            // Body
-                            sb.Append(header);
-                            sb.Append(" Basic ");
-                            appendPosition(sb, skeleton.Position);
-                            sb.AppendLine();
-                            // Joints
-                            sb.Append(header);
-                            sb.Append(" Joints");
+                            // TODO Compare tracking id with skeleton.TrackingId
+                            frame.Position = new T.Position3D();
+                            frame.Position.X = skeleton.Position.X;
+                            frame.Position.Y = skeleton.Position.Y;
+                            frame.Position.Z = skeleton.Position.Z;
+                            frame.Joints = new List<T.Joint>();
                             foreach (Joint joint in skeleton.Joints)
                             {
-                                sb.Append(" ");
-                                appendPosition(sb, joint.Position);
+                                if (joint.TrackingState == JointTrackingState.Tracked)
+                                {
+                                    var j = new T.Joint();
+                                    j.Position = new T.Position3D();
+                                    j.Position.X = joint.Position.X;
+                                    j.Position.Y = joint.Position.Y;
+                                    j.Position.Z = joint.Position.Z;
+                                    var sp = Kinect.CoordinateMapper.MapSkeletonPointToColorPoint(
+                                        joint.Position, Kinect.ColorStream.Format);
+                                    j.ScreenPosition.X = sp.X;
+                                    j.ScreenPosition.Y = sp.Y;
+                                    j.Type = ConvertJointType(joint.JointType);
+                                    frame.Joints.Add(j);
+                                }
                             }
-                            sb.AppendLine();
-
-                            // 2D location data
-                            // Body
-                            sb.Append(header);
-                            sb.Append(" Basic2D ");
-                            append2DLocation(sb, skeleton.Position, depthImageFrame);
-                            sb.AppendLine();
-                            // Joints
-                            sb.Append(header);
-                            sb.Append(" Joints2D");
-                            foreach (Joint joint in skeleton.Joints)
-                            {
-                                sb.Append(" ");
-                                append2DLocation(sb, joint.Position, depthImageFrame);
-                            }
-                            sb.AppendLine();
+                            return;
                         }
                     }
                 }
-                 */
             }
             frame.Keywords = recognizedPhrases;
             this.frame = frame;
         }
 
-        private void appendPosition(StringBuilder sb, SkeletonPoint position)
+        private T.JointType ConvertJointType(JointType type)
         {
-            sb.Append(String.Format("{0:F4} {1:F4} {2:F4}", position.X, position.Y, position.Z));
-        }
-
-        private void append2DLocation(StringBuilder sb, SkeletonPoint position, DepthImageFrame depthImageFrame)
-        {
-            if (Kinect != null)
+            switch (type)
             {
-                ColorImagePoint location = getPosition2DLocation(position);
-                sb.Append(String.Format("{0:D} {1:D}", location.X, location.Y));
+                case JointType.HipCenter:
+                    return T.JointType.HIP_CENTER;
+                case JointType.Spine:
+                    return T.JointType.SPINE;
+                case JointType.ShoulderCenter:
+                    return T.JointType.SHOULDER_CENTER;
+                case JointType.Head:
+                    return T.JointType.HEAD;
+                case JointType.ShoulderRight:
+                    return T.JointType.SHOULDER_RIGHT;
+                case JointType.ElbowRight:
+                    return T.JointType.ELBOW_RIGHT;
+                case JointType.WristRight:
+                    return T.JointType.WRIST_RIGHT;
+                case JointType.HandRight:
+                    return T.JointType.HAND_RIGHT;
+                case JointType.ShoulderLeft:
+                    return T.JointType.SHOULDER_LEFT;
+                case JointType.ElbowLeft:
+                    return T.JointType.ELBOW_LEFT;
+                case JointType.WristLeft:
+                    return T.JointType.WRIST_LEFT;
+                case JointType.HandLeft:
+                    return T.JointType.HAND_LEFT;
+                case JointType.HipRight:
+                    return T.JointType.HIP_RIGHT;
+                case JointType.KneeRight:
+                    return T.JointType.KNEE_RIGHT;
+                case JointType.AnkleRight:
+                    return T.JointType.ANKLE_RIGHT;
+                case JointType.FootRight:
+                    return T.JointType.FOOT_RIGHT;
+                case JointType.HipLeft:
+                    return T.JointType.HIP_LEFT;
+                case JointType.KneeLeft:
+                    return T.JointType.KNEE_LEFT;
+                case JointType.AnkleLeft:
+                    return T.JointType.ANKLE_LEFT;
+                case JointType.FootLeft:
+                    return T.JointType.FOOT_LEFT;
+                default:
+                    return T.JointType.HEAD;
             }
-        }
-
-        private ColorImagePoint getPosition2DLocation(SkeletonPoint position)
-        {
-            ColorImagePoint colorPoint = Kinect.CoordinateMapper.MapSkeletonPointToColorPoint(
-                position, Kinect.ColorStream.Format);
-            return colorPoint;
         }
         #endregion Kinect Skeleton processing
     }

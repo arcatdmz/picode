@@ -21,52 +21,48 @@ namespace Jp.Digitalmuseum.Kinect
   #if !SILVERLIGHT
   [Serializable]
   #endif
-  public partial class Joint : TBase
+  public partial class Position3D : TBase
   {
-    private JointType _type;
-    private Position3D _position;
-    private Position2D _screenPosition;
+    private double _x;
+    private double _y;
+    private double _z;
 
-    /// <summary>
-    /// 
-    /// <seealso cref="JointType"/>
-    /// </summary>
-    public JointType Type
+    public double X
     {
       get
       {
-        return _type;
+        return _x;
       }
       set
       {
-        __isset.type = true;
-        this._type = value;
+        __isset.x = true;
+        this._x = value;
       }
     }
 
-    public Position3D Position
+    public double Y
     {
       get
       {
-        return _position;
+        return _y;
       }
       set
       {
-        __isset.position = true;
-        this._position = value;
+        __isset.y = true;
+        this._y = value;
       }
     }
 
-    public Position2D ScreenPosition
+    public double Z
     {
       get
       {
-        return _screenPosition;
+        return _z;
       }
       set
       {
-        __isset.screenPosition = true;
-        this._screenPosition = value;
+        __isset.z = true;
+        this._z = value;
       }
     }
 
@@ -76,12 +72,12 @@ namespace Jp.Digitalmuseum.Kinect
     [Serializable]
     #endif
     public struct Isset {
-      public bool type;
-      public bool position;
-      public bool screenPosition;
+      public bool x;
+      public bool y;
+      public bool z;
     }
 
-    public Joint() {
+    public Position3D() {
     }
 
     public void Read (TProtocol iprot)
@@ -97,24 +93,22 @@ namespace Jp.Digitalmuseum.Kinect
         switch (field.ID)
         {
           case 1:
-            if (field.Type == TType.I32) {
-              Type = (JointType)iprot.ReadI32();
+            if (field.Type == TType.Double) {
+              X = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 2:
-            if (field.Type == TType.Struct) {
-              Position = new Position3D();
-              Position.Read(iprot);
+            if (field.Type == TType.Double) {
+              Y = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 3:
-            if (field.Type == TType.Struct) {
-              ScreenPosition = new Position2D();
-              ScreenPosition.Read(iprot);
+            if (field.Type == TType.Double) {
+              Z = iprot.ReadDouble();
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -129,31 +123,31 @@ namespace Jp.Digitalmuseum.Kinect
     }
 
     public void Write(TProtocol oprot) {
-      TStruct struc = new TStruct("Joint");
+      TStruct struc = new TStruct("Position3D");
       oprot.WriteStructBegin(struc);
       TField field = new TField();
-      if (__isset.type) {
-        field.Name = "type";
-        field.Type = TType.I32;
+      if (__isset.x) {
+        field.Name = "x";
+        field.Type = TType.Double;
         field.ID = 1;
         oprot.WriteFieldBegin(field);
-        oprot.WriteI32((int)Type);
+        oprot.WriteDouble(X);
         oprot.WriteFieldEnd();
       }
-      if (Position != null && __isset.position) {
-        field.Name = "position";
-        field.Type = TType.Struct;
+      if (__isset.y) {
+        field.Name = "y";
+        field.Type = TType.Double;
         field.ID = 2;
         oprot.WriteFieldBegin(field);
-        Position.Write(oprot);
+        oprot.WriteDouble(Y);
         oprot.WriteFieldEnd();
       }
-      if (ScreenPosition != null && __isset.screenPosition) {
-        field.Name = "screenPosition";
-        field.Type = TType.Struct;
+      if (__isset.z) {
+        field.Name = "z";
+        field.Type = TType.Double;
         field.ID = 3;
         oprot.WriteFieldBegin(field);
-        ScreenPosition.Write(oprot);
+        oprot.WriteDouble(Z);
         oprot.WriteFieldEnd();
       }
       oprot.WriteFieldStop();
@@ -161,13 +155,13 @@ namespace Jp.Digitalmuseum.Kinect
     }
 
     public override string ToString() {
-      StringBuilder sb = new StringBuilder("Joint(");
-      sb.Append("Type: ");
-      sb.Append(Type);
-      sb.Append(",Position: ");
-      sb.Append(Position== null ? "<null>" : Position.ToString());
-      sb.Append(",ScreenPosition: ");
-      sb.Append(ScreenPosition== null ? "<null>" : ScreenPosition.ToString());
+      StringBuilder sb = new StringBuilder("Position3D(");
+      sb.Append("X: ");
+      sb.Append(X);
+      sb.Append(",Y: ");
+      sb.Append(Y);
+      sb.Append(",Z: ");
+      sb.Append(Z);
       sb.Append(")");
       return sb.ToString();
     }

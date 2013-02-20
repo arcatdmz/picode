@@ -24,11 +24,8 @@ namespace Jp.Digitalmuseum.Kinect
   public partial class Joint : TBase
   {
     private JointType _type;
-    private double _x;
-    private double _y;
-    private double _z;
-    private double _sx;
-    private double _sy;
+    private Position3D _position;
+    private Position2D _screenPosition;
 
     /// <summary>
     /// 
@@ -47,68 +44,29 @@ namespace Jp.Digitalmuseum.Kinect
       }
     }
 
-    public double X
+    public Position3D Position
     {
       get
       {
-        return _x;
+        return _position;
       }
       set
       {
-        __isset.x = true;
-        this._x = value;
+        __isset.position = true;
+        this._position = value;
       }
     }
 
-    public double Y
+    public Position2D ScreenPosition
     {
       get
       {
-        return _y;
+        return _screenPosition;
       }
       set
       {
-        __isset.y = true;
-        this._y = value;
-      }
-    }
-
-    public double Z
-    {
-      get
-      {
-        return _z;
-      }
-      set
-      {
-        __isset.z = true;
-        this._z = value;
-      }
-    }
-
-    public double Sx
-    {
-      get
-      {
-        return _sx;
-      }
-      set
-      {
-        __isset.sx = true;
-        this._sx = value;
-      }
-    }
-
-    public double Sy
-    {
-      get
-      {
-        return _sy;
-      }
-      set
-      {
-        __isset.sy = true;
-        this._sy = value;
+        __isset.screenPosition = true;
+        this._screenPosition = value;
       }
     }
 
@@ -119,11 +77,8 @@ namespace Jp.Digitalmuseum.Kinect
     #endif
     public struct Isset {
       public bool type;
-      public bool x;
-      public bool y;
-      public bool z;
-      public bool sx;
-      public bool sy;
+      public bool position;
+      public bool screenPosition;
     }
 
     public Joint() {
@@ -149,36 +104,17 @@ namespace Jp.Digitalmuseum.Kinect
             }
             break;
           case 2:
-            if (field.Type == TType.Double) {
-              X = iprot.ReadDouble();
+            if (field.Type == TType.Struct) {
+              Position = new Position3D();
+              Position.Read(iprot);
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
           case 3:
-            if (field.Type == TType.Double) {
-              Y = iprot.ReadDouble();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
-          case 4:
-            if (field.Type == TType.Double) {
-              Z = iprot.ReadDouble();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
-          case 5:
-            if (field.Type == TType.Double) {
-              Sx = iprot.ReadDouble();
-            } else { 
-              TProtocolUtil.Skip(iprot, field.Type);
-            }
-            break;
-          case 6:
-            if (field.Type == TType.Double) {
-              Sy = iprot.ReadDouble();
+            if (field.Type == TType.Struct) {
+              ScreenPosition = new Position2D();
+              ScreenPosition.Read(iprot);
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
             }
@@ -204,44 +140,20 @@ namespace Jp.Digitalmuseum.Kinect
         oprot.WriteI32((int)Type);
         oprot.WriteFieldEnd();
       }
-      if (__isset.x) {
-        field.Name = "x";
-        field.Type = TType.Double;
+      if (Position != null && __isset.position) {
+        field.Name = "position";
+        field.Type = TType.Struct;
         field.ID = 2;
         oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(X);
+        Position.Write(oprot);
         oprot.WriteFieldEnd();
       }
-      if (__isset.y) {
-        field.Name = "y";
-        field.Type = TType.Double;
+      if (ScreenPosition != null && __isset.screenPosition) {
+        field.Name = "screenPosition";
+        field.Type = TType.Struct;
         field.ID = 3;
         oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(Y);
-        oprot.WriteFieldEnd();
-      }
-      if (__isset.z) {
-        field.Name = "z";
-        field.Type = TType.Double;
-        field.ID = 4;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(Z);
-        oprot.WriteFieldEnd();
-      }
-      if (__isset.sx) {
-        field.Name = "sx";
-        field.Type = TType.Double;
-        field.ID = 5;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(Sx);
-        oprot.WriteFieldEnd();
-      }
-      if (__isset.sy) {
-        field.Name = "sy";
-        field.Type = TType.Double;
-        field.ID = 6;
-        oprot.WriteFieldBegin(field);
-        oprot.WriteDouble(Sy);
+        ScreenPosition.Write(oprot);
         oprot.WriteFieldEnd();
       }
       oprot.WriteFieldStop();
@@ -252,16 +164,10 @@ namespace Jp.Digitalmuseum.Kinect
       StringBuilder sb = new StringBuilder("Joint(");
       sb.Append("Type: ");
       sb.Append(Type);
-      sb.Append(",X: ");
-      sb.Append(X);
-      sb.Append(",Y: ");
-      sb.Append(Y);
-      sb.Append(",Z: ");
-      sb.Append(Z);
-      sb.Append(",Sx: ");
-      sb.Append(Sx);
-      sb.Append(",Sy: ");
-      sb.Append(Sy);
+      sb.Append(",Position: ");
+      sb.Append(Position== null ? "<null>" : Position.ToString());
+      sb.Append(",ScreenPosition: ");
+      sb.Append(ScreenPosition== null ? "<null>" : ScreenPosition.ToString());
       sb.Append(")");
       return sb.ToString();
     }

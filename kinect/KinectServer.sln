@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSkeletonServer", "ConsoleSkeletonServer\ConsoleSkeletonServer.csproj", "{D22A7C57-C2B0-417B-A725-CE136BD71D7A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleKinectServer", "ConsoleKinectServer\ConsoleKinectServer.csproj", "{D22A7C57-C2B0-417B-A725-CE136BD71D7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

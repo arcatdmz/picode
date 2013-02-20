@@ -71,17 +71,41 @@ namespace ConsoleSkeletonServer
         }
 
         private int currentAngle = int.MaxValue;
+        private int targetAngle = int.MaxValue;
         public void setAngle(int angle)
         {
-            new Thread(() =>
+            if (currentAngle != int.MaxValue)
             {
-                lock (Kinect)
+                // Request the change.
+                targetAngle = angle;
+            }
+            else
+            {
+                int a = angle;
+                new Thread(() =>
                 {
-                    currentAngle = Kinect.ElevationAngle;
-                    Kinect.ElevationAngle = angle;
-                    currentAngle = int.MaxValue;
-                }
-            }).Start();
+                    lock (Kinect)
+                    {
+                        currentAngle = Kinect.ElevationAngle;
+                        while (true)
+                        {
+                            Kinect.ElevationAngle = a;
+
+                            // See http://social.msdn.microsoft.com/Forums/en-US/kinectsdknuiapi/thread/7ddf2f6e-0f6f-4dbe-87a0-69de1844e5f3/
+                            Thread.Sleep(1400);
+
+                            if (targetAngle == int.MaxValue)
+                            {
+                                // If there's no more pending request, get out of the loop.
+                                break;
+                            }
+                            a = targetAngle;
+                            targetAngle = int.MaxValue;
+                        }
+                        currentAngle = int.MaxValue;
+                    }
+                }).Start();
+            }
         }
 
         public int getAngle()
@@ -99,7 +123,7 @@ namespace ConsoleSkeletonServer
             return frame;
         }
 
-        public void stop()
+        public void shutdown()
         {
             if (Shutdown != null)
             {
@@ -110,7 +134,6 @@ namespace ConsoleSkeletonServer
         public delegate void ShutdownAction();
         public ShutdownAction Shutdown { internal set; get; }
         #endregion Thrift server implementation
-
 
         #region Kinect discovery + setup
 

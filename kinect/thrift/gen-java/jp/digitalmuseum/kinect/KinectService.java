@@ -46,7 +46,7 @@ public class KinectService {
 
     public Frame getFrame() throws org.apache.thrift.TException;
 
-    public void stop() throws org.apache.thrift.TException;
+    public void shutdown() throws org.apache.thrift.TException;
 
   }
 
@@ -64,7 +64,7 @@ public class KinectService {
 
     public void getFrame(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.getFrame_call> resultHandler) throws org.apache.thrift.TException;
 
-    public void stop(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.stop_call> resultHandler) throws org.apache.thrift.TException;
+    public void shutdown(org.apache.thrift.async.AsyncMethodCallback<AsyncClient.shutdown_call> resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -190,15 +190,15 @@ public class KinectService {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getFrame failed: unknown result");
     }
 
-    public void stop() throws org.apache.thrift.TException
+    public void shutdown() throws org.apache.thrift.TException
     {
-      send_stop();
+      send_shutdown();
     }
 
-    public void send_stop() throws org.apache.thrift.TException
+    public void send_shutdown() throws org.apache.thrift.TException
     {
-      stop_args args = new stop_args();
-      sendBase("stop", args);
+      shutdown_args args = new shutdown_args();
+      sendBase("shutdown", args);
     }
 
   }
@@ -399,21 +399,21 @@ public class KinectService {
       }
     }
 
-    public void stop(org.apache.thrift.async.AsyncMethodCallback<stop_call> resultHandler) throws org.apache.thrift.TException {
+    public void shutdown(org.apache.thrift.async.AsyncMethodCallback<shutdown_call> resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      stop_call method_call = new stop_call(resultHandler, this, ___protocolFactory, ___transport);
+      shutdown_call method_call = new shutdown_call(resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class stop_call extends org.apache.thrift.async.TAsyncMethodCall {
-      public stop_call(org.apache.thrift.async.AsyncMethodCallback<stop_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+    public static class shutdown_call extends org.apache.thrift.async.TAsyncMethodCall {
+      public shutdown_call(org.apache.thrift.async.AsyncMethodCallback<shutdown_call> resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, true);
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("stop", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        stop_args args = new stop_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("shutdown", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        shutdown_args args = new shutdown_args();
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -446,7 +446,7 @@ public class KinectService {
       processMap.put("setAngle", new setAngle());
       processMap.put("getAngle", new getAngle());
       processMap.put("getFrame", new getFrame());
-      processMap.put("stop", new stop());
+      processMap.put("shutdown", new shutdown());
       return processMap;
     }
 
@@ -568,21 +568,21 @@ public class KinectService {
       }
     }
 
-    public static class stop<I extends Iface> extends org.apache.thrift.ProcessFunction<I, stop_args> {
-      public stop() {
-        super("stop");
+    public static class shutdown<I extends Iface> extends org.apache.thrift.ProcessFunction<I, shutdown_args> {
+      public shutdown() {
+        super("shutdown");
       }
 
-      public stop_args getEmptyArgsInstance() {
-        return new stop_args();
+      public shutdown_args getEmptyArgsInstance() {
+        return new shutdown_args();
       }
 
       protected boolean isOneway() {
         return true;
       }
 
-      public org.apache.thrift.TBase getResult(I iface, stop_args args) throws org.apache.thrift.TException {
-        iface.stop();
+      public org.apache.thrift.TBase getResult(I iface, shutdown_args args) throws org.apache.thrift.TException {
+        iface.shutdown();
         return null;
       }
     }
@@ -3506,14 +3506,14 @@ public class KinectService {
 
   }
 
-  public static class stop_args implements org.apache.thrift.TBase<stop_args, stop_args._Fields>, java.io.Serializable, Cloneable   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("stop_args");
+  public static class shutdown_args implements org.apache.thrift.TBase<shutdown_args, shutdown_args._Fields>, java.io.Serializable, Cloneable   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("shutdown_args");
 
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new stop_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new stop_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new shutdown_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new shutdown_argsTupleSchemeFactory());
     }
 
 
@@ -3576,20 +3576,20 @@ public class KinectService {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(stop_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(shutdown_args.class, metaDataMap);
     }
 
-    public stop_args() {
+    public shutdown_args() {
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public stop_args(stop_args other) {
+    public shutdown_args(shutdown_args other) {
     }
 
-    public stop_args deepCopy() {
-      return new stop_args(this);
+    public shutdown_args deepCopy() {
+      return new shutdown_args(this);
     }
 
     @Override
@@ -3622,12 +3622,12 @@ public class KinectService {
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof stop_args)
-        return this.equals((stop_args)that);
+      if (that instanceof shutdown_args)
+        return this.equals((shutdown_args)that);
       return false;
     }
 
-    public boolean equals(stop_args that) {
+    public boolean equals(shutdown_args that) {
       if (that == null)
         return false;
 
@@ -3639,13 +3639,13 @@ public class KinectService {
       return 0;
     }
 
-    public int compareTo(stop_args other) {
+    public int compareTo(shutdown_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
 
       int lastComparison = 0;
-      stop_args typedOther = (stop_args)other;
+      shutdown_args typedOther = (shutdown_args)other;
 
       return 0;
     }
@@ -3664,7 +3664,7 @@ public class KinectService {
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("stop_args(");
+      StringBuilder sb = new StringBuilder("shutdown_args(");
       boolean first = true;
 
       sb.append(")");
@@ -3692,15 +3692,15 @@ public class KinectService {
       }
     }
 
-    private static class stop_argsStandardSchemeFactory implements SchemeFactory {
-      public stop_argsStandardScheme getScheme() {
-        return new stop_argsStandardScheme();
+    private static class shutdown_argsStandardSchemeFactory implements SchemeFactory {
+      public shutdown_argsStandardScheme getScheme() {
+        return new shutdown_argsStandardScheme();
       }
     }
 
-    private static class stop_argsStandardScheme extends StandardScheme<stop_args> {
+    private static class shutdown_argsStandardScheme extends StandardScheme<shutdown_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, stop_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, shutdown_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -3721,7 +3721,7 @@ public class KinectService {
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, stop_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, shutdown_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -3731,21 +3731,21 @@ public class KinectService {
 
     }
 
-    private static class stop_argsTupleSchemeFactory implements SchemeFactory {
-      public stop_argsTupleScheme getScheme() {
-        return new stop_argsTupleScheme();
+    private static class shutdown_argsTupleSchemeFactory implements SchemeFactory {
+      public shutdown_argsTupleScheme getScheme() {
+        return new shutdown_argsTupleScheme();
       }
     }
 
-    private static class stop_argsTupleScheme extends TupleScheme<stop_args> {
+    private static class shutdown_argsTupleScheme extends TupleScheme<shutdown_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, stop_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, shutdown_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, stop_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, shutdown_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
       }
     }

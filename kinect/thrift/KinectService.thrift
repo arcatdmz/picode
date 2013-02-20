@@ -44,8 +44,8 @@ struct Joint {
 struct Frame {
   1: required i32 frameId,
   2: required binary image,
-  3: required Position3D position,
-  4: required list<Joint> joints,
+  3: optional Position3D position,
+  4: optional list<Joint> joints,
   5: optional set<string> keywords
 }
 
@@ -56,5 +56,5 @@ service KinectService {
   oneway void setAngle(1:i32 angle),
   i32 getAngle(),
   Frame getFrame(),
-  oneway void stop();
+  oneway void shutdown();
 }

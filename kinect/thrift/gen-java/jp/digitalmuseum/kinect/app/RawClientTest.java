@@ -1,4 +1,4 @@
-package jp.digitalmuseum.kinect;
+package jp.digitalmuseum.kinect.app;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import jp.digitalmuseum.kinect.Frame;
+import jp.digitalmuseum.kinect.KinectService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -18,7 +20,7 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-public class ConsoleClient {
+public class RawClientTest {
 
 	/**
 	 * @param args
@@ -46,6 +48,7 @@ public class ConsoleClient {
 		
 		final JFrame window = new JFrame();
 		window.add(panel);
+		window.pack();
 		window.setVisible(true);
 		
 		TTransport transport = new TSocket("localhost", 9090);

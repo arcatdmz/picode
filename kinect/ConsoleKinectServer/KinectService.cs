@@ -49,10 +49,10 @@ namespace Jp.Digitalmuseum.Kinect
       IAsyncResult Begin_getFrame(AsyncCallback callback, object state, );
       Frame End_getFrame(IAsyncResult asyncResult);
       #endif
-      void stop();
+      void shutdown();
       #if SILVERLIGHT
-      IAsyncResult Begin_stop(AsyncCallback callback, object state, );
-      void End_stop(IAsyncResult asyncResult);
+      IAsyncResult Begin_shutdown(AsyncCallback callback, object state, );
+      void End_shutdown(IAsyncResult asyncResult);
       #endif
     }
 
@@ -392,36 +392,36 @@ namespace Jp.Digitalmuseum.Kinect
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_stop(AsyncCallback callback, object state, )
+      public IAsyncResult Begin_shutdown(AsyncCallback callback, object state, )
       {
-        return send_stop(callback, state);
+        return send_shutdown(callback, state);
       }
 
-      public void End_stop(IAsyncResult asyncResult)
+      public void End_shutdown(IAsyncResult asyncResult)
       {
         oprot_.Transport.EndFlush(asyncResult);
       }
 
       #endif
 
-      public void stop()
+      public void shutdown()
       {
         #if !SILVERLIGHT
-        send_stop();
+        send_shutdown();
 
         #else
-        var asyncResult = Begin_stop(null, null, );
+        var asyncResult = Begin_shutdown(null, null, );
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_stop(AsyncCallback callback, object state, )
+      public IAsyncResult send_shutdown(AsyncCallback callback, object state, )
       #else
-      public void send_stop()
+      public void send_shutdown()
       #endif
       {
-        oprot_.WriteMessageBegin(new TMessage("stop", TMessageType.Call, seqid_));
-        stop_args args = new stop_args();
+        oprot_.WriteMessageBegin(new TMessage("shutdown", TMessageType.Call, seqid_));
+        shutdown_args args = new shutdown_args();
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -442,7 +442,7 @@ namespace Jp.Digitalmuseum.Kinect
         processMap_["setAngle"] = setAngle_Process;
         processMap_["getAngle"] = getAngle_Process;
         processMap_["getFrame"] = getFrame_Process;
-        processMap_["stop"] = stop_Process;
+        processMap_["shutdown"] = shutdown_Process;
       }
 
       protected delegate void ProcessFunction(int seqid, TProtocol iprot, TProtocol oprot);
@@ -538,12 +538,12 @@ namespace Jp.Digitalmuseum.Kinect
         oprot.Transport.Flush();
       }
 
-      public void stop_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      public void shutdown_Process(int seqid, TProtocol iprot, TProtocol oprot)
       {
-        stop_args args = new stop_args();
+        shutdown_args args = new shutdown_args();
         args.Read(iprot);
         iprot.ReadMessageEnd();
-        iface_.stop();
+        iface_.shutdown();
         return;
       }
     }
@@ -1237,10 +1237,10 @@ namespace Jp.Digitalmuseum.Kinect
     #if !SILVERLIGHT
     [Serializable]
     #endif
-    public partial class stop_args : TBase
+    public partial class shutdown_args : TBase
     {
 
-      public stop_args() {
+      public shutdown_args() {
       }
 
       public void Read (TProtocol iprot)
@@ -1265,14 +1265,14 @@ namespace Jp.Digitalmuseum.Kinect
       }
 
       public void Write(TProtocol oprot) {
-        TStruct struc = new TStruct("stop_args");
+        TStruct struc = new TStruct("shutdown_args");
         oprot.WriteStructBegin(struc);
         oprot.WriteFieldStop();
         oprot.WriteStructEnd();
       }
 
       public override string ToString() {
-        StringBuilder sb = new StringBuilder("stop_args(");
+        StringBuilder sb = new StringBuilder("shutdown_args(");
         sb.Append(")");
         return sb.ToString();
       }

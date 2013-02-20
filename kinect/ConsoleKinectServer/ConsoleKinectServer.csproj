@@ -7,8 +7,8 @@
     <ProjectGuid>{D22A7C57-C2B0-417B-A725-CE136BD71D7A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConsoleSkeletonServer</RootNamespace>
-    <AssemblyName>ConsoleSkeletonServer</AssemblyName>
+    <RootNamespace>ConsoleKinectServer</RootNamespace>
+    <AssemblyName>ConsoleKinectServer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -26,7 +26,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

@@ -13,6 +13,8 @@ import javax.swing.SwingUtilities;
 
 import jp.digitalmuseum.kinect.Frame;
 import jp.digitalmuseum.kinect.KinectService;
+import jp.digitalmuseum.kinect.KinectServiceConstants;
+
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -49,9 +51,8 @@ public class RawClientTest {
 		final JFrame window = new JFrame();
 		window.add(panel);
 		window.pack();
-		window.setVisible(true);
 		
-		TTransport transport = new TSocket("localhost", 9090);
+		TTransport transport = new TSocket("localhost", KinectServiceConstants.SERVER_DEFAULT_PORT);
 		TProtocol protocol = new TBinaryProtocol(transport);
 		KinectService.Client client = new KinectService.Client(protocol);
 
@@ -72,7 +73,8 @@ public class RawClientTest {
 				Thread.sleep(100);
 			}
 			client.setAngle(angle);
-			
+
+			window.setVisible(true);
 			for (int i = 0; i < 300; i ++) {
 				Frame frame = client.getFrame();
 				byte[] imageData = frame.getImage();

@@ -1,6 +1,8 @@
 namespace java jp.digitalmuseum.kinect
 namespace csharp Jp.Digitalmuseum.Kinect
 
+const i32 SERVER_DEFAULT_PORT = 9191
+
 enum JointType {
    HIP_CENTER = 0,
    SPINE = 1,
@@ -45,7 +47,7 @@ struct Frame {
   1: required i32 frameId,
   2: required binary image,
   3: optional Position3D position,
-  4: optional list<Joint> joints,
+  4: optional map<JointType, Joint> joints,
   5: optional set<string> keywords
 }
 

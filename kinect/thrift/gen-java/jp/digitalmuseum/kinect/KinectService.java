@@ -1852,13 +1852,13 @@ public class KinectService {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
                 {
-                  org.apache.thrift.protocol.TSet _set16 = iprot.readSetBegin();
-                  struct.success = new HashSet<String>(2*_set16.size);
-                  for (int _i17 = 0; _i17 < _set16.size; ++_i17)
+                  org.apache.thrift.protocol.TSet _set18 = iprot.readSetBegin();
+                  struct.success = new HashSet<String>(2*_set18.size);
+                  for (int _i19 = 0; _i19 < _set18.size; ++_i19)
                   {
-                    String _elem18; // required
-                    _elem18 = iprot.readString();
-                    struct.success.add(_elem18);
+                    String _elem20; // required
+                    _elem20 = iprot.readString();
+                    struct.success.add(_elem20);
                   }
                   iprot.readSetEnd();
                 }
@@ -1886,9 +1886,9 @@ public class KinectService {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.success.size()));
-            for (String _iter19 : struct.success)
+            for (String _iter21 : struct.success)
             {
-              oprot.writeString(_iter19);
+              oprot.writeString(_iter21);
             }
             oprot.writeSetEnd();
           }
@@ -1919,9 +1919,9 @@ public class KinectService {
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (String _iter20 : struct.success)
+            for (String _iter22 : struct.success)
             {
-              oprot.writeString(_iter20);
+              oprot.writeString(_iter22);
             }
           }
         }
@@ -1933,13 +1933,13 @@ public class KinectService {
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TSet _set21 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.success = new HashSet<String>(2*_set21.size);
-            for (int _i22 = 0; _i22 < _set21.size; ++_i22)
+            org.apache.thrift.protocol.TSet _set23 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.success = new HashSet<String>(2*_set23.size);
+            for (int _i24 = 0; _i24 < _set23.size; ++_i24)
             {
-              String _elem23; // required
-              _elem23 = iprot.readString();
-              struct.success.add(_elem23);
+              String _elem25; // required
+              _elem25 = iprot.readString();
+              struct.success.add(_elem25);
             }
           }
           struct.setSuccessIsSet(true);

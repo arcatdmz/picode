@@ -29,10 +29,7 @@ namespace ConsoleSkeletonServer
         public KinectServiceHandler()
         {
             KinectStart();
-            if (Kinect != null)
-            {
-                InitializeSpeechRecognition(Kinect);
-            }
+            InitializeSpeechRecognition();
         }
 
         public void addKeyword(string text)
@@ -49,6 +46,11 @@ namespace ConsoleSkeletonServer
 
         private void UpdateGrammar()
         {
+            if (keywords.Count <= 0)
+            {
+                StopSpeechRecognition();
+                return;
+            }
             GrammarBuilder gb = new GrammarBuilder();
 
             // This is needed to ensure that it will work on machines with any culture, not just en-us.
@@ -58,6 +60,8 @@ namespace ConsoleSkeletonServer
             gb.Append(new Choices(keywordsArray));
 
             sre.LoadGrammarAsync(new Grammar(gb));
+
+            StartSpeechRecognition(Kinect.AudioSource);
         }
 
         public THashSet<string> getKeywords()
@@ -359,15 +363,11 @@ namespace ConsoleSkeletonServer
         #endregion Kinect discovery + setup
 
         #region Speech recognition
-        private void InitializeSpeechRecognition(KinectSensor sensor)
+        private void InitializeSpeechRecognition()
         {
             sre = new SpeechRecognitionEngine(GetKinectRecognizer());
             keywords = new HashSet<string>();
-            keywords.Add("Capture");
-
-            UpdateGrammar();
-
-            StartSpeechRecognition(sensor.AudioSource);
+            recognizedPhrases = new THashSet<string>();
         }
 
         private static RecognizerInfo GetKinectRecognizer()
@@ -383,6 +383,11 @@ namespace ConsoleSkeletonServer
 
         public void StartSpeechRecognition(KinectAudioSource kinectSource)
         {
+            if (kinectAudioSource != null)
+            {
+                return;
+            }
+
             kinectAudioSource = kinectSource;
             kinectAudioSource.AutomaticGainControlEnabled = false;
             kinectAudioSource.BeamAngleMode = BeamAngleMode.Adaptive;
@@ -393,8 +398,6 @@ namespace ConsoleSkeletonServer
                     EncodingFormat.Pcm, 16000, 16, 1, 32000, 2, null));
             sre.RecognizeAsync(RecognizeMode.Multiple);
             sre.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(sre_SpeechRecognized);
-
-            recognizedPhrases = new THashSet<string>();
         }
 
         void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
@@ -409,6 +412,7 @@ namespace ConsoleSkeletonServer
                 kinectAudioSource.Stop();
                 sre.RecognizeAsyncCancel();
                 sre.RecognizeAsyncStop();
+                kinectAudioSource = null;
             }
         }
         #endregion Speech recognition
@@ -427,7 +431,7 @@ namespace ConsoleSkeletonServer
                     frame.FrameId = colorImageFrame.FrameNumber;
                     frame.Image = imageData;
                 }
-                frame.Joints = new List<Jp.Digitalmuseum.Kinect.Joint>();
+                frame.Joints = new Dictionary<T.JointType,T.Joint>();
                 if (skeletonFrame != null)
                 {
                     if ((skeletonData == null) || (skeletonData.Length != skeletonFrame.SkeletonArrayLength))
@@ -440,11 +444,13 @@ namespace ConsoleSkeletonServer
                         if (SkeletonTrackingState.Tracked == skeleton.TrackingState)
                         {
                             // TODO Compare tracking id with skeleton.TrackingId
+                            //Console.WriteLine("-------------");
+                            //Console.WriteLine("tracked id: " + skeleton.TrackingId);
                             frame.Position = new T.Position3D();
                             frame.Position.X = skeleton.Position.X;
                             frame.Position.Y = skeleton.Position.Y;
                             frame.Position.Z = skeleton.Position.Z;
-                            frame.Joints = new List<T.Joint>();
+                            frame.Joints = new Dictionary<T.JointType, T.Joint>();
                             foreach (Joint joint in skeleton.Joints)
                             {
                                 if (joint.TrackingState == JointTrackingState.Tracked)
@@ -456,13 +462,15 @@ namespace ConsoleSkeletonServer
                                     j.Position.Z = joint.Position.Z;
                                     var sp = Kinect.CoordinateMapper.MapSkeletonPointToColorPoint(
                                         joint.Position, Kinect.ColorStream.Format);
+                                    j.ScreenPosition = new T.Position2D();
                                     j.ScreenPosition.X = sp.X;
                                     j.ScreenPosition.Y = sp.Y;
                                     j.Type = ConvertJointType(joint.JointType);
-                                    frame.Joints.Add(j);
+                                    frame.Joints.Add(j.Type, j);
+                                    //Console.WriteLine(j.Type + ": " + sp.X + ", " + sp.Y);
                                 }
                             }
-                            return;
+                            break;
                         }
                     }
                 }

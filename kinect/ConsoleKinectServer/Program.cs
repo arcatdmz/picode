@@ -14,21 +14,36 @@ namespace ConsoleSkeletonServer
     {
         static void Main(string[] args)
         {
-            try
+            // Get options.
+            int port = Constants.SERVER_DEFAULT_PORT;
+            for (int i = 0; i < args.Length; i++)
             {
+                if (args[i] == "-help")
+                {
+                    Console.WriteLine("usage: ConsoleKinectServer.exe -port PORT_NUMBER");
+                    return;
+                }
+                else if (i < args.Length - 1 && args[i] == "-port")
+                {
+                    int.TryParse(args[++i], out port);
+                }
+            }
+
+            // Launch the server.
+            //try
+            //{
                 KinectServiceHandler handler = new KinectServiceHandler();
                 KinectService.Processor processor = new KinectService.Processor(handler);
-                TServerTransport serverTransport = new TServerSocket(9090);
+                TServerTransport serverTransport = new TServerSocket(port);
                 TServer server = new TSimpleServer(processor, serverTransport);
                 handler.Shutdown = server.Stop;
                 Console.WriteLine("Starting the server...");
                 server.Serve();
-            }
-            catch (Exception e) {
-                Console.WriteLine(e.StackTrace);
-                throw e;
-            }
-            Console.WriteLine("done.");
+            //}
+            //catch (Exception e) {
+            //    Console.WriteLine(e.StackTrace);
+            //}
+            Console.WriteLine("Done.");
         }
     }
 }

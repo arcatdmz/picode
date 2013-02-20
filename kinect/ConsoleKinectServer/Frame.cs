@@ -26,7 +26,7 @@ namespace Jp.Digitalmuseum.Kinect
     private int _frameId;
     private byte[] _image;
     private Position3D _position;
-    private List<Joint> _joints;
+    private Dictionary<JointType, Joint> _joints;
     private THashSet<string> _keywords;
 
     public int FrameId
@@ -68,7 +68,7 @@ namespace Jp.Digitalmuseum.Kinect
       }
     }
 
-    public List<Joint> Joints
+    public Dictionary<JointType, Joint> Joints
     {
       get
       {
@@ -145,18 +145,20 @@ namespace Jp.Digitalmuseum.Kinect
             }
             break;
           case 4:
-            if (field.Type == TType.List) {
+            if (field.Type == TType.Map) {
               {
-                Joints = new List<Joint>();
-                TList _list0 = iprot.ReadListBegin();
-                for( int _i1 = 0; _i1 < _list0.Count; ++_i1)
+                Joints = new Dictionary<JointType, Joint>();
+                TMap _map0 = iprot.ReadMapBegin();
+                for( int _i1 = 0; _i1 < _map0.Count; ++_i1)
                 {
-                  Joint _elem2 = new Joint();
-                  _elem2 = new Joint();
-                  _elem2.Read(iprot);
-                  Joints.Add(_elem2);
+                  JointType _key2;
+                  Joint _val3;
+                  _key2 = (JointType)iprot.ReadI32();
+                  _val3 = new Joint();
+                  _val3.Read(iprot);
+                  Joints[_key2] = _val3;
                 }
-                iprot.ReadListEnd();
+                iprot.ReadMapEnd();
               }
             } else { 
               TProtocolUtil.Skip(iprot, field.Type);
@@ -166,12 +168,12 @@ namespace Jp.Digitalmuseum.Kinect
             if (field.Type == TType.Set) {
               {
                 Keywords = new THashSet<string>();
-                TSet _set3 = iprot.ReadSetBegin();
-                for( int _i4 = 0; _i4 < _set3.Count; ++_i4)
+                TSet _set4 = iprot.ReadSetBegin();
+                for( int _i5 = 0; _i5 < _set4.Count; ++_i5)
                 {
-                  string _elem5 = null;
-                  _elem5 = iprot.ReadString();
-                  Keywords.Add(_elem5);
+                  string _elem6 = null;
+                  _elem6 = iprot.ReadString();
+                  Keywords.Add(_elem6);
                 }
                 iprot.ReadSetEnd();
               }
@@ -218,16 +220,17 @@ namespace Jp.Digitalmuseum.Kinect
       }
       if (Joints != null && __isset.joints) {
         field.Name = "joints";
-        field.Type = TType.List;
+        field.Type = TType.Map;
         field.ID = 4;
         oprot.WriteFieldBegin(field);
         {
-          oprot.WriteListBegin(new TList(TType.Struct, Joints.Count));
-          foreach (Joint _iter6 in Joints)
+          oprot.WriteMapBegin(new TMap(TType.I32, TType.Struct, Joints.Count));
+          foreach (JointType _iter7 in Joints.Keys)
           {
-            _iter6.Write(oprot);
+            oprot.WriteI32((int)_iter7);
+            Joints[_iter7].Write(oprot);
           }
-          oprot.WriteListEnd();
+          oprot.WriteMapEnd();
         }
         oprot.WriteFieldEnd();
       }
@@ -238,9 +241,9 @@ namespace Jp.Digitalmuseum.Kinect
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteSetBegin(new TSet(TType.String, Keywords.Count));
-          foreach (string _iter7 in Keywords)
+          foreach (string _iter8 in Keywords)
           {
-            oprot.WriteString(_iter7);
+            oprot.WriteString(_iter8);
           }
           oprot.WriteSetEnd();
         }

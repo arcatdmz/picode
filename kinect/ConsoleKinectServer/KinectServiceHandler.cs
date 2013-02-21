@@ -26,6 +26,7 @@ namespace ConsoleSkeletonServer
         private Skeleton[] skeletonData;
         private T.Frame frame;
         private bool voiceEnabled;
+        private bool colorEnabled;
         private bool depthEnabled;
         #endregion Private State
 
@@ -33,6 +34,7 @@ namespace ConsoleSkeletonServer
         public KinectServiceHandler()
         {
             voiceEnabled = false;
+            colorEnabled = true;
             depthEnabled = false;
             KinectStart();
             InitializeSpeechRecognition();
@@ -89,6 +91,16 @@ namespace ConsoleSkeletonServer
                 keywords.Add(keyword);
             }
             return keywords;
+        }
+
+        public void setColorEnabled(bool isEnabled)
+        {
+            colorEnabled = isEnabled;
+        }
+
+        public bool isColorEnabled()
+        {
+            return colorEnabled;
         }
 
         public void setDepthEnabled(bool isEnabled)
@@ -468,14 +480,18 @@ namespace ConsoleSkeletonServer
             using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
             {
-                // Color image processing.
                 if (colorImageFrame == null)
                 {
                     return;
                 }
-                colorImageFrame.CopyPixelDataTo(imageData);
                 frame.FrameId = colorImageFrame.FrameNumber;
-                frame.Image = imageData;
+
+                // Color image processing.
+                if (colorEnabled)
+                {
+                    colorImageFrame.CopyPixelDataTo(imageData);
+                    frame.Image = imageData;
+                }
 
                 // Depth image processing.
                 if (depthImageFrame != null && depthEnabled)

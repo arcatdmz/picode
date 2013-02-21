@@ -49,6 +49,16 @@ namespace Jp.Digitalmuseum.Kinect
       IAsyncResult Begin_isDepthEnabled(AsyncCallback callback, object state, );
       bool End_isDepthEnabled(IAsyncResult asyncResult);
       #endif
+      void setColorEnabled(bool isEnabled);
+      #if SILVERLIGHT
+      IAsyncResult Begin_setColorEnabled(AsyncCallback callback, object state, bool isEnabled);
+      void End_setColorEnabled(IAsyncResult asyncResult);
+      #endif
+      bool isColorEnabled();
+      #if SILVERLIGHT
+      IAsyncResult Begin_isColorEnabled(AsyncCallback callback, object state, );
+      bool End_isColorEnabled(IAsyncResult asyncResult);
+      #endif
       void setAngle(int angle);
       #if SILVERLIGHT
       IAsyncResult Begin_setAngle(AsyncCallback callback, object state, int angle);
@@ -388,6 +398,109 @@ namespace Jp.Digitalmuseum.Kinect
 
       
       #if SILVERLIGHT
+      public IAsyncResult Begin_setColorEnabled(AsyncCallback callback, object state, bool isEnabled)
+      {
+        return send_setColorEnabled(callback, state, isEnabled);
+      }
+
+      public void End_setColorEnabled(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+      }
+
+      #endif
+
+      public void setColorEnabled(bool isEnabled)
+      {
+        #if !SILVERLIGHT
+        send_setColorEnabled(isEnabled);
+
+        #else
+        var asyncResult = Begin_setColorEnabled(null, null, isEnabled);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_setColorEnabled(AsyncCallback callback, object state, bool isEnabled)
+      #else
+      public void send_setColorEnabled(bool isEnabled)
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("setColorEnabled", TMessageType.Call, seqid_));
+        setColorEnabled_args args = new setColorEnabled_args();
+        args.IsEnabled = isEnabled;
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      
+      #if SILVERLIGHT
+      public IAsyncResult Begin_isColorEnabled(AsyncCallback callback, object state, )
+      {
+        return send_isColorEnabled(callback, state);
+      }
+
+      public bool End_isColorEnabled(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+        return recv_isColorEnabled();
+      }
+
+      #endif
+
+      public bool isColorEnabled()
+      {
+        #if !SILVERLIGHT
+        send_isColorEnabled();
+        return recv_isColorEnabled();
+
+        #else
+        var asyncResult = Begin_isColorEnabled(null, null, );
+        return End_isColorEnabled(asyncResult);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_isColorEnabled(AsyncCallback callback, object state, )
+      #else
+      public void send_isColorEnabled()
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("isColorEnabled", TMessageType.Call, seqid_));
+        isColorEnabled_args args = new isColorEnabled_args();
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      public bool recv_isColorEnabled()
+      {
+        TMessage msg = iprot_.ReadMessageBegin();
+        if (msg.Type == TMessageType.Exception) {
+          TApplicationException x = TApplicationException.Read(iprot_);
+          iprot_.ReadMessageEnd();
+          throw x;
+        }
+        isColorEnabled_result result = new isColorEnabled_result();
+        result.Read(iprot_);
+        iprot_.ReadMessageEnd();
+        if (result.__isset.success) {
+          return result.Success;
+        }
+        throw new TApplicationException(TApplicationException.ExceptionType.MissingResult, "isColorEnabled failed: unknown result");
+      }
+
+      
+      #if SILVERLIGHT
       public IAsyncResult Begin_setAngle(AsyncCallback callback, object state, int angle)
       {
         return send_setAngle(callback, state, angle);
@@ -602,6 +715,8 @@ namespace Jp.Digitalmuseum.Kinect
         processMap_["removeKeyword"] = removeKeyword_Process;
         processMap_["setDepthEnabled"] = setDepthEnabled_Process;
         processMap_["isDepthEnabled"] = isDepthEnabled_Process;
+        processMap_["setColorEnabled"] = setColorEnabled_Process;
+        processMap_["isColorEnabled"] = isColorEnabled_Process;
         processMap_["setAngle"] = setAngle_Process;
         processMap_["getAngle"] = getAngle_Process;
         processMap_["getFrame"] = getFrame_Process;
@@ -691,6 +806,27 @@ namespace Jp.Digitalmuseum.Kinect
         isDepthEnabled_result result = new isDepthEnabled_result();
         result.Success = iface_.isDepthEnabled();
         oprot.WriteMessageBegin(new TMessage("isDepthEnabled", TMessageType.Reply, seqid)); 
+        result.Write(oprot);
+        oprot.WriteMessageEnd();
+        oprot.Transport.Flush();
+      }
+
+      public void setColorEnabled_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        setColorEnabled_args args = new setColorEnabled_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        iface_.setColorEnabled(args.IsEnabled);
+        return;
+      }
+      public void isColorEnabled_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        isColorEnabled_args args = new isColorEnabled_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        isColorEnabled_result result = new isColorEnabled_result();
+        result.Success = iface_.isColorEnabled();
+        oprot.WriteMessageBegin(new TMessage("isColorEnabled", TMessageType.Reply, seqid)); 
         result.Write(oprot);
         oprot.WriteMessageEnd();
         oprot.Transport.Flush();
@@ -1348,6 +1484,227 @@ namespace Jp.Digitalmuseum.Kinect
 
       public override string ToString() {
         StringBuilder sb = new StringBuilder("isDepthEnabled_result(");
+        sb.Append("Success: ");
+        sb.Append(Success);
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class setColorEnabled_args : TBase
+    {
+      private bool _isEnabled;
+
+      public bool IsEnabled
+      {
+        get
+        {
+          return _isEnabled;
+        }
+        set
+        {
+          __isset.isEnabled = true;
+          this._isEnabled = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool isEnabled;
+      }
+
+      public setColorEnabled_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            case 1:
+              if (field.Type == TType.Bool) {
+                IsEnabled = iprot.ReadBool();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("setColorEnabled_args");
+        oprot.WriteStructBegin(struc);
+        TField field = new TField();
+        if (__isset.isEnabled) {
+          field.Name = "isEnabled";
+          field.Type = TType.Bool;
+          field.ID = 1;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteBool(IsEnabled);
+          oprot.WriteFieldEnd();
+        }
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("setColorEnabled_args(");
+        sb.Append("IsEnabled: ");
+        sb.Append(IsEnabled);
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class isColorEnabled_args : TBase
+    {
+
+      public isColorEnabled_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("isColorEnabled_args");
+        oprot.WriteStructBegin(struc);
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("isColorEnabled_args(");
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class isColorEnabled_result : TBase
+    {
+      private bool _success;
+
+      public bool Success
+      {
+        get
+        {
+          return _success;
+        }
+        set
+        {
+          __isset.success = true;
+          this._success = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool success;
+      }
+
+      public isColorEnabled_result() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            case 0:
+              if (field.Type == TType.Bool) {
+                Success = iprot.ReadBool();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("isColorEnabled_result");
+        oprot.WriteStructBegin(struc);
+        TField field = new TField();
+
+        if (this.__isset.success) {
+          field.Name = "Success";
+          field.Type = TType.Bool;
+          field.ID = 0;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteBool(Success);
+          oprot.WriteFieldEnd();
+        }
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("isColorEnabled_result(");
         sb.Append("Success: ");
         sb.Append(Success);
         sb.Append(")");

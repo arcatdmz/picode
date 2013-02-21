@@ -53,34 +53,33 @@ public class KinectServiceWrapper implements KinectService.Iface {
 	public static final short tooFarDepth = 0x0fff;
 	public static final short unknownDepth = 0x1fff;
 	
-	public static void drawSkeleton(Graphics g, Frame frame, int x, int y) {
-		if (frame != null
-				&& frame.joints != null
-				&& frame.joints.size() == 20) {
-			drawLine(g, x, y, frame.joints,
+	public static void drawSkeleton(Graphics g, Map<JointType, Joint> joints, int x, int y) {
+		if (joints != null
+				&& joints.size() == 20) {
+			drawLine(g, x, y, joints,
 					JointType.HIP_CENTER,
 					JointType.SPINE,
 					JointType.SHOULDER_CENTER,
 					JointType.HEAD);
-			drawLine(g, x, y, frame.joints,
+			drawLine(g, x, y, joints,
 					JointType.SHOULDER_CENTER,
 					JointType.SHOULDER_RIGHT,
 					JointType.ELBOW_RIGHT,
 					JointType.WRIST_RIGHT,
 					JointType.HAND_RIGHT);
-			drawLine(g, x, y, frame.joints,
+			drawLine(g, x, y, joints,
 					JointType.SHOULDER_CENTER,
 					JointType.SHOULDER_LEFT,
 					JointType.ELBOW_LEFT,
 					JointType.WRIST_LEFT,
 					JointType.HAND_LEFT);
-			drawLine(g, x, y, frame.joints,
+			drawLine(g, x, y, joints,
 					JointType.HIP_CENTER,
 					JointType.HIP_RIGHT,
 					JointType.KNEE_RIGHT,
 					JointType.ANKLE_RIGHT,
 					JointType.FOOT_RIGHT);
-			drawLine(g, x, y, frame.joints,
+			drawLine(g, x, y, joints,
 					JointType.HIP_CENTER,
 					JointType.HIP_LEFT,
 					JointType.KNEE_LEFT,
@@ -178,36 +177,34 @@ public class KinectServiceWrapper implements KinectService.Iface {
 		}
 
 		public void run() {
-			try {
-				synchronized (KinectServiceWrapper.this) {
-					frame = client.getFrame();
-				}
-			} catch (TException e) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						stop();
-					}
-				});
-			}
-			byte[] imageData = frame.getImage();
-			colorByteBuffer.put((byte)0);
-			colorByteBuffer.put(imageData, 0, imageData.length - 1);
-			colorByteBuffer.rewind();
 			synchronized (KinectServiceWrapper.this) {
-				colorIntBuffer.put(colorByteBuffer.asIntBuffer());
-				colorIntBuffer.rewind();
-				if (frame.getDepthImage() != null) {
+				try {
+					frame = client.getFrame();
+				} catch (TException e) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							stop();
+						}
+					});
+				}
+				short[] depthImageData = null;
+				if (frame.isSetImage()) {
+					byte[] imageData = frame.getImage();
+					colorByteBuffer.put((byte) 0);
+					colorByteBuffer.put(imageData, 0, imageData.length - 1);
+					colorByteBuffer.rewind();
+					colorIntBuffer.put(colorByteBuffer.asIntBuffer());
+					colorIntBuffer.rewind();
+				}
+				if (frame.isSetDepthImage()) {
 					depthByteBuffer.put(frame.getDepthImage());
 					depthByteBuffer.rewind();
 					depthShortBuffer.put(depthByteBuffer.asShortBuffer());
 					depthShortBuffer.rewind();
-					for (FrameListener listener : listeners) {
-						listener.frameUpdated(frame, image, depthShortBuffer.array());
-					}
-				} else {
-					for (FrameListener listener : listeners) {
-						listener.frameUpdated(frame, image, null);
-					}
+					depthImageData = depthShortBuffer.array();
+				}
+				for (FrameListener listener : listeners) {
+					listener.frameUpdated(frame, image, depthImageData);
 				}
 			}
 		}
@@ -233,6 +230,16 @@ public class KinectServiceWrapper implements KinectService.Iface {
 		client.removeKeyword(text);
 	}
 
+	@Override
+	public synchronized void setColorEnabled(boolean isEnabled) throws TException {
+		client.setColorEnabled(isEnabled);
+	}
+
+	@Override
+	public synchronized boolean isColorEnabled() throws TException {
+		return client.isColorEnabled();
+	}
+	
 	@Override
 	public synchronized void setDepthEnabled(boolean isEnabled) throws TException {
 		client.setDepthEnabled(isEnabled);

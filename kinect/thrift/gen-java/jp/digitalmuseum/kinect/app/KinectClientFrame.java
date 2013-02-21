@@ -27,6 +27,8 @@ import javax.swing.event.ChangeEvent;
 import org.apache.thrift.TException;
 
 import jp.digitalmuseum.kinect.Frame;
+import jp.digitalmuseum.kinect.Joint;
+import jp.digitalmuseum.kinect.JointType;
 import jp.digitalmuseum.kinect.KinectServiceConstants;
 import jp.digitalmuseum.kinect.KinectServiceWrapper;
 import jp.digitalmuseum.kinect.KinectServiceWrapper.FrameListener;
@@ -38,10 +40,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class KinectClientFrame extends JFrame implements FrameListener {
 
 	private static final long serialVersionUID = -1065767804512646130L;
+	private static final int SKELETON_LIFE = 7;
 
 	private JPanel contentPane;
 	private JPanel panel;
@@ -56,6 +60,8 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 	private transient BufferedImage image;
 	private transient short[] depthImageData;
 	private transient BufferedImage depthImage;
+	private transient int skeletonLife = 0;
+	private transient Map<JointType, Joint> joints;
 
 	/**
 	 * Launch the application.
@@ -143,9 +149,17 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 
 					g.drawImage(image, x, y, null);
 
-					g.setColor(Color.green);
-					((Graphics2D) g).setStroke(stroke);
-					KinectServiceWrapper.drawSkeleton(g, frame, x, y);
+					if (frame.joints.size() == 20) {
+						joints = frame.joints;
+						skeletonLife = SKELETON_LIFE;
+					} else {
+						skeletonLife --;
+					}
+					if (skeletonLife > 0) {
+						g.setColor(Color.green);
+						((Graphics2D) g).setStroke(stroke);
+						KinectServiceWrapper.drawSkeleton(g, joints, x, y);
+					}
 				}
 			}
 		};
@@ -158,9 +172,13 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 				try {
 					boolean isDepthEnabled = kinect.isDepthEnabled();
 					kinect.setDepthEnabled(!isDepthEnabled);
+					kinect.setColorEnabled(isDepthEnabled);
 					System.out.print("Depth stream is ");
 					System.out.println(
 							isDepthEnabled ? "disabled." : "enabled");
+					System.out.print("Color stream is ");
+					System.out.println(
+							isDepthEnabled ? "enabled." : "disabled");
 				} catch (TException te) {
 					te.printStackTrace();
 				}

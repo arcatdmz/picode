@@ -47,10 +47,10 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   }
 
   public int frameId; // required
-  public ByteBuffer image; // required
+  public ByteBuffer image; // optional
   public ByteBuffer depthImage; // optional
   public Position3D position; // optional
-  public Map<JointType,Joint> joints; // optional
+  public Map<JointType,Joint> joints; // required
   public Set<String> words; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -129,19 +129,19 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   // isset id assignments
   private static final int __FRAMEID_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.DEPTH_IMAGE,_Fields.POSITION,_Fields.JOINTS,_Fields.WORDS};
+  private _Fields optionals[] = {_Fields.IMAGE,_Fields.DEPTH_IMAGE,_Fields.POSITION,_Fields.WORDS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.FRAME_ID, new org.apache.thrift.meta_data.FieldMetaData("frameId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.IMAGE, new org.apache.thrift.meta_data.FieldMetaData("image", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.IMAGE, new org.apache.thrift.meta_data.FieldMetaData("image", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     tmpMap.put(_Fields.DEPTH_IMAGE, new org.apache.thrift.meta_data.FieldMetaData("depthImage", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
     tmpMap.put(_Fields.POSITION, new org.apache.thrift.meta_data.FieldMetaData("position", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Position3D.class)));
-    tmpMap.put(_Fields.JOINTS, new org.apache.thrift.meta_data.FieldMetaData("joints", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.JOINTS, new org.apache.thrift.meta_data.FieldMetaData("joints", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, JointType.class), 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Joint.class))));
@@ -157,12 +157,12 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
 
   public Frame(
     int frameId,
-    ByteBuffer image)
+    Map<JointType,Joint> joints)
   {
     this();
     this.frameId = frameId;
     setFrameIdIsSet(true);
-    this.image = image;
+    this.joints = joints;
   }
 
   /**
@@ -676,14 +676,16 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     sb.append("frameId:");
     sb.append(this.frameId);
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("image:");
-    if (this.image == null) {
-      sb.append("null");
-    } else {
-      org.apache.thrift.TBaseHelper.toString(this.image, sb);
+    if (isSetImage()) {
+      if (!first) sb.append(", ");
+      sb.append("image:");
+      if (this.image == null) {
+        sb.append("null");
+      } else {
+        org.apache.thrift.TBaseHelper.toString(this.image, sb);
+      }
+      first = false;
     }
-    first = false;
     if (isSetDepthImage()) {
       if (!first) sb.append(", ");
       sb.append("depthImage:");
@@ -704,16 +706,14 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       }
       first = false;
     }
-    if (isSetJoints()) {
-      if (!first) sb.append(", ");
-      sb.append("joints:");
-      if (this.joints == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.joints);
-      }
-      first = false;
+    if (!first) sb.append(", ");
+    sb.append("joints:");
+    if (this.joints == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.joints);
     }
+    first = false;
     if (isSetWords()) {
       if (!first) sb.append(", ");
       sb.append("words:");
@@ -731,8 +731,8 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // alas, we cannot check 'frameId' because it's a primitive and you chose the non-beans generator.
-    if (image == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'image' was not present! Struct: " + toString());
+    if (joints == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'joints' was not present! Struct: " + toString());
     }
     // check for sub-struct validity
     if (position != null) {
@@ -870,9 +870,11 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       oprot.writeI32(struct.frameId);
       oprot.writeFieldEnd();
       if (struct.image != null) {
-        oprot.writeFieldBegin(IMAGE_FIELD_DESC);
-        oprot.writeBinary(struct.image);
-        oprot.writeFieldEnd();
+        if (struct.isSetImage()) {
+          oprot.writeFieldBegin(IMAGE_FIELD_DESC);
+          oprot.writeBinary(struct.image);
+          oprot.writeFieldEnd();
+        }
       }
       if (struct.depthImage != null) {
         if (struct.isSetDepthImage()) {
@@ -889,19 +891,17 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
         }
       }
       if (struct.joints != null) {
-        if (struct.isSetJoints()) {
-          oprot.writeFieldBegin(JOINTS_FIELD_DESC);
+        oprot.writeFieldBegin(JOINTS_FIELD_DESC);
+        {
+          oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, struct.joints.size()));
+          for (Map.Entry<JointType, Joint> _iter7 : struct.joints.entrySet())
           {
-            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, struct.joints.size()));
-            for (Map.Entry<JointType, Joint> _iter7 : struct.joints.entrySet())
-            {
-              oprot.writeI32(_iter7.getKey().getValue());
-              _iter7.getValue().write(oprot);
-            }
-            oprot.writeMapEnd();
+            oprot.writeI32(_iter7.getKey().getValue());
+            _iter7.getValue().write(oprot);
           }
-          oprot.writeFieldEnd();
+          oprot.writeMapEnd();
         }
+        oprot.writeFieldEnd();
       }
       if (struct.words != null) {
         if (struct.isSetWords()) {
@@ -935,36 +935,36 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
     public void write(org.apache.thrift.protocol.TProtocol prot, Frame struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeI32(struct.frameId);
-      oprot.writeBinary(struct.image);
+      {
+        oprot.writeI32(struct.joints.size());
+        for (Map.Entry<JointType, Joint> _iter9 : struct.joints.entrySet())
+        {
+          oprot.writeI32(_iter9.getKey().getValue());
+          _iter9.getValue().write(oprot);
+        }
+      }
       BitSet optionals = new BitSet();
-      if (struct.isSetDepthImage()) {
+      if (struct.isSetImage()) {
         optionals.set(0);
       }
-      if (struct.isSetPosition()) {
+      if (struct.isSetDepthImage()) {
         optionals.set(1);
       }
-      if (struct.isSetJoints()) {
+      if (struct.isSetPosition()) {
         optionals.set(2);
       }
       if (struct.isSetWords()) {
         optionals.set(3);
       }
       oprot.writeBitSet(optionals, 4);
+      if (struct.isSetImage()) {
+        oprot.writeBinary(struct.image);
+      }
       if (struct.isSetDepthImage()) {
         oprot.writeBinary(struct.depthImage);
       }
       if (struct.isSetPosition()) {
         struct.position.write(oprot);
-      }
-      if (struct.isSetJoints()) {
-        {
-          oprot.writeI32(struct.joints.size());
-          for (Map.Entry<JointType, Joint> _iter9 : struct.joints.entrySet())
-          {
-            oprot.writeI32(_iter9.getKey().getValue());
-            _iter9.getValue().write(oprot);
-          }
-        }
       }
       if (struct.isSetWords()) {
         {
@@ -982,33 +982,33 @@ public class Frame implements org.apache.thrift.TBase<Frame, Frame._Fields>, jav
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.frameId = iprot.readI32();
       struct.setFrameIdIsSet(true);
-      struct.image = iprot.readBinary();
-      struct.setImageIsSet(true);
+      {
+        org.apache.thrift.protocol.TMap _map11 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.joints = new HashMap<JointType,Joint>(2*_map11.size);
+        for (int _i12 = 0; _i12 < _map11.size; ++_i12)
+        {
+          JointType _key13; // required
+          Joint _val14; // required
+          _key13 = JointType.findByValue(iprot.readI32());
+          _val14 = new Joint();
+          _val14.read(iprot);
+          struct.joints.put(_key13, _val14);
+        }
+      }
+      struct.setJointsIsSet(true);
       BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
+        struct.image = iprot.readBinary();
+        struct.setImageIsSet(true);
+      }
+      if (incoming.get(1)) {
         struct.depthImage = iprot.readBinary();
         struct.setDepthImageIsSet(true);
       }
-      if (incoming.get(1)) {
+      if (incoming.get(2)) {
         struct.position = new Position3D();
         struct.position.read(iprot);
         struct.setPositionIsSet(true);
-      }
-      if (incoming.get(2)) {
-        {
-          org.apache.thrift.protocol.TMap _map11 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.joints = new HashMap<JointType,Joint>(2*_map11.size);
-          for (int _i12 = 0; _i12 < _map11.size; ++_i12)
-          {
-            JointType _key13; // required
-            Joint _val14; // required
-            _key13 = JointType.findByValue(iprot.readI32());
-            _val14 = new Joint();
-            _val14.read(iprot);
-            struct.joints.put(_key13, _val14);
-          }
-        }
-        struct.setJointsIsSet(true);
       }
       if (incoming.get(3)) {
         {

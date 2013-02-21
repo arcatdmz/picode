@@ -45,10 +45,10 @@ struct Joint {
 
 struct Frame {
   1: required i32 frameId,
-  2: required binary image,
+  2: optional binary image,
   3: optional binary depthImage,
   4: optional Position3D position,
-  5: optional map<JointType, Joint> joints,
+  5: required map<JointType, Joint> joints,
   6: optional set<string> words
 }
 
@@ -61,6 +61,9 @@ service KinectService {
 
   oneway void setDepthEnabled(1:bool isEnabled),
   bool isDepthEnabled(),
+
+  oneway void setColorEnabled(1:bool isEnabled),
+  bool isColorEnabled(),
 
   oneway void setAngle(1:i32 angle),
   i32 getAngle(),

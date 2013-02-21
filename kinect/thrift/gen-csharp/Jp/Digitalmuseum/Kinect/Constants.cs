@@ -17,6 +17,6 @@ namespace Jp.Digitalmuseum.Kinect
 {
   public class Constants
   {
-    public static int SERVER_DEFAULT_PORT = 9191;
+    public static int SERVER_DEFAULT_PORT = 50000;
   }
 }

@@ -10,9 +10,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 
-import java.util.Map;
-
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
@@ -27,11 +27,17 @@ import javax.swing.event.ChangeEvent;
 import org.apache.thrift.TException;
 
 import jp.digitalmuseum.kinect.Frame;
-import jp.digitalmuseum.kinect.Joint;
-import jp.digitalmuseum.kinect.JointType;
 import jp.digitalmuseum.kinect.KinectServiceConstants;
 import jp.digitalmuseum.kinect.KinectServiceWrapper;
 import jp.digitalmuseum.kinect.KinectServiceWrapper.FrameListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class KinectClientFrame extends JFrame implements FrameListener {
 
@@ -48,6 +54,8 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 			new KinectServiceWrapper("localhost", KinectServiceConstants.SERVER_DEFAULT_PORT);
 	private transient Frame frame;
 	private transient BufferedImage image;
+	private transient short[] depthImageData;
+	private transient BufferedImage depthImage;
 
 	/**
 	 * Launch the application.
@@ -84,72 +92,80 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 			@Override
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
-				int x = 0, y = 0;
-				if (image != null) {
-					g.drawImage(image, x, y, null);
-					x = (getWidth() - image.getWidth()) / 2;
-					y = (getHeight() - image.getHeight()) / 2;
+				if (frame == null) {
+					return;
 				}
-				if (frame != null
-						&& frame.joints != null
-						&& frame.joints.size() == 20) {
+				if (frame.isSetDepthImage()) {
+					if (depthImage == null) {
+						depthImage = new BufferedImage(
+								320, 240, BufferedImage.TYPE_INT_RGB);
+					}
+					DataBufferInt dbi = (DataBufferInt)depthImage.getRaster().getDataBuffer();
+					int[] pixels = dbi.getData();
+					for (int i = 0; i < depthImageData.length; i ++) {
+						int realDepth = KinectServiceWrapper.getRealDepth(depthImageData[i]);
+						if (realDepth == KinectServiceWrapper.tooNearDepth) {
+							pixels[i] = 0xff0000;
+						} else if (realDepth == KinectServiceWrapper.tooFarDepth) {
+							pixels[i] = 0x00ff00;
+						} else if (realDepth == KinectServiceWrapper.unknownDepth) {
+							pixels[i] = 0x0000ff;
+						} else {
+							int intensity = 0xff * Math.abs(realDepth) / KinectServiceWrapper.tooFarDepth;
+							int index = KinectServiceWrapper.getPlayerIndex(depthImageData[i]);
+							switch (index) {
+							case 1:
+							case 4:
+							case 7:
+								pixels[i] = (intensity << 16) + (intensity << 8);
+								break;
+							case 2:
+							case 5:
+								pixels[i] = (intensity << 16) + intensity;
+								break;
+							case 3:
+							case 6:
+								pixels[i] = (intensity << 8) + intensity;
+								break;
+							default:
+								pixels[i] = (intensity << 16) + (intensity << 8) + intensity;
+								break;
+							}
+						}
+					}
+					int x = (getWidth() - depthImage.getWidth() * 2) / 2;
+					int y = (getHeight() - depthImage.getHeight() * 2) / 2;
+					
+					g.drawImage(depthImage, x, y, depthImage.getWidth() * 2, depthImage.getHeight() * 2, null);
+				} else if (frame.isSetImage()) {
+					int x = (getWidth() - image.getWidth()) / 2;
+					int y = (getHeight() - image.getHeight()) / 2;
+
+					g.drawImage(image, x, y, null);
+
 					g.setColor(Color.green);
 					((Graphics2D) g).setStroke(stroke);
-					drawLine(g, x, y, frame.joints,
-							JointType.HIP_CENTER,
-							JointType.SPINE,
-							JointType.SHOULDER_CENTER,
-							JointType.HEAD);
-					drawLine(g, x, y, frame.joints,
-							JointType.SHOULDER_CENTER,
-							JointType.SHOULDER_RIGHT,
-							JointType.ELBOW_RIGHT,
-							JointType.WRIST_RIGHT,
-							JointType.HAND_RIGHT);
-					drawLine(g, x, y, frame.joints,
-							JointType.SHOULDER_CENTER,
-							JointType.SHOULDER_LEFT,
-							JointType.ELBOW_LEFT,
-							JointType.WRIST_LEFT,
-							JointType.HAND_LEFT);
-					drawLine(g, x, y, frame.joints,
-							JointType.HIP_CENTER,
-							JointType.HIP_RIGHT,
-							JointType.KNEE_RIGHT,
-							JointType.ANKLE_RIGHT,
-							JointType.FOOT_RIGHT);
-					drawLine(g, x, y, frame.joints,
-							JointType.HIP_CENTER,
-							JointType.HIP_LEFT,
-							JointType.KNEE_LEFT,
-							JointType.ANKLE_LEFT,
-							JointType.FOOT_LEFT);
-				}
-			}
-
-			private void drawLine(Graphics g, int x, int y, Map<JointType, Joint> joints, JointType... keys) {
-				Joint sj = joints.get(keys[0]);
-				double sx = 0, sy = 0;
-				if (sj != null) {
-					sx = sj.screenPosition.x + x;
-					sy = sj.screenPosition.y + y;
-				}
-				for (int i = 1; i < keys.length; i ++) {
-					Joint ej = joints.get(keys[i]);
-					double ex = 0, ey = 0;
-					if (ej != null) {
-						ex = ej.screenPosition.x + x;
-						ey = ej.screenPosition.y + y;
-					}
-					if (sj != null && ej != null) {
-						g.drawLine((int)sx, (int)sy, (int)ex, (int)ey);
-					}
-					sj = ej;
-					sx = ex;
-					sy = ey;
+					KinectServiceWrapper.drawSkeleton(g, frame, x, y);
 				}
 			}
 		};
+		panel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (!kinect.isStarted()) {
+					return;
+				}
+				try {
+					boolean isDepthEnabled = kinect.isDepthEnabled();
+					kinect.setDepthEnabled(!isDepthEnabled);
+					System.out.print("Depth stream is ");
+					System.out.println(
+							isDepthEnabled ? "disabled." : "enabled");
+				} catch (TException te) {
+					te.printStackTrace();
+				}
+			}
+		});
 		panel.setPreferredSize(new Dimension(640, 480));
 		contentPane.add(panel, BorderLayout.CENTER);
 		
@@ -199,6 +215,8 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 				return;
 			}
 			try {
+				kinect.addKeyword("Capture");
+				kinect.setVoiceEnabled(true);
 				slider.setValue(kinect.getAngle());
 				kinect.addFrameListener(KinectClientFrame.this);
 			} catch (TException te) {
@@ -218,9 +236,33 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 		}
 	}
 	@Override
-	public void frameUpdated(Frame frame, BufferedImage image) {
+	public void frameUpdated(Frame frame, BufferedImage image, short[] depthImageData) {
 		this.frame = frame;
 		this.image = image;
+		this.depthImageData = depthImageData;
+		if (frame.isSetWords()) {
+			boolean save = false;
+			System.out.print("Word detected: ");
+			for (String word : frame.getWords()) {
+				System.out.print(word);
+				save |= "capture".equalsIgnoreCase(word);
+			}
+			System.out.println();
+			if (save) {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
+				try {
+					File file = new File(sdf.format(new Date()) + ".jpg");
+					ImageIO.write(image, "JPEG",
+							new FileOutputStream(file));
+					System.out.print("Current image is saved as: ");
+					System.out.println(file.getAbsolutePath());
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		panel.repaint();
 	}
 	@Override

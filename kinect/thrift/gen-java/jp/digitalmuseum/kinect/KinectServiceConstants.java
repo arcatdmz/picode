@@ -32,6 +32,6 @@ import org.slf4j.LoggerFactory;
 
 public class KinectServiceConstants {
 
-  public static final int SERVER_DEFAULT_PORT = 9191;
+  public static final int SERVER_DEFAULT_PORT = 50000;
 
 }

@@ -25,9 +25,10 @@ namespace Jp.Digitalmuseum.Kinect
   {
     private int _frameId;
     private byte[] _image;
+    private byte[] _depthImage;
     private Position3D _position;
     private Dictionary<JointType, Joint> _joints;
-    private THashSet<string> _keywords;
+    private THashSet<string> _words;
 
     public int FrameId
     {
@@ -52,6 +53,19 @@ namespace Jp.Digitalmuseum.Kinect
       {
         __isset.image = true;
         this._image = value;
+      }
+    }
+
+    public byte[] DepthImage
+    {
+      get
+      {
+        return _depthImage;
+      }
+      set
+      {
+        __isset.depthImage = true;
+        this._depthImage = value;
       }
     }
 
@@ -81,16 +95,16 @@ namespace Jp.Digitalmuseum.Kinect
       }
     }
 
-    public THashSet<string> Keywords
+    public THashSet<string> Words
     {
       get
       {
-        return _keywords;
+        return _words;
       }
       set
       {
-        __isset.keywords = true;
-        this._keywords = value;
+        __isset.words = true;
+        this._words = value;
       }
     }
 
@@ -102,9 +116,10 @@ namespace Jp.Digitalmuseum.Kinect
     public struct Isset {
       public bool frameId;
       public bool image;
+      public bool depthImage;
       public bool position;
       public bool joints;
-      public bool keywords;
+      public bool words;
     }
 
     public Frame() {
@@ -137,6 +152,13 @@ namespace Jp.Digitalmuseum.Kinect
             }
             break;
           case 3:
+            if (field.Type == TType.String) {
+              DepthImage = iprot.ReadBinary();
+            } else { 
+              TProtocolUtil.Skip(iprot, field.Type);
+            }
+            break;
+          case 4:
             if (field.Type == TType.Struct) {
               Position = new Position3D();
               Position.Read(iprot);
@@ -144,7 +166,7 @@ namespace Jp.Digitalmuseum.Kinect
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 4:
+          case 5:
             if (field.Type == TType.Map) {
               {
                 Joints = new Dictionary<JointType, Joint>();
@@ -164,16 +186,16 @@ namespace Jp.Digitalmuseum.Kinect
               TProtocolUtil.Skip(iprot, field.Type);
             }
             break;
-          case 5:
+          case 6:
             if (field.Type == TType.Set) {
               {
-                Keywords = new THashSet<string>();
+                Words = new THashSet<string>();
                 TSet _set4 = iprot.ReadSetBegin();
                 for( int _i5 = 0; _i5 < _set4.Count; ++_i5)
                 {
                   string _elem6 = null;
                   _elem6 = iprot.ReadString();
-                  Keywords.Add(_elem6);
+                  Words.Add(_elem6);
                 }
                 iprot.ReadSetEnd();
               }
@@ -210,10 +232,18 @@ namespace Jp.Digitalmuseum.Kinect
         oprot.WriteBinary(Image);
         oprot.WriteFieldEnd();
       }
+      if (DepthImage != null && __isset.depthImage) {
+        field.Name = "depthImage";
+        field.Type = TType.String;
+        field.ID = 3;
+        oprot.WriteFieldBegin(field);
+        oprot.WriteBinary(DepthImage);
+        oprot.WriteFieldEnd();
+      }
       if (Position != null && __isset.position) {
         field.Name = "position";
         field.Type = TType.Struct;
-        field.ID = 3;
+        field.ID = 4;
         oprot.WriteFieldBegin(field);
         Position.Write(oprot);
         oprot.WriteFieldEnd();
@@ -221,7 +251,7 @@ namespace Jp.Digitalmuseum.Kinect
       if (Joints != null && __isset.joints) {
         field.Name = "joints";
         field.Type = TType.Map;
-        field.ID = 4;
+        field.ID = 5;
         oprot.WriteFieldBegin(field);
         {
           oprot.WriteMapBegin(new TMap(TType.I32, TType.Struct, Joints.Count));
@@ -234,14 +264,14 @@ namespace Jp.Digitalmuseum.Kinect
         }
         oprot.WriteFieldEnd();
       }
-      if (Keywords != null && __isset.keywords) {
-        field.Name = "keywords";
+      if (Words != null && __isset.words) {
+        field.Name = "words";
         field.Type = TType.Set;
-        field.ID = 5;
+        field.ID = 6;
         oprot.WriteFieldBegin(field);
         {
-          oprot.WriteSetBegin(new TSet(TType.String, Keywords.Count));
-          foreach (string _iter8 in Keywords)
+          oprot.WriteSetBegin(new TSet(TType.String, Words.Count));
+          foreach (string _iter8 in Words)
           {
             oprot.WriteString(_iter8);
           }
@@ -259,12 +289,14 @@ namespace Jp.Digitalmuseum.Kinect
       sb.Append(FrameId);
       sb.Append(",Image: ");
       sb.Append(Image);
+      sb.Append(",DepthImage: ");
+      sb.Append(DepthImage);
       sb.Append(",Position: ");
       sb.Append(Position== null ? "<null>" : Position.ToString());
       sb.Append(",Joints: ");
       sb.Append(Joints);
-      sb.Append(",Keywords: ");
-      sb.Append(Keywords);
+      sb.Append(",Words: ");
+      sb.Append(Words);
       sb.Append(")");
       return sb.ToString();
     }

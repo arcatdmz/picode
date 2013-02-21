@@ -1,7 +1,7 @@
 namespace java jp.digitalmuseum.kinect
 namespace csharp Jp.Digitalmuseum.Kinect
 
-const i32 SERVER_DEFAULT_PORT = 9191
+const i32 SERVER_DEFAULT_PORT = 50000
 
 enum JointType {
    HIP_CENTER = 0,
@@ -46,17 +46,26 @@ struct Joint {
 struct Frame {
   1: required i32 frameId,
   2: required binary image,
-  3: optional Position3D position,
-  4: optional map<JointType, Joint> joints,
-  5: optional set<string> keywords
+  3: optional binary depthImage,
+  4: optional Position3D position,
+  5: optional map<JointType, Joint> joints,
+  6: optional set<string> words
 }
 
 service KinectService {
+
+  oneway void setVoiceEnabled(1:bool isEnabled),
+  bool isVoiceEnabled(),
   oneway void addKeyword(1:string text),
   oneway void removeKeyword(1:string text),
-  set<string> getKeywords(),
+
+  oneway void setDepthEnabled(1:bool isEnabled),
+  bool isDepthEnabled(),
+
   oneway void setAngle(1:i32 angle),
   i32 getAngle(),
+
   Frame getFrame(),
-  oneway void shutdown();
+
+  oneway void shutdown()
 }

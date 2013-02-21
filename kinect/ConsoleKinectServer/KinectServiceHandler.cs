@@ -18,35 +18,52 @@ namespace ConsoleSkeletonServer
         #region Private State
         private SpeechRecognitionEngine sre;
         private KinectAudioSource kinectAudioSource;
-        private THashSet<string> recognizedPhrases;
+        private HashSet<string> words;
         private HashSet<string> keywords;
         private byte[] imageData;
+        private short[] depthImageData;
+        private byte[] depthImageRawData;
         private Skeleton[] skeletonData;
         private T.Frame frame;
+        private bool voiceEnabled;
+        private bool depthEnabled;
         #endregion Private State
 
         #region Thrift server implementation
         public KinectServiceHandler()
         {
+            voiceEnabled = false;
+            depthEnabled = false;
             KinectStart();
             InitializeSpeechRecognition();
+        }
+
+        public void setVoiceEnabled(bool isEnabled)
+        {
+            voiceEnabled = isEnabled;
+            UpdateSpeechRecognition();
+        }
+
+        public bool isVoiceEnabled()
+        {
+            return true;
         }
 
         public void addKeyword(string text)
         {
             keywords.Add(text);
-            UpdateGrammar();
+            UpdateSpeechRecognition();
         }
 
         public void removeKeyword(string text)
         {
             keywords.Remove(text);
-            UpdateGrammar();
+            UpdateSpeechRecognition();
         }
 
-        private void UpdateGrammar()
+        private void UpdateSpeechRecognition()
         {
-            if (keywords.Count <= 0)
+            if (keywords.Count <= 0 || !voiceEnabled)
             {
                 StopSpeechRecognition();
                 return;
@@ -72,6 +89,16 @@ namespace ConsoleSkeletonServer
                 keywords.Add(keyword);
             }
             return keywords;
+        }
+
+        public void setDepthEnabled(bool isEnabled)
+        {
+            depthEnabled = isEnabled;
+        }
+
+        public bool isDepthEnabled()
+        {
+            return depthEnabled;
         }
 
         private int currentAngle = int.MaxValue;
@@ -123,7 +150,7 @@ namespace ConsoleSkeletonServer
 
         public T.Frame getFrame()
         {
-            recognizedPhrases.Clear();
+            words.Clear();
             return frame;
         }
 
@@ -185,11 +212,26 @@ namespace ConsoleSkeletonServer
             // Application should enable all streams first.
             sensor.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
             sensor.DepthStream.Enable(DepthImageFormat.Resolution320x240Fps30);
-            imageData = new byte[640 * 480 * 4];
 
-            // sensor.SkeletonStream.TransformSmooth = true;
+            // Smoothed with some latency.
+            // Filters out medium jitters.
+            // Good for a menu system that needs to be smooth but
+            // doesn't need the reduced latency as much as gesture recognition does.
+            sensor.SkeletonStream.Enable(new TransformSmoothParameters()
+            {
+                // See http://msdn.microsoft.com/en-us/library/jj131024.aspx for details.
+                Smoothing = 0.5f,
+                Correction = 0.1f,
+                Prediction = 0.5f,
+                JitterRadius = 0.1f,
+                MaxDeviationRadius = 0.1f
+            });
+
+            imageData = new byte[640 * 480 * 4];
+            depthImageData = new short[320 * 240];
+            depthImageRawData = new byte[320 * 240 * 2];
+
             sensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(AllFramesReady);
-            sensor.SkeletonStream.Enable();
 
             try
             {
@@ -367,7 +409,7 @@ namespace ConsoleSkeletonServer
         {
             sre = new SpeechRecognitionEngine(GetKinectRecognizer());
             keywords = new HashSet<string>();
-            recognizedPhrases = new THashSet<string>();
+            words = new HashSet<string>();
         }
 
         private static RecognizerInfo GetKinectRecognizer()
@@ -402,12 +444,12 @@ namespace ConsoleSkeletonServer
 
         void sre_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
-            recognizedPhrases.Add(e.Result.Text);
+            words.Add(e.Result.Text);
         }
 
         public void StopSpeechRecognition()
         {
-            if (sre != null)
+            if (kinectAudioSource != null)
             {
                 kinectAudioSource.Stop();
                 sre.RecognizeAsyncCancel();
@@ -423,15 +465,28 @@ namespace ConsoleSkeletonServer
             // Construct data.
             T.Frame frame = new T.Frame();
             using (ColorImageFrame colorImageFrame = e.OpenColorImageFrame())
+            using (DepthImageFrame depthImageFrame = e.OpenDepthImageFrame())
             using (SkeletonFrame skeletonFrame = e.OpenSkeletonFrame())
             {
-                if (colorImageFrame != null)
+                // Color image processing.
+                if (colorImageFrame == null)
                 {
-                    colorImageFrame.CopyPixelDataTo(imageData);
-                    frame.FrameId = colorImageFrame.FrameNumber;
-                    frame.Image = imageData;
+                    return;
                 }
-                frame.Joints = new Dictionary<T.JointType,T.Joint>();
+                colorImageFrame.CopyPixelDataTo(imageData);
+                frame.FrameId = colorImageFrame.FrameNumber;
+                frame.Image = imageData;
+
+                // Depth image processing.
+                if (depthImageFrame != null && depthEnabled)
+                {
+                    depthImageFrame.CopyPixelDataTo(depthImageData);
+                    Buffer.BlockCopy(depthImageData, 0, depthImageRawData, 0, depthImageRawData.Length);
+                    frame.DepthImage = depthImageRawData;
+                }
+
+                // Skeleton proccessing.
+                frame.Joints = new Dictionary<T.JointType, T.Joint>();
                 if (skeletonFrame != null)
                 {
                     if ((skeletonData == null) || (skeletonData.Length != skeletonFrame.SkeletonArrayLength))
@@ -475,7 +530,14 @@ namespace ConsoleSkeletonServer
                     }
                 }
             }
-            frame.Keywords = recognizedPhrases;
+            if (words.Count > 0)
+            {
+                frame.Words = new THashSet<string>();
+                foreach (var word in words)
+                {
+                    frame.Words.Add(word);
+                }
+            }
             this.frame = frame;
         }
 

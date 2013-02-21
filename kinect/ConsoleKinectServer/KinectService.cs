@@ -19,6 +19,16 @@ namespace Jp.Digitalmuseum.Kinect
 {
   public partial class KinectService {
     public interface Iface {
+      void setVoiceEnabled(bool isEnabled);
+      #if SILVERLIGHT
+      IAsyncResult Begin_setVoiceEnabled(AsyncCallback callback, object state, bool isEnabled);
+      void End_setVoiceEnabled(IAsyncResult asyncResult);
+      #endif
+      bool isVoiceEnabled();
+      #if SILVERLIGHT
+      IAsyncResult Begin_isVoiceEnabled(AsyncCallback callback, object state, );
+      bool End_isVoiceEnabled(IAsyncResult asyncResult);
+      #endif
       void addKeyword(string text);
       #if SILVERLIGHT
       IAsyncResult Begin_addKeyword(AsyncCallback callback, object state, string text);
@@ -29,10 +39,15 @@ namespace Jp.Digitalmuseum.Kinect
       IAsyncResult Begin_removeKeyword(AsyncCallback callback, object state, string text);
       void End_removeKeyword(IAsyncResult asyncResult);
       #endif
-      THashSet<string> getKeywords();
+      void setDepthEnabled(bool isEnabled);
       #if SILVERLIGHT
-      IAsyncResult Begin_getKeywords(AsyncCallback callback, object state, );
-      THashSet<string> End_getKeywords(IAsyncResult asyncResult);
+      IAsyncResult Begin_setDepthEnabled(AsyncCallback callback, object state, bool isEnabled);
+      void End_setDepthEnabled(IAsyncResult asyncResult);
+      #endif
+      bool isDepthEnabled();
+      #if SILVERLIGHT
+      IAsyncResult Begin_isDepthEnabled(AsyncCallback callback, object state, );
+      bool End_isDepthEnabled(IAsyncResult asyncResult);
       #endif
       void setAngle(int angle);
       #if SILVERLIGHT
@@ -80,6 +95,109 @@ namespace Jp.Digitalmuseum.Kinect
         get { return oprot_; }
       }
 
+
+      
+      #if SILVERLIGHT
+      public IAsyncResult Begin_setVoiceEnabled(AsyncCallback callback, object state, bool isEnabled)
+      {
+        return send_setVoiceEnabled(callback, state, isEnabled);
+      }
+
+      public void End_setVoiceEnabled(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+      }
+
+      #endif
+
+      public void setVoiceEnabled(bool isEnabled)
+      {
+        #if !SILVERLIGHT
+        send_setVoiceEnabled(isEnabled);
+
+        #else
+        var asyncResult = Begin_setVoiceEnabled(null, null, isEnabled);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_setVoiceEnabled(AsyncCallback callback, object state, bool isEnabled)
+      #else
+      public void send_setVoiceEnabled(bool isEnabled)
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("setVoiceEnabled", TMessageType.Call, seqid_));
+        setVoiceEnabled_args args = new setVoiceEnabled_args();
+        args.IsEnabled = isEnabled;
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      
+      #if SILVERLIGHT
+      public IAsyncResult Begin_isVoiceEnabled(AsyncCallback callback, object state, )
+      {
+        return send_isVoiceEnabled(callback, state);
+      }
+
+      public bool End_isVoiceEnabled(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+        return recv_isVoiceEnabled();
+      }
+
+      #endif
+
+      public bool isVoiceEnabled()
+      {
+        #if !SILVERLIGHT
+        send_isVoiceEnabled();
+        return recv_isVoiceEnabled();
+
+        #else
+        var asyncResult = Begin_isVoiceEnabled(null, null, );
+        return End_isVoiceEnabled(asyncResult);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_isVoiceEnabled(AsyncCallback callback, object state, )
+      #else
+      public void send_isVoiceEnabled()
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("isVoiceEnabled", TMessageType.Call, seqid_));
+        isVoiceEnabled_args args = new isVoiceEnabled_args();
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      public bool recv_isVoiceEnabled()
+      {
+        TMessage msg = iprot_.ReadMessageBegin();
+        if (msg.Type == TMessageType.Exception) {
+          TApplicationException x = TApplicationException.Read(iprot_);
+          iprot_.ReadMessageEnd();
+          throw x;
+        }
+        isVoiceEnabled_result result = new isVoiceEnabled_result();
+        result.Read(iprot_);
+        iprot_.ReadMessageEnd();
+        if (result.__isset.success) {
+          return result.Success;
+        }
+        throw new TApplicationException(TApplicationException.ExceptionType.MissingResult, "isVoiceEnabled failed: unknown result");
+      }
 
       
       #if SILVERLIGHT
@@ -167,39 +285,37 @@ namespace Jp.Digitalmuseum.Kinect
 
       
       #if SILVERLIGHT
-      public IAsyncResult Begin_getKeywords(AsyncCallback callback, object state, )
+      public IAsyncResult Begin_setDepthEnabled(AsyncCallback callback, object state, bool isEnabled)
       {
-        return send_getKeywords(callback, state);
+        return send_setDepthEnabled(callback, state, isEnabled);
       }
 
-      public THashSet<string> End_getKeywords(IAsyncResult asyncResult)
+      public void End_setDepthEnabled(IAsyncResult asyncResult)
       {
         oprot_.Transport.EndFlush(asyncResult);
-        return recv_getKeywords();
       }
 
       #endif
 
-      public THashSet<string> getKeywords()
+      public void setDepthEnabled(bool isEnabled)
       {
         #if !SILVERLIGHT
-        send_getKeywords();
-        return recv_getKeywords();
+        send_setDepthEnabled(isEnabled);
 
         #else
-        var asyncResult = Begin_getKeywords(null, null, );
-        return End_getKeywords(asyncResult);
+        var asyncResult = Begin_setDepthEnabled(null, null, isEnabled);
 
         #endif
       }
       #if SILVERLIGHT
-      public IAsyncResult send_getKeywords(AsyncCallback callback, object state, )
+      public IAsyncResult send_setDepthEnabled(AsyncCallback callback, object state, bool isEnabled)
       #else
-      public void send_getKeywords()
+      public void send_setDepthEnabled(bool isEnabled)
       #endif
       {
-        oprot_.WriteMessageBegin(new TMessage("getKeywords", TMessageType.Call, seqid_));
-        getKeywords_args args = new getKeywords_args();
+        oprot_.WriteMessageBegin(new TMessage("setDepthEnabled", TMessageType.Call, seqid_));
+        setDepthEnabled_args args = new setDepthEnabled_args();
+        args.IsEnabled = isEnabled;
         args.Write(oprot_);
         oprot_.WriteMessageEnd();
         #if SILVERLIGHT
@@ -209,7 +325,51 @@ namespace Jp.Digitalmuseum.Kinect
         #endif
       }
 
-      public THashSet<string> recv_getKeywords()
+      
+      #if SILVERLIGHT
+      public IAsyncResult Begin_isDepthEnabled(AsyncCallback callback, object state, )
+      {
+        return send_isDepthEnabled(callback, state);
+      }
+
+      public bool End_isDepthEnabled(IAsyncResult asyncResult)
+      {
+        oprot_.Transport.EndFlush(asyncResult);
+        return recv_isDepthEnabled();
+      }
+
+      #endif
+
+      public bool isDepthEnabled()
+      {
+        #if !SILVERLIGHT
+        send_isDepthEnabled();
+        return recv_isDepthEnabled();
+
+        #else
+        var asyncResult = Begin_isDepthEnabled(null, null, );
+        return End_isDepthEnabled(asyncResult);
+
+        #endif
+      }
+      #if SILVERLIGHT
+      public IAsyncResult send_isDepthEnabled(AsyncCallback callback, object state, )
+      #else
+      public void send_isDepthEnabled()
+      #endif
+      {
+        oprot_.WriteMessageBegin(new TMessage("isDepthEnabled", TMessageType.Call, seqid_));
+        isDepthEnabled_args args = new isDepthEnabled_args();
+        args.Write(oprot_);
+        oprot_.WriteMessageEnd();
+        #if SILVERLIGHT
+        return oprot_.Transport.BeginFlush(callback, state);
+        #else
+        oprot_.Transport.Flush();
+        #endif
+      }
+
+      public bool recv_isDepthEnabled()
       {
         TMessage msg = iprot_.ReadMessageBegin();
         if (msg.Type == TMessageType.Exception) {
@@ -217,13 +377,13 @@ namespace Jp.Digitalmuseum.Kinect
           iprot_.ReadMessageEnd();
           throw x;
         }
-        getKeywords_result result = new getKeywords_result();
+        isDepthEnabled_result result = new isDepthEnabled_result();
         result.Read(iprot_);
         iprot_.ReadMessageEnd();
         if (result.__isset.success) {
           return result.Success;
         }
-        throw new TApplicationException(TApplicationException.ExceptionType.MissingResult, "getKeywords failed: unknown result");
+        throw new TApplicationException(TApplicationException.ExceptionType.MissingResult, "isDepthEnabled failed: unknown result");
       }
 
       
@@ -436,9 +596,12 @@ namespace Jp.Digitalmuseum.Kinect
       public Processor(Iface iface)
       {
         iface_ = iface;
+        processMap_["setVoiceEnabled"] = setVoiceEnabled_Process;
+        processMap_["isVoiceEnabled"] = isVoiceEnabled_Process;
         processMap_["addKeyword"] = addKeyword_Process;
         processMap_["removeKeyword"] = removeKeyword_Process;
-        processMap_["getKeywords"] = getKeywords_Process;
+        processMap_["setDepthEnabled"] = setDepthEnabled_Process;
+        processMap_["isDepthEnabled"] = isDepthEnabled_Process;
         processMap_["setAngle"] = setAngle_Process;
         processMap_["getAngle"] = getAngle_Process;
         processMap_["getFrame"] = getFrame_Process;
@@ -475,6 +638,27 @@ namespace Jp.Digitalmuseum.Kinect
         return true;
       }
 
+      public void setVoiceEnabled_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        setVoiceEnabled_args args = new setVoiceEnabled_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        iface_.setVoiceEnabled(args.IsEnabled);
+        return;
+      }
+      public void isVoiceEnabled_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        isVoiceEnabled_args args = new isVoiceEnabled_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        isVoiceEnabled_result result = new isVoiceEnabled_result();
+        result.Success = iface_.isVoiceEnabled();
+        oprot.WriteMessageBegin(new TMessage("isVoiceEnabled", TMessageType.Reply, seqid)); 
+        result.Write(oprot);
+        oprot.WriteMessageEnd();
+        oprot.Transport.Flush();
+      }
+
       public void addKeyword_Process(int seqid, TProtocol iprot, TProtocol oprot)
       {
         addKeyword_args args = new addKeyword_args();
@@ -491,14 +675,22 @@ namespace Jp.Digitalmuseum.Kinect
         iface_.removeKeyword(args.Text);
         return;
       }
-      public void getKeywords_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      public void setDepthEnabled_Process(int seqid, TProtocol iprot, TProtocol oprot)
       {
-        getKeywords_args args = new getKeywords_args();
+        setDepthEnabled_args args = new setDepthEnabled_args();
         args.Read(iprot);
         iprot.ReadMessageEnd();
-        getKeywords_result result = new getKeywords_result();
-        result.Success = iface_.getKeywords();
-        oprot.WriteMessageBegin(new TMessage("getKeywords", TMessageType.Reply, seqid)); 
+        iface_.setDepthEnabled(args.IsEnabled);
+        return;
+      }
+      public void isDepthEnabled_Process(int seqid, TProtocol iprot, TProtocol oprot)
+      {
+        isDepthEnabled_args args = new isDepthEnabled_args();
+        args.Read(iprot);
+        iprot.ReadMessageEnd();
+        isDepthEnabled_result result = new isDepthEnabled_result();
+        result.Success = iface_.isDepthEnabled();
+        oprot.WriteMessageBegin(new TMessage("isDepthEnabled", TMessageType.Reply, seqid)); 
         result.Write(oprot);
         oprot.WriteMessageEnd();
         oprot.Transport.Flush();
@@ -546,6 +738,227 @@ namespace Jp.Digitalmuseum.Kinect
         iface_.shutdown();
         return;
       }
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class setVoiceEnabled_args : TBase
+    {
+      private bool _isEnabled;
+
+      public bool IsEnabled
+      {
+        get
+        {
+          return _isEnabled;
+        }
+        set
+        {
+          __isset.isEnabled = true;
+          this._isEnabled = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool isEnabled;
+      }
+
+      public setVoiceEnabled_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            case 1:
+              if (field.Type == TType.Bool) {
+                IsEnabled = iprot.ReadBool();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("setVoiceEnabled_args");
+        oprot.WriteStructBegin(struc);
+        TField field = new TField();
+        if (__isset.isEnabled) {
+          field.Name = "isEnabled";
+          field.Type = TType.Bool;
+          field.ID = 1;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteBool(IsEnabled);
+          oprot.WriteFieldEnd();
+        }
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("setVoiceEnabled_args(");
+        sb.Append("IsEnabled: ");
+        sb.Append(IsEnabled);
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class isVoiceEnabled_args : TBase
+    {
+
+      public isVoiceEnabled_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("isVoiceEnabled_args");
+        oprot.WriteStructBegin(struc);
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("isVoiceEnabled_args(");
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class isVoiceEnabled_result : TBase
+    {
+      private bool _success;
+
+      public bool Success
+      {
+        get
+        {
+          return _success;
+        }
+        set
+        {
+          __isset.success = true;
+          this._success = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool success;
+      }
+
+      public isVoiceEnabled_result() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            case 0:
+              if (field.Type == TType.Bool) {
+                Success = iprot.ReadBool();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("isVoiceEnabled_result");
+        oprot.WriteStructBegin(struc);
+        TField field = new TField();
+
+        if (this.__isset.success) {
+          field.Name = "Success";
+          field.Type = TType.Bool;
+          field.ID = 0;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteBool(Success);
+          oprot.WriteFieldEnd();
+        }
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("isVoiceEnabled_result(");
+        sb.Append("Success: ");
+        sb.Append(Success);
+        sb.Append(")");
+        return sb.ToString();
+      }
+
     }
 
 
@@ -726,10 +1139,97 @@ namespace Jp.Digitalmuseum.Kinect
     #if !SILVERLIGHT
     [Serializable]
     #endif
-    public partial class getKeywords_args : TBase
+    public partial class setDepthEnabled_args : TBase
+    {
+      private bool _isEnabled;
+
+      public bool IsEnabled
+      {
+        get
+        {
+          return _isEnabled;
+        }
+        set
+        {
+          __isset.isEnabled = true;
+          this._isEnabled = value;
+        }
+      }
+
+
+      public Isset __isset;
+      #if !SILVERLIGHT
+      [Serializable]
+      #endif
+      public struct Isset {
+        public bool isEnabled;
+      }
+
+      public setDepthEnabled_args() {
+      }
+
+      public void Read (TProtocol iprot)
+      {
+        TField field;
+        iprot.ReadStructBegin();
+        while (true)
+        {
+          field = iprot.ReadFieldBegin();
+          if (field.Type == TType.Stop) { 
+            break;
+          }
+          switch (field.ID)
+          {
+            case 1:
+              if (field.Type == TType.Bool) {
+                IsEnabled = iprot.ReadBool();
+              } else { 
+                TProtocolUtil.Skip(iprot, field.Type);
+              }
+              break;
+            default: 
+              TProtocolUtil.Skip(iprot, field.Type);
+              break;
+          }
+          iprot.ReadFieldEnd();
+        }
+        iprot.ReadStructEnd();
+      }
+
+      public void Write(TProtocol oprot) {
+        TStruct struc = new TStruct("setDepthEnabled_args");
+        oprot.WriteStructBegin(struc);
+        TField field = new TField();
+        if (__isset.isEnabled) {
+          field.Name = "isEnabled";
+          field.Type = TType.Bool;
+          field.ID = 1;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteBool(IsEnabled);
+          oprot.WriteFieldEnd();
+        }
+        oprot.WriteFieldStop();
+        oprot.WriteStructEnd();
+      }
+
+      public override string ToString() {
+        StringBuilder sb = new StringBuilder("setDepthEnabled_args(");
+        sb.Append("IsEnabled: ");
+        sb.Append(IsEnabled);
+        sb.Append(")");
+        return sb.ToString();
+      }
+
+    }
+
+
+    #if !SILVERLIGHT
+    [Serializable]
+    #endif
+    public partial class isDepthEnabled_args : TBase
     {
 
-      public getKeywords_args() {
+      public isDepthEnabled_args() {
       }
 
       public void Read (TProtocol iprot)
@@ -754,14 +1254,14 @@ namespace Jp.Digitalmuseum.Kinect
       }
 
       public void Write(TProtocol oprot) {
-        TStruct struc = new TStruct("getKeywords_args");
+        TStruct struc = new TStruct("isDepthEnabled_args");
         oprot.WriteStructBegin(struc);
         oprot.WriteFieldStop();
         oprot.WriteStructEnd();
       }
 
       public override string ToString() {
-        StringBuilder sb = new StringBuilder("getKeywords_args(");
+        StringBuilder sb = new StringBuilder("isDepthEnabled_args(");
         sb.Append(")");
         return sb.ToString();
       }
@@ -772,11 +1272,11 @@ namespace Jp.Digitalmuseum.Kinect
     #if !SILVERLIGHT
     [Serializable]
     #endif
-    public partial class getKeywords_result : TBase
+    public partial class isDepthEnabled_result : TBase
     {
-      private THashSet<string> _success;
+      private bool _success;
 
-      public THashSet<string> Success
+      public bool Success
       {
         get
         {
@@ -798,7 +1298,7 @@ namespace Jp.Digitalmuseum.Kinect
         public bool success;
       }
 
-      public getKeywords_result() {
+      public isDepthEnabled_result() {
       }
 
       public void Read (TProtocol iprot)
@@ -814,18 +1314,8 @@ namespace Jp.Digitalmuseum.Kinect
           switch (field.ID)
           {
             case 0:
-              if (field.Type == TType.Set) {
-                {
-                  Success = new THashSet<string>();
-                  TSet _set9 = iprot.ReadSetBegin();
-                  for( int _i10 = 0; _i10 < _set9.Count; ++_i10)
-                  {
-                    string _elem11 = null;
-                    _elem11 = iprot.ReadString();
-                    Success.Add(_elem11);
-                  }
-                  iprot.ReadSetEnd();
-                }
+              if (field.Type == TType.Bool) {
+                Success = iprot.ReadBool();
               } else { 
                 TProtocolUtil.Skip(iprot, field.Type);
               }
@@ -840,33 +1330,24 @@ namespace Jp.Digitalmuseum.Kinect
       }
 
       public void Write(TProtocol oprot) {
-        TStruct struc = new TStruct("getKeywords_result");
+        TStruct struc = new TStruct("isDepthEnabled_result");
         oprot.WriteStructBegin(struc);
         TField field = new TField();
 
         if (this.__isset.success) {
-          if (Success != null) {
-            field.Name = "Success";
-            field.Type = TType.Set;
-            field.ID = 0;
-            oprot.WriteFieldBegin(field);
-            {
-              oprot.WriteSetBegin(new TSet(TType.String, Success.Count));
-              foreach (string _iter12 in Success)
-              {
-                oprot.WriteString(_iter12);
-              }
-              oprot.WriteSetEnd();
-            }
-            oprot.WriteFieldEnd();
-          }
+          field.Name = "Success";
+          field.Type = TType.Bool;
+          field.ID = 0;
+          oprot.WriteFieldBegin(field);
+          oprot.WriteBool(Success);
+          oprot.WriteFieldEnd();
         }
         oprot.WriteFieldStop();
         oprot.WriteStructEnd();
       }
 
       public override string ToString() {
-        StringBuilder sb = new StringBuilder("getKeywords_result(");
+        StringBuilder sb = new StringBuilder("isDepthEnabled_result(");
         sb.Append("Success: ");
         sb.Append(Success);
         sb.Append(")");

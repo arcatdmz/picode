@@ -1,1 +1,0 @@
-thrift -gen csharp KinectService.thrift

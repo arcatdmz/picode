@@ -1,4 +1,4 @@
-package com.phybots.picode.ui;
+package com.phybots.picode;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.library;
+package com.phybots.picode.ui.pose;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -20,15 +20,15 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import com.phybots.Phybots;
-import com.phybots.picode.Pose;
+import com.phybots.picode.PicodeMain;
 import com.phybots.picode.action.ApplySelectedPoseAction;
 import com.phybots.picode.action.DeleteSelectedPoseAction;
 import com.phybots.picode.action.DuplicateSelectedPoseAction;
 import com.phybots.picode.action.EditSelectedPoseNameAction;
 import com.phybots.picode.action.OpenPoseFolderAction;
 import com.phybots.picode.action.ShowCameraFrameAction;
+import com.phybots.picode.api.Pose;
 import com.phybots.picode.ui.PicodeFrame;
-import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.library.internal.DefaultListCellEditor;
 import com.phybots.picode.ui.library.internal.IconListRenderer;
 import com.phybots.picode.ui.library.internal.JMutableList;
@@ -84,7 +84,7 @@ public class PosePanel extends JPanel {
 		if (getJList().getSelectedIndex() != -1) {
 			Pose pose = jList.getSelectedValue();
 			if (pose != null) {
-				picodeMain.getPoseManager().duplicate(pose);
+				picodeMain.getRobotManager().getCurrentPoser().getPoseLibrary().duplicate(pose);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class PosePanel extends JPanel {
 		if (getJList().getSelectedIndex() != -1) {
 			Pose pose = jList.getSelectedValue();
 			if (pose != null) {
-				picodeMain.getPoseManager().removeElement(pose);
+				picodeMain.getRobotManager().getCurrentPoser().getPoseLibrary().removeElement(pose);
 			}
 		}
 	}
@@ -189,10 +189,10 @@ public class PosePanel extends JPanel {
 
 	private JMutableList<Pose> getJList() {
 		if (jList == null) {
-			jList = new JMutableList<Pose>(picodeMain.getPoseManager());
+			jList = new JMutableList<Pose>(picodeMain.getRobotManager().getCurrentPoser().getPoseLibrary());
 			jList.setListCellEditor(new PoseCellEditor());
 			jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			jList.setCellRenderer(new IconListRenderer(picodeMain.getPoseManager()));
+			jList.setCellRenderer(new IconListRenderer(picodeMain.getRobotManager().getCurrentPoser().getPoseLibrary()));
 			jList.setDragEnabled(true);
 			jList.setDropMode(DropMode.INSERT);
 			jList.setFont(defaultFont);

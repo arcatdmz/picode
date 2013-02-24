@@ -5,8 +5,8 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 
-import com.phybots.picode.ui.ProcessingIntegration;
-import com.phybots.picode.ui.PicodeSettings;
+import com.phybots.picode.PicodeSettings;
+import com.phybots.picode.ProcessingIntegration;
 
 public class OpenPoseFolderAction extends AbstractAction {
 	private static final long serialVersionUID = 2092347018925625257L;

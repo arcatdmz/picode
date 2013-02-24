@@ -20,11 +20,13 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
 
+import com.phybots.picode.GlobalPoseLibrary;
+import com.phybots.picode.PicodeMain;
 import com.phybots.picode.parser.PdeParser;
 import com.phybots.picode.parser.PdeWalker;
-import com.phybots.picode.ui.PicodeMain;
 import com.phybots.picode.ui.editor.Decoration.Type;
-import com.phybots.picode.ui.library.PoseManager;
+import com.phybots.picode.ui.pose.PoseLibrary;
+
 import processing.app.PicodeSketch;
 import processing.app.SketchException;
 import processing.mode.java.preproc.PdeEmitter;
@@ -214,20 +216,22 @@ public class DocumentManager implements DocumentListener {
 				attrs = keywordAttrs;
 				break;
 			case POSE:
-				PoseManager poseManager = picodeMain.getPoseManager();
+				GlobalPoseLibrary poseManager = picodeMain.getGlobalPoseLibrary();
 				String poseName = decoration.getOption().toString();
 				System.out.println("Pose " + poseName);
 				if (poseManager.contains(poseName)) {
-					attrs = poseManager.getCharacterAttributes(poseName);
+					//attrs = poseManager.getCharacterAttributes(poseName);
+					//TODO
 				} else {
-					try {
-						attrs = poseManager.load(poseName).getCharacterAttributes();
-					} catch (IOException e) {
+//					try {
+						//attrs = poseManager.load(poseName).getCharacterAttributes();
+						//TODO
+//					} catch (IOException e) {
 						se = new SketchException(
-								e.getMessage(),
+								"",//e.getMessage(),
 								picodeMain.getFrame().getCurrentEditorIndex(),
 								parser.getLine(startIndex), parser.getColumn(startIndex));
-					}
+//					}
 				}
 				break;
 			default:

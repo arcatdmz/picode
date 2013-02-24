@@ -4,8 +4,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.phybots.picode.Robot;
-import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.PicodeMain;
+import com.phybots.picode.api.Poser;
 import com.phybots.picode.ui.dialog.NewRobotDialog;
 
 public class NewRobotAction extends AbstractAction {
@@ -22,10 +22,10 @@ public class NewRobotAction extends AbstractAction {
       public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
         if (command.equals("OK")) {
-          Robot robot = contentPanel.newRobotInstance();
+          Poser robot = contentPanel.newRobotInstance();
           if (robot != null) {
-            picodeMain.addRobot(robot);
-            picodeMain.setActiveRobot(robot);
+            picodeMain.getRobotManager().addRobot(robot);
+            //picodeMain.setActiveRobot(robot);//TODO
           }
         }
         picodeMain.getFrame().setEnabled(true);

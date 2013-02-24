@@ -24,7 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.phybots.picode.HumanPose;
+import com.phybots.picode.api.HumanPose;
 
 public class KinectClient extends Thread {
 	private Set<KinectListener> listeners =

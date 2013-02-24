@@ -3,8 +3,8 @@ package com.phybots.picode.parser;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import com.phybots.picode.ui.ProcessingIntegration;
-import com.phybots.picode.ui.PicodeSettings;
+import com.phybots.picode.PicodeSettings;
+import com.phybots.picode.ProcessingIntegration;
 
 import processing.app.PicodeSketch;
 import processing.app.SketchException;

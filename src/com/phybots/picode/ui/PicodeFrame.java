@@ -15,8 +15,7 @@ import javax.swing.SwingConstants;
 import java.awt.FlowLayout;
 
 import com.phybots.Phybots;
-import com.phybots.picode.Pose;
-import com.phybots.picode.Robot;
+import com.phybots.picode.PicodeMain;
 import com.phybots.picode.action.DeleteActiveRobotAction;
 import com.phybots.picode.action.DeleteFileAction;
 import com.phybots.picode.action.LoadSketchAction;
@@ -28,10 +27,13 @@ import com.phybots.picode.action.RunAction;
 import com.phybots.picode.action.SaveSketchAction;
 import com.phybots.picode.action.SaveSketchAsAction;
 import com.phybots.picode.action.StopAction;
+import com.phybots.picode.api.Pose;
+import com.phybots.picode.api.Poser;
 import com.phybots.picode.builder.Launcher;
 import com.phybots.picode.ui.editor.PicodeEditor;
 import com.phybots.picode.ui.editor.PicodeEditorPane;
-import com.phybots.picode.ui.library.PosePanel;
+import com.phybots.picode.ui.pose.PosePanel;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -110,11 +112,9 @@ public class PicodeFrame extends JFrame {
   public void setRunnable(boolean isRunnable) {
     getMnFile().setEnabled(isRunnable);
     getMnSketch().setEnabled(isRunnable);
-    getComboBox().setEnabled(isRunnable);
+    //getComboBox().setEnabled(isRunnable);//TODO
     getBtnRun().setEnabled(isRunnable);
     getBtnStop().setEnabled(!isRunnable);
-    getBtnAddRobot().setEnabled(isRunnable);
-    getBtnDeleteRobot().setEnabled(isRunnable);
     getPosePanel().setRunnable(isRunnable);
   }
 
@@ -131,15 +131,6 @@ public class PicodeFrame extends JFrame {
 		getLibraryPane().setDividerLocation(proportionalLocation);
 	}
 	*/
-
-	public void applySelectedPose() {
-		Pose pose = getPosePanel().getSelectedPose();
-		if (pose == null ||
-		    picodeMain.getActiveRobot() == null ||
-				!picodeMain.getActiveRobot().setPose(pose)) {
-			picodeMain.getFrame().setStatusText("Setting pose failed.");
-		}
-	}
 
 	public void duplicateSelectedPose() {
 		getPosePanel().duplicateSelectedPose();
@@ -215,14 +206,6 @@ public class PicodeFrame extends JFrame {
 		getTabbedPane().setTitleAt(getCurrentEditorIndex(),
 				code.isExtension("pde") ? code.getPrettyName() : code.getFileName());
 	}
-
-  public void updateRobotList() {
-    JComboBox comboBox = getComboBox();
-    comboBox.removeAllItems();
-    for (Robot robot : picodeMain.getRobots()) {
-      comboBox.addItem(robot);
-    }
-  }
 
 	public void updateTabs() {
 	  // TODO Save current selection before clearance.
@@ -327,29 +310,6 @@ public class PicodeFrame extends JFrame {
 			gbc_stopJButton.gridx = 1;
 			gbc_stopJButton.gridy = 0;
 			menuPanel.add(getBtnStop(), gbc_stopJButton);
-			GridBagConstraints gbc_lblActiveRobotLabel = new GridBagConstraints();
-			gbc_lblActiveRobotLabel.anchor = GridBagConstraints.EAST;
-			gbc_lblActiveRobotLabel.insets = new Insets(5, 0, 5, 5);
-			gbc_lblActiveRobotLabel.gridx = 2;
-			gbc_lblActiveRobotLabel.gridy = 0;
-			menuPanel.add(getLblActiveRobotLabel(), gbc_lblActiveRobotLabel);
-			GridBagConstraints gbc_comboBox = new GridBagConstraints();
-			gbc_comboBox.weightx = 0.8;
-			gbc_comboBox.insets = new Insets(5, 0, 5, 5);
-			gbc_comboBox.fill = GridBagConstraints.BOTH;
-			gbc_comboBox.gridx = 3;
-			gbc_comboBox.gridy = 0;
-			menuPanel.add(getComboBox(), gbc_comboBox);
-			GridBagConstraints gbc_plusButton = new GridBagConstraints();
-			gbc_plusButton.insets = new Insets(5, 0, 5, 5);
-			gbc_plusButton.gridx = 4;
-			gbc_plusButton.gridy = 0;
-			menuPanel.add(getBtnAddRobot(), gbc_plusButton);
-			GridBagConstraints gbc_minusButton = new GridBagConstraints();
-			gbc_minusButton.insets = new Insets(5, 0, 5, 5);
-			gbc_minusButton.gridx = 5;
-			gbc_minusButton.gridy = 0;
-			menuPanel.add(getBtnDeleteRobot(), gbc_minusButton);
 		}
 		return menuPanel;
 	}
@@ -565,43 +525,4 @@ public class PicodeFrame extends JFrame {
 		}
 		return mntmDelete;
 	}
-  private JLabel getLblActiveRobotLabel() {
-    if (lblActiveRobotLabel == null) {
-    	lblActiveRobotLabel = new JLabel("Active robot:");
-    	lblActiveRobotLabel.setFont(defaultFont);
-    }
-    return lblActiveRobotLabel;
-  }
-  private JComboBox getComboBox() {
-    if (comboBox == null) {
-    	comboBox = new JComboBox();
-    	comboBox.setFont(defaultFont);
-    	comboBox.addItemListener(new ItemListener() {
-        public void itemStateChanged(ItemEvent e) {
-          if (e.getStateChange() == ItemEvent.SELECTED) {
-            picodeMain.setActiveRobot((Robot) e.getItem());
-          }
-        }
-      });
-    }
-    return comboBox;
-  }
-  private JButton getBtnDeleteRobot() {
-    if (btnDeleteRobot == null) {
-    	btnDeleteRobot = new JButton();
-    	btnDeleteRobot.setAction(new DeleteActiveRobotAction(picodeMain));
-    	btnDeleteRobot.setFont(defaultFont);
-    	btnDeleteRobot.setText("-");
-    }
-    return btnDeleteRobot;
-  }
-  private JButton getBtnAddRobot() {
-    if (btnAddRobot == null) {
-    	btnAddRobot = new JButton();
-    	btnAddRobot.setAction(new NewRobotAction(picodeMain));
-    	btnAddRobot.setFont(defaultFont);
-    	btnAddRobot.setText("+");
-    }
-    return btnAddRobot;
-  }
 }

@@ -1,18 +1,14 @@
-package com.phybots.picode;
+package com.phybots.picode.api;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import com.phybots.Phybots;
-import com.phybots.service.Service;
-import com.phybots.task.ManageMindstormsNXTMotorState;
-
 public class MindstormsNXTPose extends Pose {
 	private int[] rotationCounts;
 
 	public MindstormsNXTPose() {
-		super(RobotType.MindstormsNXT);
+		super();
 		rotationCounts = new int[3];
 	}
 
@@ -28,36 +24,6 @@ public class MindstormsNXTPose extends Pose {
 		for (int i = 0; i < rotationCounts.length; i ++) {
 			writer.write(String.valueOf(rotationCounts[i]));
 			writer.newLine();
-		}
-	}
-
-	@Override
-	public boolean applyTo(MotorManager motorManager) {
-		Phybots.getInstance().getOutStream().println(
-				"---Setting pose of the robot.");
-		int i = 0;
-		for (Service service : ((MindstormsNXTMotorManager) motorManager).getServices()) {
-			if (!(service instanceof ManageMindstormsNXTMotorState)) {
-				return false;
-			}
-			ManageMindstormsNXTMotorState manager = (ManageMindstormsNXTMotorState) service;
-			manager.setRotationCount(rotationCounts[i ++]);
-			Phybots.getInstance().getOutStream().println(
-					String.format("Port %d: %d", i, rotationCounts[i - 1]));
-		}
-		return true;
-	}
-
-	@Override
-	public void retrieveFrom(MotorManager motorManager) {
-	  Phybots.getInstance().getOutStream().println(
-				"---Retrieving pose of the robot.");
-		int i = 0;
-		for (Service service : ((MindstormsNXTMotorManager) motorManager).getServices()) {
-			ManageMindstormsNXTMotorState manager = (ManageMindstormsNXTMotorState) service;
-			rotationCounts[i ++] = manager.getRotationCount();
-			Phybots.getInstance().getOutStream().println(
-					String.format("Port %d: %d", i, rotationCounts[i - 1]));
 		}
 	}
 

@@ -3,7 +3,7 @@ package com.phybots.picode.action;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
-import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.PicodeMain;
 
 public class RenameFileAction extends AbstractAction {
 	private static final long serialVersionUID = -301527980746520731L;

@@ -1,4 +1,4 @@
-package com.phybots.picode;
+package com.phybots.picode.api;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,10 +40,6 @@ public class HumanPose extends Pose {
 	private Vector[] joints = null;
 	private double[] angles = new double[15];
 
-	public HumanPose() {
-		super(RobotType.Human);
-	}
-
 	@Override
 	public void load(BufferedReader reader) throws IOException {
 		joints = new Vector[20];
@@ -82,17 +78,6 @@ public class HumanPose extends Pose {
 				writer.newLine();
 			}
 		}
-	}
-
-	@Override
-	public boolean applyTo(MotorManager motorManager) {
-		return false;
-	}
-
-	@Override
-	public void retrieveFrom(MotorManager motorManager) {
-		float[][] data = ((HumanMotorManager) motorManager).getJoints();
-		importData(data);
 	}
 
 	public void importData(float[][] data) {

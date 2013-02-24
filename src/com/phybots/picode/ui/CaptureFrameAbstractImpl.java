@@ -4,10 +4,11 @@ import javax.swing.JFrame;
 
 import com.phybots.gui.ImageProviderPanel;
 import com.phybots.service.Camera;
+import com.phybots.picode.PicodeMain;
 import com.phybots.picode.action.CapturePoseAction;
 import com.phybots.picode.action.StartPreviewAction;
 import com.phybots.picode.action.StopPreviewAction;
-import com.phybots.picode.ui.library.PoseManager;
+import com.phybots.picode.ui.pose.PoseLibrary;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
@@ -33,8 +34,8 @@ public abstract class CaptureFrameAbstractImpl extends JFrame {
 	public CaptureFrameAbstractImpl(PicodeMain picodeMain) {
 		this.picodeMain = picodeMain;
 
-		Camera camera = picodeMain.getCamera();
-		PoseManager poseManager = picodeMain.getPoseManager();
+		Camera camera = null; //picodeMain.getCamera();//TODO
+		PoseLibrary poseManager = null;//picodeMain.getPoseLibrary();
 
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -95,13 +96,13 @@ public abstract class CaptureFrameAbstractImpl extends JFrame {
 
 	private void windowOpening() {
 		((StartPreviewAction) btnStart.getAction()).actionPerformed(null);
-		picodeMain.getActiveRobot().setEditable(true);
+		//picodeMain.getActiveRobot().setEditable(true);
 		picodeMain.getFrame().setEnabled(false);
 	}
 
 	private void windowClosing() {
 		((StopPreviewAction) btnStop.getAction()).actionPerformed(null);
-		picodeMain.getActiveRobot().setEditable(false);
+		//picodeMain.getActiveRobot().setEditable(false);
 		picodeMain.getFrame().setEnabled(true);
 	}
 }

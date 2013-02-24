@@ -33,9 +33,9 @@ import java.util.Date;
 
 import javax.swing.*;
 
+import com.phybots.picode.PicodeMain;
+import com.phybots.picode.PicodeSettings;
 import com.phybots.picode.parser.PdeParser;
-import com.phybots.picode.ui.PicodeMain;
-import com.phybots.picode.ui.PicodeSettings;
 
 
 /**

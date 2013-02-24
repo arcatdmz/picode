@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.phybots.picode.ProcessingIntegration;
 import com.phybots.picode.ui.PicodeFrame;
-import com.phybots.picode.ui.ProcessingIntegration;
 
 import processing.app.Base;
 import processing.app.Preferences;

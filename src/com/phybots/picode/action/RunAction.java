@@ -5,8 +5,8 @@ import javax.swing.AbstractAction;
 
 import processing.app.SketchException;
 
+import com.phybots.picode.PicodeMain;
 import com.phybots.picode.builder.Builder;
-import com.phybots.picode.ui.PicodeMain;
 
 public class RunAction extends AbstractAction {
 	private static final long serialVersionUID = -8531811907562726754L;
@@ -23,11 +23,11 @@ public class RunAction extends AbstractAction {
 		}
 		Builder builder = new Builder(picodeMain, picodeMain.getSketch());
 		try {
-			picodeMain.disconnectActiveRobot();
+			picodeMain.beforeRun();
 			builder.run();
 		} catch (SketchException se) {
 			picodeMain.getPintegration().statusError(se);
-			// picodeMain.connectActiveRobot();
+			picodeMain.afterRun();
 		}
 	}
 }

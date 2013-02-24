@@ -8,8 +8,8 @@ import javax.swing.JScrollPane;
 
 import processing.app.SketchCode;
 
-import com.phybots.picode.Pose;
-import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.PicodeMain;
+import com.phybots.picode.api.Pose;
 import com.phybots.picode.ui.editor.Decoration.Type;
 
 public class PicodeEditor extends JEditorPane {
@@ -40,7 +40,7 @@ public class PicodeEditor extends JEditorPane {
 							decoration.getType() == Type.POSE) {
 						PicodeMain picodeMain = PicodeEditor.this.picodeMain;
 						String poseName = (String) decoration.getOption();
-						Pose pose = picodeMain.getPoseManager().get(poseName);
+						Pose pose = picodeMain.getGlobalPoseLibrary().get(poseName);
 						picodeMain.getFrame().editPoseName(pose);
 						System.out.println(decoration.getOption());
 					}

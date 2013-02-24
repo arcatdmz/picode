@@ -3,7 +3,7 @@ package com.phybots.picode.action;
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
-import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.PicodeMain;
 
 public class DeleteFileAction extends AbstractAction {
 	private static final long serialVersionUID = 8648208348407144085L;

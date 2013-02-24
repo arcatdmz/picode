@@ -1,4 +1,4 @@
-package com.phybots.picode.ui;
+package com.phybots.picode;
 
 import java.awt.EventQueue;
 import java.awt.Point;
@@ -7,6 +7,7 @@ import java.io.File;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import com.phybots.picode.ui.PicodeFrame;
 import com.phybots.picode.ui.editor.PicodeEditor;
 
 import processing.app.Base;

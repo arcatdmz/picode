@@ -1,4 +1,4 @@
-package com.phybots.picode;
+package com.phybots.picode.api;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -16,19 +16,14 @@ import javax.swing.ImageIcon;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
-import com.phybots.picode.ui.PicodeSettings;
+import com.phybots.picode.PicodeSettings;
 import com.phybots.picode.ui.editor.DocumentManager;
 
 public abstract class Pose implements Cloneable {
-	private RobotType robotType;
 	private String name;
 	private BufferedImage photo;
 	private Icon icon;
 	private SimpleAttributeSet attrs;
-
-	public Pose(RobotType robotType) {
-		this.robotType = robotType;
-	}
 
 	public static Pose load(String name) throws IOException {
 
@@ -36,9 +31,8 @@ public abstract class Pose implements Cloneable {
 		BufferedReader reader = new BufferedReader(new FileReader(new File(
 				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
 		String robotTypeString = reader.readLine().trim();
-		RobotType robotType = RobotType.valueOf(robotTypeString);
-		Pose pose = robotType.newPoseInstance();
-		pose.robotType = robotType;
+
+		Pose pose = null; //TODO
 		pose.name = name;
 		pose.load(reader);
 		reader.close();
@@ -66,7 +60,7 @@ public abstract class Pose implements Cloneable {
 		// Save the pose data.
 		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
 				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
-		writer.write(getRobotType().toString());
+		//writer.write(getRobotType().toString());
 		writer.newLine();
 		save(writer);
 		writer.close();
@@ -76,10 +70,6 @@ public abstract class Pose implements Cloneable {
 			ImageIO.write(getPhoto(), "JPEG", new File(
 					PicodeSettings.getPoseFolderPath(), getPhotoFileName()));
 		}
-	}
-
-	public RobotType getRobotType() {
-		return robotType;
 	}
 
 	public String getName() {
@@ -119,10 +109,6 @@ public abstract class Pose implements Cloneable {
 	protected abstract void load(BufferedReader reader) throws IOException;
 
 	protected abstract void save(BufferedWriter writer) throws IOException;
-
-	public abstract boolean applyTo(MotorManager motorManager);
-
-	public abstract void retrieveFrom(MotorManager motorManager);
 
 	public abstract Pose interpolate(Pose pose, float proportion);
 

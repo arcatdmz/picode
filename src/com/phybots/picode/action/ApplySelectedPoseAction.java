@@ -16,6 +16,6 @@ public class ApplySelectedPoseAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		picodeFrame.applySelectedPose();
+		//picodeFrame.applySelectedPose();//TODO
 	}
 }

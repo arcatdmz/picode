@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.library;
+package com.phybots.picode.ui.pose;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -7,27 +7,23 @@ import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.text.SimpleAttributeSet;
 
-import com.phybots.picode.MotorManager;
-import com.phybots.picode.Pose;
-import com.phybots.picode.ui.PicodeMain;
-import com.phybots.picode.ui.PicodeSettings;
+import com.phybots.picode.PicodeMain;
+import com.phybots.picode.PicodeSettings;
+import com.phybots.picode.api.MotorManager;
+import com.phybots.picode.api.Pose;
+import com.phybots.picode.api.Poser;
+import com.phybots.picode.camera.Camera;
 import com.phybots.picode.ui.library.internal.IconListModel;
 import com.phybots.picode.ui.library.internal.IconProvider;
-import com.phybots.picode.ui.library.PoseManager;
+import com.phybots.picode.ui.pose.PoseLibrary;
 
-public class PoseManager extends IconListModel<Pose> implements IconProvider {
+public class PoseLibrary extends IconListModel<Pose> implements IconProvider {
 	private static final long serialVersionUID = 4052983716336989888L;
-	private PicodeMain picodeMain;
+	private Poser poser;
 	private int numPoses;
 
-	/**
-	 * Default constructor.
-	 * When the parameter is null, this manager does not provide functionality to {@link #capture()} new poses.
-	 *
-	 * @param picodeMain
-	 */
-	public PoseManager(PicodeMain picodeMain) {
-		this.picodeMain = picodeMain;
+	public PoseLibrary(Poser poser) {
+		this.poser = poser;
 		initialize();
 	}
 
@@ -58,10 +54,6 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 		return pose;
 	}
 
-	public void save(Pose pose) throws IOException {
-		pose.save();
-	}
-
 	public Pose duplicate(Pose pose) {
 		Pose newPose = pose.clone();
 		int i = 0;
@@ -78,7 +70,7 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 			}
 		}
 		try {
-			save(newPose);
+			newPose.save();
 		} catch (IOException e) {
 			return null;
 		}
@@ -118,7 +110,8 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 	}
 
 	public Pose capture() {
-		Pose pose = picodeMain.getActiveRobot().getType().newPoseInstance();
+		MotorManager motorManager = poser.getMotorManager();
+		Pose pose = motorManager.getPose();
 		while (true) {
 			pose.setName(String.format("New pose (%d)", numPoses ++));
 			if (!new File(
@@ -127,11 +120,10 @@ public class PoseManager extends IconListModel<Pose> implements IconProvider {
 				break;
 			}
 		}
-		MotorManager motorManager = picodeMain.getActiveRobot().getMotorManager();
-		pose.retrieveFrom(motorManager);
-		pose.setPhoto(motorManager.getImage());
+		Camera camera = poser.getCamera();
+		pose.setPhoto(camera.getImage());
 		try {
-			save(pose);
+			pose.save();
 		} catch (IOException e) {
 			return null;
 		}

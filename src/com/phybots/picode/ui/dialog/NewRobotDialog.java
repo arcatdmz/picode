@@ -15,7 +15,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.phybots.Phybots;
-import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.PicodeMain;
 
 public class NewRobotDialog extends JDialog implements ActionListener {
 

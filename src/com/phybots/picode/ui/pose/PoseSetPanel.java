@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.library;
+package com.phybots.picode.ui.pose;
 
 import javax.swing.JPanel;
 

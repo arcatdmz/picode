@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.PicodeMain;
 
 public class ShowCameraFrameAction extends AbstractAction {
 	private static final long serialVersionUID = -2297070480522312162L;
@@ -16,8 +16,9 @@ public class ShowCameraFrameAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-	  if (picodeMain.getActiveRobot() != null) {
-	    picodeMain.showCaptureFrame(true);
-	  }
+//		if (picodeMain.getActiveRobot() != null) {
+//			picodeMain.showCaptureFrame(true);
+//		}
+		//TODO
 	}
 }

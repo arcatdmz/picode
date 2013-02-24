@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.phybots.Phybots;
-import com.phybots.picode.ui.ProcessingIntegration;
-import com.phybots.picode.ui.PicodeMain;
-import com.phybots.picode.ui.PicodeSettings;
+import com.phybots.picode.PicodeMain;
+import com.phybots.picode.PicodeSettings;
+import com.phybots.picode.ProcessingIntegration;
 
 import processing.app.Base;
 import processing.app.Library;

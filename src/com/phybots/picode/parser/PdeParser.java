@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.phybots.picode.ui.ProcessingIntegration;
-import com.phybots.picode.ui.PicodeSettings;
+import com.phybots.picode.PicodeSettings;
+import com.phybots.picode.ProcessingIntegration;
 
 import processing.app.PicodeSketch;
 import processing.app.SketchCode;

@@ -1,4 +1,4 @@
-package com.phybots.picode;
+package com.phybots.picode.api;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,11 +7,11 @@ import java.util.List;
 import com.phybots.service.ServiceAbstractImpl;
 
 public class Action {
-	private Robot robot;
+	private Poser robot;
 	private List<ActionElement> elements;
 	private ActionService actionService;
 
-	Action(Robot robot) {
+	Action(Poser robot) {
 		this.robot = robot;
 		elements = new ArrayList<ActionElement>();
 	}

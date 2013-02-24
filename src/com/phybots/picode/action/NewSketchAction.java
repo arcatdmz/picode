@@ -5,7 +5,7 @@ import javax.swing.AbstractAction;
 
 import processing.app.PicodeSketch;
 
-import com.phybots.picode.ui.PicodeMain;
+import com.phybots.picode.PicodeMain;
 
 public class NewSketchAction extends AbstractAction {
 	private static final long serialVersionUID = 2044354384275000188L;

@@ -4,8 +4,8 @@ import com.phybots.picode.PicodeMain;
 
 public class HumanMotorManager extends MotorManager {
 
-	public HumanMotorManager(PicodeMain picodeMain, Poser robot) throws InstantiationException {
-		super(picodeMain, robot);
+	public HumanMotorManager(PicodeMain picodeMain, Poser poser) {
+		super(picodeMain, poser);
 	}
 
 	public void start() {
@@ -22,7 +22,6 @@ public class HumanMotorManager extends MotorManager {
 
 	@Override
 	public boolean setPose(Pose pose) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 

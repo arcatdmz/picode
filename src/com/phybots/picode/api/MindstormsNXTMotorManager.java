@@ -1,13 +1,10 @@
 package com.phybots.picode.api;
 
-import com.phybots.Phybots;
 import com.phybots.picode.PicodeMain;
-import com.phybots.service.Service;
-import com.phybots.task.ManageMindstormsNXTMotorState;
 
 public class MindstormsNXTMotorManager extends MotorManager {
 
-	public MindstormsNXTMotorManager(PicodeMain picodeMain, Poser robot) throws InstantiationException {
+	public MindstormsNXTMotorManager(PicodeMain picodeMain, Poser robot) {
 		super(picodeMain, robot);
 	}
 
@@ -36,8 +33,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		if (!(pose instanceof MindstormsNXTPose)) {
 			return false;
 		}
-		MindstormsNXTPose mindstormsNXTPose =
-				(MindstormsNXTPose) pose;
+		MindstormsNXTPose myPose = (MindstormsNXTPose) pose;
 		int i = 0;
 // TODO
 //		for (Service service : getServices()) {
@@ -52,7 +48,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 	@Override
 	public boolean isActing() {
 		boolean isActing = false;
-// TODO
+		// TODO
 		return isActing;
 	}
 

@@ -1,13 +1,11 @@
-package com.phybots.picode.ui.library.internal;
+package com.phybots.picode.ui.list;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.DefaultListModel;
 
-
-@SuppressWarnings("unchecked")
-public abstract class IconListModel<T> extends DefaultListModel implements MutableListModel<T>, IconProvider {
+public abstract class IconListModel<T> extends DefaultListModel<T> implements MutableListModel<T>, IconProvider {
 	private static final long serialVersionUID = -4583426804317292958L;
 	private Map<String, T> database = new HashMap<String, T>();
 
@@ -16,14 +14,14 @@ public abstract class IconListModel<T> extends DefaultListModel implements Mutab
 	}
 
 	@Override
-	public void add(int index, Object object) {
+	public void add(int index, T object) {
 		super.add(index, object);
-		database.put(getName(object), (T) object);
+		database.put(getName(object), object);
 	}
 
 	@Override
-	public Object remove(int index) {
-		Object object = super.remove(index);
+	public T remove(int index) {
+		T object = super.remove(index);
 		if (object != null) {
 			database.remove(getName(object));
 		}
@@ -31,23 +29,23 @@ public abstract class IconListModel<T> extends DefaultListModel implements Mutab
 	}
 
 	@Override
-	public Object set(int index, Object object) {
-		Object oldObject = super.set(index, object);
+	public T set(int index, T object) {
+		T oldObject = super.set(index, object);
 		database.remove(getName(oldObject));
-		database.put(getName(object), (T) object);
+		database.put(getName(object), object);
 		return oldObject;
 	}
 
 	@Override
-	public void addElement(Object object) {
+	public void addElement(T object) {
 		super.addElement(object);
-		database.put(getName(object), (T) object);
+		database.put(getName(object), object);
 	}
 
 	@Override
-	public void insertElementAt(Object object, int index) {
+	public void insertElementAt(T object, int index) {
 		super.insertElementAt(object, index);
-		database.put(getName(object), (T) object);
+		database.put(getName(object), object);
 	}
 
 	@Override
@@ -82,11 +80,11 @@ public abstract class IconListModel<T> extends DefaultListModel implements Mutab
 	}
 
 	@Override
-	public void setElementAt(Object object, int index) {
+	public void setElementAt(T object, int index) {
 		Object oldObject = getElementAt(index);
 		super.setElementAt(object, index);
 		database.remove(getName(oldObject));
-		database.put(getName(object), (T) object);
+		database.put(getName(object), object);
 	}
 
 	@Override

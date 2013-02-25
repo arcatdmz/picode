@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.library.internal;
+package com.phybots.picode.ui.list;
 
 import java.awt.Component;
 
@@ -16,7 +16,7 @@ public class DefaultListCellEditor<T> extends DefaultCellEditor implements
 		super(checkBox);
 	}
 
-	public DefaultListCellEditor(final JComboBox comboBox) {
+	public DefaultListCellEditor(final JComboBox<T> comboBox) {
 		super(comboBox);
 	}
 
@@ -30,7 +30,7 @@ public class DefaultListCellEditor<T> extends DefaultCellEditor implements
 		return (T) super.getCellEditorValue();
 	}
 
-	public Component getListCellEditorComponent(JList list, Object value,
+	public Component getListCellEditorComponent(JList<T> list, Object value,
 			boolean isSelected, int index) {
 		delegate.setValue(value);
 		return editorComponent;

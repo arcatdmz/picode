@@ -14,13 +14,14 @@ import com.phybots.picode.ui.editor.Decoration.Type;
 
 public class PicodeEditor extends JEditorPane {
 	private static final long serialVersionUID = -6366895407636859766L;
-	private static final Font defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+	private static final Font defaultFont = new Font(Font.MONOSPACED,
+			Font.PLAIN, 14);
 	private PicodeMain picodeMain;
 	private DocumentManager documentManager;
 	private SketchCode code;
-  private JScrollPane jScrollPane;
+	private JScrollPane jScrollPane;
 
-  public static Font getDefaultFont() {
+	public static Font getDefaultFont() {
 		return defaultFont;
 	}
 
@@ -36,22 +37,13 @@ public class PicodeEditor extends JEditorPane {
 				if (e.getClickCount() == 2) {
 					int index = viewToModel(e.getPoint());
 					Decoration decoration = documentManager.getDecoration(index);
-					if (decoration != null &&
-							decoration.getType() == Type.POSE) {
+					if (decoration != null && decoration.getType() == Type.POSE) {
 						PicodeMain picodeMain = PicodeEditor.this.picodeMain;
+						System.out.println(decoration.getOption());
 						String poseName = (String) decoration.getOption();
 						Pose pose = picodeMain.getGlobalPoseLibrary().get(poseName);
-						picodeMain.getFrame().editPoseName(pose);
-						System.out.println(decoration.getOption());
+						//TODO Implement code to show GUI etc.
 					}
-					/*
-					Element element = ((StyledDocument) getDocument()).getCharacterElement(index);
-					System.out.println(String.format("%s (%s) at %d",
-							element.getClass(),
-							element.getName(),
-							element.getStartOffset()));
-					dumpElementAttributes(element);
-					*/
 				}
 			}
 		});
@@ -59,24 +51,13 @@ public class PicodeEditor extends JEditorPane {
 		setDragEnabled(true);
 	}
 
-	/*
-	private void dumpElementAttributes(Element elem) {
-		AttributeSet attrs = elem.getAttributes();
-		Enumeration<?> names = attrs.getAttributeNames();
-		while (names.hasMoreElements()) {
-			Object key = names.nextElement();
-			System.out.println("\t" + key + " : " + attrs.getAttribute(key));
-		}
+	public void setOuterScrollPane(JScrollPane jScrollPane) {
+		this.jScrollPane = jScrollPane;
 	}
-	*/
 
-  public void setOuterScrollPane(JScrollPane jScrollPane) {
-    this.jScrollPane = jScrollPane;
-  }
-  
-  public JScrollPane getOuterScrollPane() {
-    return jScrollPane;
-  }
+	public JScrollPane getOuterScrollPane() {
+		return jScrollPane;
+	}
 
 	public SketchCode getCode() {
 		return code;

@@ -14,71 +14,69 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
-import com.phybots.Phybots;
 import com.phybots.picode.PicodeMain;
 
 public class NewRobotDialog extends JDialog implements ActionListener {
 
-  protected final NewRobotPanel contentPanel;
-  private static final Font defaultFont = Phybots.getInstance().getDefaultFont();
+	private static final long serialVersionUID = 355467424630256025L;
 
-  /**
-   * Launch the application.
-   */
-  public static void main(String[] args) {
-    try {
-      NewRobotDialog dialog = new NewRobotDialog();
-      dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-      dialog.setVisible(true);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
+	protected final NewRobotPanel contentPanel;
 
-  public NewRobotDialog() {
-    this(null);
-  }
+	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
-  /**
-   * Create the dialog.
-   */
-  public NewRobotDialog(PicodeMain picodeMain) {
-    setBounds(100, 100, 450, 200);
-    getContentPane().setLayout(new BorderLayout());
-    contentPanel = new NewRobotPanel(picodeMain);
-    contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-    getContentPane().add(contentPanel, BorderLayout.CENTER);
-    {
-      JPanel buttonPane = new JPanel();
-      buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-      getContentPane().add(buttonPane, BorderLayout.SOUTH);
-      {
-        JButton okButton = new JButton("OK");
-        okButton.setActionCommand("OK");
-        okButton.setFont(defaultFont);
-        okButton.addActionListener(this);
-        buttonPane.add(okButton);
-        getRootPane().setDefaultButton(okButton);
-      }
-      {
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.setActionCommand("Cancel");
-        cancelButton.setFont(defaultFont);
-        cancelButton.addActionListener(this);
-        buttonPane.add(cancelButton);
-      }
-    }
-    setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent e) {
-        actionPerformed(
-          new ActionEvent(NewRobotDialog.this, Integer.MIN_VALUE, "Cancel"));
-      }
-    });
-  }
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		try {
+			NewRobotDialog dialog = new NewRobotDialog();
+			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-  @Override
-  public void actionPerformed(ActionEvent e) {
-  }
+	/**
+	 * Create the dialog.
+	 */
+	public NewRobotDialog() {
+		setBounds(100, 100, 450, 200);
+		getContentPane().setLayout(new BorderLayout());
+		contentPanel = new NewRobotPanel();
+		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		{
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			{
+				JButton okButton = new JButton("OK");
+				okButton.setActionCommand("OK");
+				okButton.setFont(defaultFont);
+				okButton.addActionListener(this);
+				buttonPane.add(okButton);
+				getRootPane().setDefaultButton(okButton);
+			}
+			{
+				JButton cancelButton = new JButton("Cancel");
+				cancelButton.setActionCommand("Cancel");
+				cancelButton.setFont(defaultFont);
+				cancelButton.addActionListener(this);
+				buttonPane.add(cancelButton);
+			}
+		}
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				actionPerformed(new ActionEvent(NewRobotDialog.this,
+						Integer.MIN_VALUE, "Cancel"));
+			}
+		});
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+	}
 }

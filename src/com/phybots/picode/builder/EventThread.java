@@ -50,6 +50,7 @@ import com.sun.jdi.request.*;
  * @version     @(#) EventThread.java 1.4 03/01/23 23:33:38
  * @author Robert Field
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class EventThread extends Thread {
 
   private Launcher launcher;

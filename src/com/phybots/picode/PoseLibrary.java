@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.pose;
+package com.phybots.picode;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -7,15 +7,13 @@ import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.text.SimpleAttributeSet;
 
-import com.phybots.picode.PicodeMain;
-import com.phybots.picode.PicodeSettings;
+import com.phybots.picode.PoseLibrary;
 import com.phybots.picode.api.MotorManager;
 import com.phybots.picode.api.Pose;
 import com.phybots.picode.api.Poser;
 import com.phybots.picode.camera.Camera;
-import com.phybots.picode.ui.library.internal.IconListModel;
-import com.phybots.picode.ui.library.internal.IconProvider;
-import com.phybots.picode.ui.pose.PoseLibrary;
+import com.phybots.picode.ui.list.IconListModel;
+import com.phybots.picode.ui.list.IconProvider;
 
 public class PoseLibrary extends IconListModel<Pose> implements IconProvider {
 	private static final long serialVersionUID = 4052983716336989888L;

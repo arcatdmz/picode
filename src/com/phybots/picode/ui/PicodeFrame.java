@@ -14,13 +14,10 @@ import javax.swing.SwingConstants;
 
 import java.awt.FlowLayout;
 
-import com.phybots.Phybots;
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.action.DeleteActiveRobotAction;
 import com.phybots.picode.action.DeleteFileAction;
 import com.phybots.picode.action.LoadSketchAction;
 import com.phybots.picode.action.NewFileAction;
-import com.phybots.picode.action.NewRobotAction;
 import com.phybots.picode.action.NewSketchAction;
 import com.phybots.picode.action.RenameFileAction;
 import com.phybots.picode.action.RunAction;
@@ -28,44 +25,37 @@ import com.phybots.picode.action.SaveSketchAction;
 import com.phybots.picode.action.SaveSketchAsAction;
 import com.phybots.picode.action.StopAction;
 import com.phybots.picode.api.Pose;
-import com.phybots.picode.api.Poser;
 import com.phybots.picode.builder.Launcher;
 import com.phybots.picode.ui.editor.PicodeEditor;
 import com.phybots.picode.ui.editor.PicodeEditorPane;
-import com.phybots.picode.ui.pose.PosePanel;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import processing.app.PicodeSketch;
 import processing.app.SketchCode;
 
 import java.awt.event.InputEvent;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import javax.swing.JComboBox;
 import javax.swing.border.EmptyBorder;
 
 public class PicodeFrame extends JFrame {
 	private static final long serialVersionUID = -7081881044895496089L;
 
-	private static final Font defaultFont = Phybots.getInstance().getDefaultFont();
+	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JPanel contentPanel = null;
 	private JSplitPane splitPane = null;
@@ -78,9 +68,9 @@ public class PicodeFrame extends JFrame {
 	private JLabel statusLabel = null;
 	private JLabel numLineLabel = null;
 
-	// private JSplitPane libraryPane = null;
-	private PosePanel posePanel = null;
-	// private PoseSetPanel poseSetPanel = null;
+	private JPanel libraryPane = null;
+	private PoserSelectorPanel poserPanel = null;
+	private PoseLibraryPanel poseLibraryPanel = null;
 
 	private transient PicodeMain picodeMain;
 	private transient ArrayList<PicodeEditorPane> editorPanes;
@@ -95,10 +85,6 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem mntmRename;
 	private JMenuItem mntmDelete;
 	private JMenuItem mntmSaveAs;
-	private JLabel lblActiveRobotLabel;
-	private JComboBox comboBox;
-  private JButton btnAddRobot;
-	private JButton btnDeleteRobot;
 
 	/**
 	 * This is the default constructor
@@ -109,61 +95,31 @@ public class PicodeFrame extends JFrame {
 		initialize();
 	}
 
-  public void setRunnable(boolean isRunnable) {
-    getMnFile().setEnabled(isRunnable);
-    getMnSketch().setEnabled(isRunnable);
-    //getComboBox().setEnabled(isRunnable);//TODO
-    getBtnRun().setEnabled(isRunnable);
-    getBtnStop().setEnabled(!isRunnable);
-    getPosePanel().setRunnable(isRunnable);
-  }
+	public void setRunnable(boolean isRunnable) {
+		getMnFile().setEnabled(isRunnable);
+		getMnSketch().setEnabled(isRunnable);
+		// getComboBox().setEnabled(isRunnable);//TODO
+		getBtnRun().setEnabled(isRunnable);
+		getBtnStop().setEnabled(!isRunnable);
+		getPosePanel().setRunnable(isRunnable);
+	}
 
-  public void setStatusText(String statusText) {
+	public void setStatusText(String statusText) {
 		getStatusLabel().setText(statusText);
 	}
 
 	public void setNumberOfLines(int lines) {
 		getNumLineLabel().setText(String.format("%d lines", lines));
 	}
-	
-	/*
-	public void setDividerLocation(double proportionalLocation) {
-		getLibraryPane().setDividerLocation(proportionalLocation);
-	}
-	*/
 
-	public void duplicateSelectedPose() {
-		getPosePanel().duplicateSelectedPose();
-	}
+	public void addEditor(SketchCode code) {
+		PicodeEditor picodeEditor = new PicodeEditor(picodeMain, code);
 
-	public void removeSelectedPose() {
-		getPosePanel().removeSelectedPose();
-	}
-
-	public void editSelectedPoseName() {
-		getPosePanel().editSelectedPoseName();
-	}
-
-	public void editPoseName(Pose pose) {
-		getPosePanel().editPoseName(pose);
-	}
-
-  public void addEditor(SketchCode code) {
-    addEditor(new PicodeEditor(
-      picodeMain, code));
-  }
-
-	public void addEditor(PicodeEditor picodeEditor) {
 		PicodeEditorPane picodeEditorPane = new PicodeEditorPane(picodeEditor);
-		addEditor(picodeEditorPane);
-	}
-
-	private void addEditor(PicodeEditorPane picodeEditorPane) {
 		editorPanes.add(picodeEditorPane);
-		SketchCode code = picodeEditorPane.getPicodeEditor().getCode();
-		getTabbedPane().addTab(
-				code.isExtension("pde") ? code.getPrettyName() : code.getFileName(),
-				null, picodeEditorPane, null);
+
+		String title = getTitle(picodeEditor);
+		getTabbedPane().addTab(title, null, picodeEditorPane, null);
 	}
 
 	public void removeEditor(SketchCode code) {
@@ -183,9 +139,9 @@ public class PicodeFrame extends JFrame {
 	}
 
 	public void setCurrentEditorIndex(int index) {
-	  if (index >= 0 && index < editorPanes.size()) {
-	    getTabbedPane().getModel().setSelectedIndex(index);
-	  }
+		if (index >= 0 && index < editorPanes.size()) {
+			getTabbedPane().getModel().setSelectedIndex(index);
+		}
 	}
 
 	public int getCurrentEditorIndex() {
@@ -194,33 +150,22 @@ public class PicodeFrame extends JFrame {
 
 	public PicodeEditor getCurrentEditor() {
 		Component selectedComponent = getTabbedPane().getSelectedComponent();
-		if (selectedComponent != null &&
-				selectedComponent instanceof PicodeEditorPane) {
+		if (selectedComponent != null
+				&& selectedComponent instanceof PicodeEditorPane) {
 			return ((PicodeEditorPane) selectedComponent).getPicodeEditor();
 		}
 		return null;
 	}
 
 	public void updateCurrentEditorName() {
-		SketchCode code = getCurrentEditor().getCode();
-		getTabbedPane().setTitleAt(getCurrentEditorIndex(),
-				code.isExtension("pde") ? code.getPrettyName() : code.getFileName());
+		getTabbedPane().setTitleAt(
+				getCurrentEditorIndex(),
+				getTitle(getCurrentEditor()));
 	}
-
-	public void updateTabs() {
-	  // TODO Save current selection before clearance.
-	  
-		HashMap<SketchCode, PicodeEditorPane> map
-				= new HashMap<SketchCode, PicodeEditorPane>();
-		for (PicodeEditorPane picodeEditorPane : editorPanes) {
-			getTabbedPane().remove(picodeEditorPane);
-			map.put(picodeEditorPane.getPicodeEditor().getCode(), picodeEditorPane);
-		}
-		editorPanes.clear();
-		PicodeSketch sketch = picodeMain.getSketch();
-		for (int i = 0; i < sketch.getCodeCount(); i ++) {
-			addEditor(map.get(sketch.getCode(i)));
-		}
+	
+	private String getTitle(PicodeEditor picodeEditor) {
+		SketchCode code = getCurrentEditor().getCode();
+		return code.isExtension("pde") ? code.getPrettyName() : code.getFileName();
 	}
 
 	public void clearEditors() {
@@ -232,7 +177,15 @@ public class PicodeFrame extends JFrame {
 		}
 	}
 
-  @Override
+	public Pose getSelectedPose() {
+		return getPosePanel().getSelectedPose();
+	}
+
+	public void editSelectedPoseName() {
+		getPosePanel().editSelectedPoseName();
+	}
+
+	@Override
 	public void dispose() {
 		super.dispose();
 		picodeMain.dispose();
@@ -240,7 +193,7 @@ public class PicodeFrame extends JFrame {
 
 	/**
 	 * This method initializes this
-	 *
+	 * 
 	 * @return void
 	 */
 	private void initialize() {
@@ -249,19 +202,19 @@ public class PicodeFrame extends JFrame {
 		this.setTitle("Picode");
 		editorPanes = new ArrayList<PicodeEditorPane>();
 		addWindowListener(new WindowAdapter() {
-      @Override
-      public void windowClosing(WindowEvent e) {
-        Launcher launcher = picodeMain.getLauncher();
-        if (launcher != null) {
-          launcher.close();
-        }
-      }
-    });
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Launcher launcher = picodeMain.getLauncher();
+				if (launcher != null) {
+					launcher.close();
+				}
+			}
+		});
 	}
 
 	/**
 	 * This method initializes jContentPane
-	 *
+	 * 
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getContentPanel() {
@@ -279,7 +232,7 @@ public class PicodeFrame extends JFrame {
 		if (splitPane == null) {
 			splitPane = new JSplitPane();
 			splitPane.setLeftComponent(getTabbedPane());
-			splitPane.setRightComponent(getPosePanel() /* getLibraryPane() */);
+			splitPane.setRightComponent(getLibraryPane());
 			splitPane.setResizeWeight(.6);
 		}
 		return splitPane;
@@ -287,15 +240,15 @@ public class PicodeFrame extends JFrame {
 
 	/**
 	 * This method initializes menuPanel
-	 *
+	 * 
 	 * @return javax.swing.JPanel
 	 */
 	private JPanel getMenuPanel() {
 		if (menuPanel == null) {
 			menuPanel = new JPanel();
 			GridBagLayout gbl_menuPanel = new GridBagLayout();
-			gbl_menuPanel.columnWeights = new double[]{0.0, 1.0, 0.0, 0.0, 0.0, 0.0};
-			gbl_menuPanel.rowWeights = new double[]{0.0};
+			gbl_menuPanel.columnWeights = new double[] { 0.0, 1.0 };
+			gbl_menuPanel.rowWeights = new double[] { 0.0 };
 			menuPanel.setLayout(gbl_menuPanel);
 			GridBagConstraints gbc_runJButton = new GridBagConstraints();
 			gbc_runJButton.anchor = GridBagConstraints.NORTHWEST;
@@ -316,7 +269,7 @@ public class PicodeFrame extends JFrame {
 
 	/**
 	 * This method initializes runJButton
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getBtnRun() {
@@ -332,7 +285,7 @@ public class PicodeFrame extends JFrame {
 
 	/**
 	 * This method initializes stopJButton
-	 *
+	 * 
 	 * @return javax.swing.JButton
 	 */
 	private JButton getBtnStop() {
@@ -390,33 +343,31 @@ public class PicodeFrame extends JFrame {
 		return numLineLabel;
 	}
 
-	/*
-	private JSplitPane getLibraryPane() {
+	private JPanel getLibraryPane() {
 		if (libraryPane == null) {
-			libraryPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-			libraryPane.setLeftComponent(getPosePanel());
-			libraryPane.setRightComponent(getPoseSetPanel());
+			libraryPane = new JPanel();
+			libraryPane.setLayout(new BorderLayout(0, 0));
+			libraryPane.add(getPoserPanel(), BorderLayout.NORTH);
+			libraryPane.add(getPosePanel());
 		}
 		return libraryPane;
 	}
-	*/
 
-	private PosePanel getPosePanel() {
-		if (posePanel == null) {
-			posePanel = new PosePanel(picodeMain, this);
-			posePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+	private PoserSelectorPanel getPoserPanel() {
+		if (poserPanel == null) {
+			poserPanel = new PoserSelectorPanel(picodeMain.getPoserManager());
+			poserPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		}
-		return posePanel;
+		return poserPanel;
 	}
 
-	/*
-	private PoseSetPanel getPoseSetPanel() {
-		if (poseSetPanel == null) {
-			poseSetPanel = new PoseSetPanel();
+	private PoseLibraryPanel getPosePanel() {
+		if (poseLibraryPanel == null) {
+			poseLibraryPanel = new PoseLibraryPanel(picodeMain);
+			poseLibraryPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		}
-		return poseSetPanel;
+		return poseLibraryPanel;
 	}
-	*/
 
 	private JMenuBar getMenuBar_1() {
 		if (menuBar == null) {
@@ -426,6 +377,7 @@ public class PicodeFrame extends JFrame {
 		}
 		return menuBar;
 	}
+
 	private JMenu getMnSketch() {
 		if (mnSketch == null) {
 			mnSketch = new JMenu("Sketch");
@@ -436,38 +388,46 @@ public class PicodeFrame extends JFrame {
 		}
 		return mnSketch;
 	}
+
 	private JMenuItem getMntmNew() {
 		if (mntmNew == null) {
 			mntmNew = new JMenuItem();
 			mntmNew.setAction(new NewSketchAction(picodeMain));
-			mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
+			mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+					InputEvent.CTRL_MASK));
 			mntmNew.setText("New");
 		}
 		return mntmNew;
 	}
+
 	private JMenuItem getMntmLoad() {
 		if (mntmLoad == null) {
 			mntmLoad = new JMenuItem();
 			mntmLoad.setAction(new LoadSketchAction(picodeMain));
-			mntmLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
+			mntmLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L,
+					InputEvent.CTRL_MASK));
 			mntmLoad.setText("Load");
 		}
 		return mntmLoad;
 	}
+
 	private JMenuItem getMntmSave() {
 		if (mntmSave == null) {
 			mntmSave = new JMenuItem();
 			mntmSave.setAction(new SaveSketchAction(picodeMain));
-			mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+			mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
+					InputEvent.CTRL_MASK));
 			mntmSave.setText("Save");
 		}
 		return mntmSave;
 	}
+
 	private JMenuItem getMntmSaveAs() {
 		if (mntmSaveAs == null) {
 			mntmSaveAs = new JMenuItem();
 			mntmSaveAs.setAction(new SaveSketchAsAction(picodeMain));
-			mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
+			mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
+					InputEvent.CTRL_MASK));
 			mntmSaveAs.setText("Save As…");
 		}
 		return mntmSaveAs;
@@ -489,6 +449,7 @@ public class PicodeFrame extends JFrame {
 		}
 		return tabbedPane;
 	}
+
 	private JMenu getMnFile() {
 		if (mnFile == null) {
 			mnFile = new JMenu("File");
@@ -498,31 +459,38 @@ public class PicodeFrame extends JFrame {
 		}
 		return mnFile;
 	}
+
 	private JMenuItem getMntmNew_1() {
 		if (mntmNew_1 == null) {
 			mntmNew_1 = new JMenuItem();
 			mntmNew_1.setAction(new NewFileAction(picodeMain));
-			mntmNew_1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_MASK));
+			mntmNew_1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+					InputEvent.CTRL_MASK));
 			mntmNew_1.setText("New");
 		}
 		return mntmNew_1;
 	}
+
 	private JMenuItem getMntmRename() {
 		if (mntmRename == null) {
 			mntmRename = new JMenuItem();
 			mntmRename.setAction(new RenameFileAction(picodeMain));
-			mntmRename.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
+			mntmRename.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,
+					InputEvent.CTRL_MASK));
 			mntmRename.setText("Rename");
 		}
 		return mntmRename;
 	}
+
 	private JMenuItem getMntmDelete() {
 		if (mntmDelete == null) {
 			mntmDelete = new JMenuItem();
 			mntmDelete.setAction(new DeleteFileAction(picodeMain));
-			mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+			mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
+					InputEvent.CTRL_MASK));
 			mntmDelete.setText("Delete");
 		}
 		return mntmDelete;
 	}
+
 }

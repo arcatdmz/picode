@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.Writer;
-import java.lang.reflect.Method;
 
 import org.eclipse.jdt.core.compiler.batch.BatchCompiler;
 

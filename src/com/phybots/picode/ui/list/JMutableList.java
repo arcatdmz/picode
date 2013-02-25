@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.library.internal;
+package com.phybots.picode.ui.list;
 
 import java.applet.Applet;
 import java.awt.Component;
@@ -25,14 +25,14 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 
-public class JMutableList<T> extends JList implements CellEditorListener {
+public class JMutableList<T> extends JList<T> implements CellEditorListener {
 	private static final long serialVersionUID = 6748911850025823661L;
 	protected Component editorComp = null;
 	protected int editingIndex = -1;
 	protected ListCellEditor<T> editor = null;
 	private PropertyChangeListener editorRemover = null;
 
-	public JMutableList(ListModel dataModel) {
+	public JMutableList(ListModel<T> dataModel) {
 		super(dataModel);
 		initialize();
 	}
@@ -41,10 +41,12 @@ public class JMutableList<T> extends JList implements CellEditorListener {
 		getActionMap().put("startEditing", new StartEditingAction());
 		getActionMap().put("cancel", new CancelEditingAction());
 		addMouseListener(new MouseListener());
-		getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0),
+		getInputMap().put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0),
 				"startEditing");
 		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancel");
+				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+				"cancel");
 		putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 	}
 
@@ -186,20 +188,17 @@ public class JMutableList<T> extends JList implements CellEditorListener {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean isCellEditable(int index) {
 		if (getModel() instanceof MutableListModel)
 			return ((MutableListModel<T>) getModel()).isCellEditable(index);
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setValueAt(T value, int index) {
 		((MutableListModel<T>) getModel()).setElementAt(value, index);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public T getSelectedValue() {
 		return (T) super.getSelectedValue();
 	}

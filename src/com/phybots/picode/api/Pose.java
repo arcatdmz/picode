@@ -30,9 +30,15 @@ public abstract class Pose implements Cloneable {
 		// Load pose data.
 		BufferedReader reader = new BufferedReader(new FileReader(new File(
 				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
-		String robotTypeString = reader.readLine().trim();
+		String poserIdentifier = reader.readLine().trim();
 
-		Pose pose = null; //TODO
+		PoserManager poserManager = PoserManager.getInstance();
+		Poser poser = poserManager.findPoser(poserIdentifier);
+		if (poser == null) {
+			System.err.println("Poser not found: " + poserIdentifier);
+		}
+
+		Pose pose = poser.newPoseInstance();
 		pose.name = name;
 		pose.load(reader);
 		reader.close();

@@ -1,22 +1,19 @@
 package com.phybots.picode;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.SwingUtilities;
 import processing.app.PicodeSketch;
 import processing.app.SketchCode;
 import com.phybots.Phybots;
-import com.phybots.service.Camera;
 import com.phybots.picode.action.RunAction;
-import com.phybots.picode.api.Human;
 import com.phybots.picode.api.Poser;
+import com.phybots.picode.api.PoserManager;
+import com.phybots.picode.api.PoserManager.PoserInfo;
 import com.phybots.picode.builder.Launcher;
 import com.phybots.picode.ui.PicodeFrame;
-import com.phybots.picode.ui.pose.PoseLibrary;
 
 public class PicodeMain {
 
@@ -30,6 +27,10 @@ public class PicodeMain {
 
 	private PicodeFrame picodeFrame;
 
+	private PoserManager poserManager;
+	
+	private GlobalPoseLibrary poseLibrary;
+
 	private Launcher launcher;
 
 	public PicodeMain(String[] args) {
@@ -37,17 +38,16 @@ public class PicodeMain {
 		ProcessingIntegration.init();
 
 		// Get parameters
-		String robotType = null;
-		String address = null;
+		PoserInfo poserInfo = new PoserInfo();
 		boolean debug = false;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-debug")) {
 				debug = true;
 			} else if (i + 1 < args.length) {
 				if (args[i].equals("-type")) {
-					robotType = args[++i];
+					poserInfo.type = PoserManager.getTypeInfo(args[++i]);
 				} else if (args[i].equals("-address")) {
-					address = args[++i];
+					poserInfo.connector = args[++i];
 				}
 			}
 		}
@@ -55,23 +55,16 @@ public class PicodeMain {
 			Phybots.getInstance().showDebugFrame();
 		}
 
-		// Set up configuration
-		// robots = new ArrayList<Poser>();
-		try {
-			if (robotType != null
-					&& (robotType.equals("Human") || address != null)) {
-				// if (robotType.equals("Human")) {
-				// activeRobot = new Human(this);
-				// } else {
-				// activeRobot = new Poser(this, robotType, address);
-				// }
-				// connectActiveRobot();
-			}
-			// camera = new Camera();
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			System.err.println("Unsupported robot type.");
+		// Initialize poser manager
+		poserManager = PoserManager.getInstance();
+		poserManager.setIDE(this);
+		Poser poser = poserManager.newPoserInstance(poserInfo);
+		if (poser != null) {
+			poserManager.addPoser(poser);
 		}
+		
+		// Initialize global pose library
+		poseLibrary = new GlobalPoseLibrary();
 
 		// Launch main UI
 		SwingUtilities.invokeLater(new Runnable() {
@@ -161,12 +154,15 @@ public class PicodeMain {
 		return launcher;
 	}
 
-	public GlobalPoseLibrary getGlobalPoseLibrary() {
-		return null;
+	public PoserManager getPoserManager() {
+		return poserManager;
 	}
 
-	public RobotManager getRobotManager() {
-		// TODO Auto-generated method stub
-		return null;
+	public GlobalPoseLibrary getGlobalPoseLibrary() {
+		return poseLibrary;
+	}
+
+	public static Font getDefaultFont() {
+		return Phybots.getInstance().getDefaultFont();
 	}
 }

@@ -47,6 +47,7 @@ import com.sun.jdi.event.ExceptionEvent;
 /**
  * Copied from {@link processing.mode.java.runner.Runner}
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Launcher implements MessageConsumer {
 
   private Builder builder;

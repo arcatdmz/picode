@@ -1,15 +1,23 @@
 package com.phybots.picode.api;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.camera.KinectCamera;
 
 public class Human extends Poser {
 
 	public Human() {
 		super();
+		initialize();
 	}
 
 	public Human(PicodeMain picodeMain) {
 		super(picodeMain);
+		initialize();
+	}
+	
+	private void initialize() {
+		camera = new KinectCamera();
+		motorManager = new HumanMotorManager(picodeMain, this);
 	}
 
 	@Override
@@ -19,8 +27,8 @@ public class Human extends Poser {
 	}
 
 	@Override
-	public String toString() {
-	  return "Human (Kinect)";
+	public Pose newPoseInstance() {
+		return new HumanPose();
 	}
 
 }

@@ -7,30 +7,31 @@ import javax.swing.AbstractAction;
 
 import com.phybots.picode.PicodeMain;
 import com.phybots.picode.api.Poser;
+import com.phybots.picode.api.PoserManager;
 
 public class DeleteActiveRobotAction extends AbstractAction {
-	private PicodeMain picodeMain;
+	private static final long serialVersionUID = 1526677233343155373L;
+	private PoserManager poserManager;
 
-	public DeleteActiveRobotAction(PicodeMain picodeMain) {
-		this.picodeMain = picodeMain;
+	public DeleteActiveRobotAction(PoserManager poserManager) {
+		this.poserManager = poserManager;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Poser robot = null;//TODO picodeMain.getActiveRobot();
-		if (robot == null) {
-			//picodeMain.setActiveRobot(null);
-		} else {
-			List<Poser> robots = picodeMain.getRobotManager().getRobots();
-			int index = robots.indexOf(robot);
-			if (index < robots.size() - 1) {
-				//picodeMain.setActiveRobot(robots.get(index + 1));
-			} else if (index > 0) {
-				//picodeMain.setActiveRobot(robots.get(index - 1));
-			} else {
-				//picodeMain.setActiveRobot(null);
-			}
-			picodeMain.getRobotManager().removeRobot(robot);
+		Poser poser = poserManager.getCurrentPoser();
+		if (poser == null) {
+			return;
 		}
+		List<Poser> posers = poserManager.getPosers();
+		int index = posers.indexOf(poser);
+		if (index < posers.size() - 1) {
+			poserManager.setCurrentPoser(posers.get(index + 1));
+		} else if (index > 0) {
+			poserManager.setCurrentPoser(posers.get(index - 1));
+		} else {
+			poserManager.setCurrentPoser(null);
+		}
+		poserManager.removePoser(poser);
 	}
 }

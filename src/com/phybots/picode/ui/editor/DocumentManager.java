@@ -22,10 +22,10 @@ import javax.swing.text.StyledEditorKit;
 
 import com.phybots.picode.GlobalPoseLibrary;
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.PoseLibrary;
 import com.phybots.picode.parser.PdeParser;
 import com.phybots.picode.parser.PdeWalker;
 import com.phybots.picode.ui.editor.Decoration.Type;
-import com.phybots.picode.ui.pose.PoseLibrary;
 
 import processing.app.PicodeSketch;
 import processing.app.SketchException;

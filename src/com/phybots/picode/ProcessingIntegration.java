@@ -360,7 +360,7 @@ public class ProcessingIntegration implements RunnerListener {
   }
 
   public void headerRebuild() {
-    picodeMain.getFrame().updateTabs();
+    // Do nothing.
   }
 
   // Runner listener methods are implemented below:

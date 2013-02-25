@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.library.internal;
+package com.phybots.picode.ui.list;
 
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
@@ -15,7 +15,7 @@ public class IconListRenderer extends DefaultListCellRenderer {
 	}
 
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
+	public Component getListCellRendererComponent(JList<?> list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel label = (JLabel) super.getListCellRendererComponent(list, value,
 				index, isSelected, cellHasFocus);

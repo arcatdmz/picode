@@ -4,19 +4,19 @@ import com.phybots.picode.PicodeMain;
 
 public abstract class MotorManager {
 	private PicodeMain picodeMain;
-	private Poser robot;
+	private Poser poser;
 
-	public MotorManager(PicodeMain picodeMain, Poser robot) throws InstantiationException {
+	public MotorManager(PicodeMain picodeMain, Poser poser) {
 		this.picodeMain = picodeMain;
-		this.robot = robot;
+		this.poser = poser;
 	}
 
 	protected PicodeMain getPicodeMain() {
 		return picodeMain;
 	}
 
-	protected Poser getRobot() {
-		return robot;
+	protected Poser getPoser() {
+		return poser;
 	}
 
 	public abstract void start();

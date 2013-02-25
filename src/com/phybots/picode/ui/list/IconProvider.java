@@ -1,4 +1,4 @@
-package com.phybots.picode.ui.library.internal;
+package com.phybots.picode.ui.list;
 
 import javax.swing.Icon;
 

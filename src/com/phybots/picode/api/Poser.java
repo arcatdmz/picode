@@ -1,14 +1,16 @@
 package com.phybots.picode.api;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.PoseLibrary;
 import com.phybots.picode.camera.Camera;
-import com.phybots.picode.ui.pose.PoseLibrary;
 
 public abstract class Poser {
-	
-	private PicodeMain picodeMain;
+
+	protected PicodeMain picodeMain;
 	protected MotorManager motorManager;
 	protected Camera camera;
+	
+	private String name;
 
 	public Poser() {
 		this(null);
@@ -25,13 +27,16 @@ public abstract class Poser {
 	public Camera getCamera() {
 		return camera;
 	}
-	
-	public void setConnector(String connectionString) {
-		throw new UnsupportedOperationException(
-				String.format(
-						"setConnector is not allowed for %s class",
-						this.getClass().getSimpleName()));
+
+	public void setName(String name) {
+		this.name = name;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public abstract Pose newPoseInstance();
 
 	public abstract void dispose();
 
@@ -53,7 +58,16 @@ public abstract class Poser {
 	}
 
 	public PoseLibrary getPoseLibrary() {
-		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public String getIdentifier() {
+		return String.format("%s/%s", getClass().getSimpleName(), name);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%s (%s)", name, getClass().getSimpleName());
+	}
+
 }

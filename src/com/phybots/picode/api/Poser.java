@@ -6,10 +6,12 @@ public abstract class Poser {
 
 	protected MotorManager motorManager;
 	
+	private PoseLibrary poseLibrary;
 	private String name;
 
 	public Poser() {
 		initialize();
+		poseLibrary = new PoseLibrary(this);
 		PoserManager.getInstance().addPoser(this);
 	}
 	

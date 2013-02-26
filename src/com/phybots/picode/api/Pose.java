@@ -54,6 +54,9 @@ public abstract class Pose implements Cloneable {
 		String photoFileName = pose.getPhotoFileName();
 		pose.setPhoto(ImageIO.read(new File(
 				PicodeSettings.getPoseFolderPath(), photoFileName)));
+		
+		// Add the pose instance to the corresponding pose library.
+		poserManager.getPoseLibrary().addPose(pose);
 		return pose;
 	}
 

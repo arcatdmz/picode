@@ -24,6 +24,7 @@ public class PoseLibrary extends IconListModel<Pose> implements IconProvider {
 	}
 
 	private void initialize() {
+		/*
 		File poseFolder = new File(PicodeSettings.getPoseFolderPath());
 		for (File file : poseFolder.listFiles(new FilenameFilter() {
 			public boolean accept(File folder, String fileName) {
@@ -40,38 +41,8 @@ public class PoseLibrary extends IconListModel<Pose> implements IconProvider {
 				// e.printStackTrace();
 			}
 		}
-	}
-
-	public Pose load(String poseName) throws IOException {
-		Pose pose = Pose.load(poseName);
-		if (pose != null) {
-			addElement(pose);
-		}
-		return pose;
-	}
-
-	public Pose duplicate(Pose pose) {
-		Pose newPose = pose.clone();
-		int i = 0;
-		while (true) {
-			if (i == 0) {
-				newPose.setName(String.format("Copy of %s", pose.getName()));
-			} else {
-				newPose.setName(String.format("Copy (%d) of %s", i ++, pose.getName()));
-			}
-			if (!new File(
-					PicodeSettings.getPoseFolderPath(),
-					newPose.getDataFileName()).exists()) {
-				break;
-			}
-		}
-		try {
-			newPose.save();
-		} catch (IOException e) {
-			return null;
-		}
-		addElement(newPose);
-		return newPose;
+		*/
+		
 	}
 
 	/*

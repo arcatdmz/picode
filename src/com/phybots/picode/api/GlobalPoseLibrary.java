@@ -1,8 +1,12 @@
 package com.phybots.picode.api;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.phybots.picode.PicodeSettings;
 
 
 public class GlobalPoseLibrary {
@@ -20,11 +24,32 @@ public class GlobalPoseLibrary {
 		return poses.containsKey(poseName);
 	}
 
-	public void duplicatePose(Pose pose) {
+	public Pose duplicatePose(Pose pose) {
+		Pose newPose = pose.clone();
+		int i = 0;
+		while (true) {
+			if (i == 0) {
+				newPose.setName(String.format("Copy of %s", pose.getName()));
+			} else {
+				newPose.setName(String.format("Copy (%d) of %s", i ++, pose.getName()));
+			}
+			if (!new File(
+					PicodeSettings.getPoseFolderPath(),
+					newPose.getDataFileName()).exists()) {
+				break;
+			}
+		}
+		try {
+			newPose.save();
+		} catch (IOException e) {
+			return null;
+		}
+		poses.put(newPose.getName(), newPose);
+		return newPose;
 	}
-	
+
 	void addPose(Pose pose) {
-		
+		poses.put(pose.getName(), pose);
 	}
 
 	void removePose(Pose pose) {
@@ -35,7 +60,6 @@ public class GlobalPoseLibrary {
 			}
 		}
 		poses.remove(key);
-		
 	}
 
 }

@@ -13,7 +13,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
@@ -642,8 +641,11 @@ public class DocumentManager implements DocumentListener {
 		fileName = fileName.substring(1, fileName.length() - 1);
 		int startIndex = parser.getIndex(className);
 		int length = getPicodeMethodCallLength(className, poseFileName);
-		decorations
-				.add(new Decoration(startIndex, length, Type.POSE, fileName));
+		decorations.add(new Decoration(
+				startIndex,
+				length,
+				Type.POSE,
+				fileName));
 		return true;
 	}
 

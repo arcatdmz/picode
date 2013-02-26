@@ -1,11 +1,9 @@
 package com.phybots.picode.api;
 
-import com.phybots.picode.PicodeMain;
-
 public class MindstormsNXTMotorManager extends MotorManager {
 
-	public MindstormsNXTMotorManager(PicodeMain picodeMain, Poser robot) {
-		super(picodeMain, robot);
+	public MindstormsNXTMotorManager(Poser poser) {
+		super(poser);
 	}
 
 	@Override

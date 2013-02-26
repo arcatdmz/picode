@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -20,7 +21,6 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.PoseLibrary;
 import com.phybots.picode.action.ApplySelectedPoseAction;
 import com.phybots.picode.action.DeleteSelectedPoseAction;
 import com.phybots.picode.action.DuplicateSelectedPoseAction;
@@ -28,7 +28,9 @@ import com.phybots.picode.action.EditSelectedPoseNameAction;
 import com.phybots.picode.action.OpenPoseFolderAction;
 import com.phybots.picode.action.ShowCameraFrameAction;
 import com.phybots.picode.api.Pose;
+import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.api.Poser;
+import com.phybots.picode.api.PoserManager;
 import com.phybots.picode.ui.list.DefaultListCellEditor;
 import com.phybots.picode.ui.list.IconListRenderer;
 import com.phybots.picode.ui.list.JMutableList;
@@ -50,8 +52,7 @@ public class PoseLibraryPanel extends JPanel {
 
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
-	private transient final PicodeMain picodeMain;
-	private transient final PicodeFrame picodeFrame;
+	private transient PicodeMain picodeMain;
 	private JPopupMenu popupMenu;
 	private JMenuItem mntmApplyThisPose;
 	private JMenuItem mntmRenameThisPose;
@@ -65,14 +66,18 @@ public class PoseLibraryPanel extends JPanel {
 	public PoseLibraryPanel(PicodeMain picodeMain) {
 		super();
 		this.picodeMain = picodeMain;
-		this.picodeFrame = picodeMain.getFrame();
 		this.isRunnable = true;
 		initialize();
 	}
 
 	public void setPoseLibrary(PoseLibrary poseLibrary) {
-		jList.setModel(poseLibrary);
-		jList.setCellRenderer(new IconListRenderer(poseLibrary));
+		if (poseLibrary == null) {
+			jList.setModel(new DefaultListModel<Pose>());
+			jList.setCellRenderer(new IconListRenderer(null));
+		} else {
+			jList.setModel(poseLibrary);
+			jList.setCellRenderer(new IconListRenderer(poseLibrary));
+		}
 	}
 
 	public void setRunnable(boolean isRunnable) {
@@ -84,16 +89,6 @@ public class PoseLibraryPanel extends JPanel {
 
 	public Pose getSelectedPose() {
 		return getJList().getSelectedValue();
-	}
-
-	public void removeSelectedPose() {
-		if (getJList().getSelectedIndex() != -1) {
-			Pose pose = jList.getSelectedValue();
-			if (pose != null) {
-				picodeMain.getPoserManager().getCurrentPoser().getPoseLibrary()
-						.removeElement(pose);
-			}
-		}
 	}
 
 	public void editPoseName(Pose pose) {
@@ -156,7 +151,7 @@ public class PoseLibraryPanel extends JPanel {
 	private JButton getBtnAddPose() {
 		if (btnAddPose == null) {
 			btnAddPose = new JButton();
-			btnAddPose.setAction(new ShowCameraFrameAction(picodeMain));
+			btnAddPose.setAction(new ShowCameraFrameAction());
 			btnAddPose.setText("+");
 			btnAddPose.setFont(defaultFont);
 		}
@@ -184,12 +179,17 @@ public class PoseLibraryPanel extends JPanel {
 
 	private JMutableList<Pose> getJList() {
 		if (jList == null) {
-			Poser poser = picodeMain.getPoserManager().getCurrentPoser();
-			PoseLibrary poseLibrary = poser.getPoseLibrary();
-			jList = new JMutableList<Pose>(poseLibrary);
+			Poser poser = PoserManager.getInstance().getCurrentPoser();
+			if (poser == null) {
+				jList = new JMutableList<Pose>(new DefaultListModel<Pose>());
+				jList.setCellRenderer(new IconListRenderer(null));
+			} else {
+				PoseLibrary poseLibrary = poser.getPoseLibrary();
+				jList = new JMutableList<Pose>(poseLibrary);
+				jList.setCellRenderer(new IconListRenderer(poseLibrary));
+			}
 			jList.setListCellEditor(new PoseCellEditor());
 			jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			jList.setCellRenderer(new IconListRenderer(poseLibrary));
 			jList.setDragEnabled(true);
 			jList.setDropMode(DropMode.INSERT);
 			jList.setFont(defaultFont);
@@ -282,8 +282,7 @@ public class PoseLibraryPanel extends JPanel {
 	private JMenuItem getMntmApplyThisPose() {
 		if (mntmApplyThisPose == null) {
 			mntmApplyThisPose = new JMenuItem();
-			mntmApplyThisPose
-					.setAction(new ApplySelectedPoseAction(picodeFrame));
+			mntmApplyThisPose.setAction(new ApplySelectedPoseAction(picodeMain));
 			mntmApplyThisPose.setText("Apply this pose to the robot");
 			mntmApplyThisPose.setAccelerator(KeyStroke.getKeyStroke(
 					KeyEvent.VK_A, 0));
@@ -294,8 +293,7 @@ public class PoseLibraryPanel extends JPanel {
 	private JMenuItem getMntmRenameThisPose() {
 		if (mntmRenameThisPose == null) {
 			mntmRenameThisPose = new JMenuItem();
-			mntmRenameThisPose.setAction(new EditSelectedPoseNameAction(
-					picodeFrame));
+			mntmRenameThisPose.setAction(new EditSelectedPoseNameAction(picodeMain));
 			mntmRenameThisPose.setText("Rename this pose");
 			mntmRenameThisPose.setAccelerator(KeyStroke.getKeyStroke(
 					KeyEvent.VK_R, 0));

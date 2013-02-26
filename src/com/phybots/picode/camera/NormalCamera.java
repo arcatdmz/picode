@@ -14,8 +14,13 @@ public class NormalCamera implements Camera {
 	}
 
 	@Override
-	public void start() {
-		camera.start();
+	public boolean start() {
+		try {
+			camera.start();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -25,7 +30,6 @@ public class NormalCamera implements Camera {
 
 	@Override
 	public BufferedImage getImage() {
-		// TODO Auto-generated method stub
-		return null;
+		return camera.getImage();
 	}
 }

@@ -5,10 +5,10 @@ import javax.swing.JFrame;
 import com.phybots.gui.ImageProviderPanel;
 import com.phybots.service.Camera;
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.PoseLibrary;
 import com.phybots.picode.action.CapturePoseAction;
 import com.phybots.picode.action.StartPreviewAction;
 import com.phybots.picode.action.StopPreviewAction;
+import com.phybots.picode.api.PoseLibrary;
 
 import java.awt.BorderLayout;
 import javax.swing.JPanel;

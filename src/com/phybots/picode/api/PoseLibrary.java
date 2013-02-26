@@ -1,4 +1,4 @@
-package com.phybots.picode;
+package com.phybots.picode.api;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -7,10 +7,8 @@ import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.text.SimpleAttributeSet;
 
-import com.phybots.picode.PoseLibrary;
-import com.phybots.picode.api.MotorManager;
-import com.phybots.picode.api.Pose;
-import com.phybots.picode.api.Poser;
+import com.phybots.picode.PicodeSettings;
+import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.camera.Camera;
 import com.phybots.picode.ui.list.IconListModel;
 import com.phybots.picode.ui.list.IconProvider;

@@ -23,9 +23,8 @@ public class PoserSelectorPanel extends JPanel {
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JComboBox<Poser> comboBox;
-	private transient PoserManager poserManager;
 
-	public PoserSelectorPanel(PoserManager poserManager) {
+	public PoserSelectorPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{1.0};
@@ -37,8 +36,7 @@ public class PoserSelectorPanel extends JPanel {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					Poser poser = (Poser)comboBox.getSelectedItem();
 					if (poser != null) {
-						PoserSelectorPanel.this.
-							poserManager.setCurrentPoser(poser);
+						PoserManager.getInstance().setCurrentPoser(poser);
 					}
 				}
 			}

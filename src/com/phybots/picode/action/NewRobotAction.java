@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserManager;
 import com.phybots.picode.api.PoserManager.PoserInfo;
 import com.phybots.picode.ui.dialog.NewRobotDialog;
@@ -13,10 +12,6 @@ import com.phybots.picode.ui.dialog.NewRobotDialog;
 public class NewRobotAction extends AbstractAction {
 	private static final long serialVersionUID = 4418251293922946830L;
 	private PicodeMain picodeMain;
-
-	public NewRobotAction(PicodeMain picodeMain) {
-		this.picodeMain = picodeMain;
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -28,10 +23,7 @@ public class NewRobotAction extends AbstractAction {
 				String command = e.getActionCommand();
 				if (command.equals("OK")) {
 					PoserInfo poserInfo = contentPanel.getPoserInfo();
-					Poser poser = picodeMain.getPoserManager().newPoserInstance(poserInfo);
-					if (poser != null) {
-						picodeMain.getPoserManager().addPoser(poser);
-					}
+					PoserManager.getInstance().newPoserInstance(poserInfo);
 				}
 				picodeMain.getFrame().setEnabled(true);
 				setVisible(false);

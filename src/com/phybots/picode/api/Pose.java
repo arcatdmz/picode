@@ -24,6 +24,10 @@ public abstract class Pose implements Cloneable {
 	private BufferedImage photo;
 	private Icon icon;
 	private SimpleAttributeSet attrs;
+	private Poser poser;
+
+	Pose() {
+	}
 
 	public static Pose load(String name) throws IOException {
 
@@ -32,13 +36,16 @@ public abstract class Pose implements Cloneable {
 				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
 		String poserIdentifier = reader.readLine().trim();
 
+		// Find the corresponding poser.
 		PoserManager poserManager = PoserManager.getInstance();
 		Poser poser = poserManager.findPoser(poserIdentifier);
 		if (poser == null) {
 			System.err.println("Poser not found: " + poserIdentifier);
 		}
 
+		// Setup pose instance.
 		Pose pose = poser.newPoseInstance();
+		pose.poser = poser;
 		pose.name = name;
 		pose.load(reader);
 		reader.close();
@@ -59,6 +66,7 @@ public abstract class Pose implements Cloneable {
 		if (photoFile.exists()) {
 			photoFile.delete();
 		}
+		PoserManager.getInstance().getPoseLibrary().removePose(this);
 	}
 
 	public void save() throws IOException {
@@ -66,7 +74,7 @@ public abstract class Pose implements Cloneable {
 		// Save the pose data.
 		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
 				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
-		//writer.write(getRobotType().toString());
+		writer.write(poser.getIdentifier());
 		writer.newLine();
 		save(writer);
 		writer.close();

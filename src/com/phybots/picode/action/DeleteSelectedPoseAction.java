@@ -18,6 +18,9 @@ public class DeleteSelectedPoseAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		Pose pose = picodeMain.getFrame().getSelectedPose();
-		picodeMain.getGlobalPoseLibrary().removePose(pose);
+		if (pose != null) {
+			pose.delete();
+		}
 	}
+
 }

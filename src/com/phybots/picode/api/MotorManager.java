@@ -1,18 +1,10 @@
 package com.phybots.picode.api;
 
-import com.phybots.picode.PicodeMain;
-
 public abstract class MotorManager {
-	private PicodeMain picodeMain;
 	private Poser poser;
 
-	public MotorManager(PicodeMain picodeMain, Poser poser) {
-		this.picodeMain = picodeMain;
+	public MotorManager(Poser poser) {
 		this.poser = poser;
-	}
-
-	protected PicodeMain getPicodeMain() {
-		return picodeMain;
 	}
 
 	protected Poser getPoser() {

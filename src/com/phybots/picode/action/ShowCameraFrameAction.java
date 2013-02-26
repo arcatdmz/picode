@@ -4,21 +4,18 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.phybots.picode.PicodeMain;
+import com.phybots.picode.api.Poser;
+import com.phybots.picode.api.PoserManager;
 
 public class ShowCameraFrameAction extends AbstractAction {
 	private static final long serialVersionUID = -2297070480522312162L;
-	private transient PicodeMain picodeMain;
-
-	public ShowCameraFrameAction(PicodeMain picodeMain) {
-		this.picodeMain = picodeMain;
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-//		if (picodeMain.getActiveRobot() != null) {
-//			picodeMain.showCaptureFrame(true);
-//		}
-		//TODO
+		PoserManager poserManager = PoserManager.getInstance();
+		Poser currentPoser = poserManager.getCurrentPoser();
+		if (currentPoser != null) {
+			currentPoser.showCaptureFrame();
+		}
 	}
 }

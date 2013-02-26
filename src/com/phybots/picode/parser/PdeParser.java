@@ -128,14 +128,33 @@ public class PdeParser {
 		if (!program.endsWith("\n")) {
 			program += "\n";
 		}
-		PdePreprocessor.checkForUnterminatedMultilineComment(program);
+
+		// Count indices of the start character of each line.
+		BufferedReader reader = new BufferedReader(new StringReader(program));
+		List<Integer> cs = new ArrayList<Integer>();
+		String line;
+		try {
+			int read = 0;
+			while ((line = reader.readLine()) != null) {
+				cs.add(read);
+				read += line.length() + 1;
+			}
+		} catch (IOException e1) {
+			//
+		}
+		columns = new int[cs.size()];
+		Iterator<Integer> it = cs.iterator();
+		for (int i = 0; i < cs.size(); i ++) {
+			columns[i] = it.next();
+		}
 
 		// ---
 		// Parse the program: copied from {@link PdePreprocessor#write(String, PrintWriter)}
+		PdePreprocessor.checkForUnterminatedMultilineComment(program);
 
 		// Match on the uncommented version, otherwise code inside comments used
-    // http://code.google.com/p/processing/issues/detail?id=1404
-    String uncomment = PdePreprocessor.scrubComments(program);
+	    // http://code.google.com/p/processing/issues/detail?id=1404
+	    String uncomment = PdePreprocessor.scrubComments(program);
 		PdeRecognizer parser = pp.createParser(program);
 		try {
 			if (PdePreprocessor.PUBLIC_CLASS.matcher(uncomment).find()) {
@@ -165,25 +184,6 @@ public class PdeParser {
 			handleParseError(e, sketch.getCodeIndex(code));
 		}
 		// ---
-
-		// Count indices of the start character of each line.
-		BufferedReader reader = new BufferedReader(new StringReader(program));
-		List<Integer> cs = new ArrayList<Integer>();
-		String line;
-		try {
-			int read = 0;
-			while ((line = reader.readLine()) != null) {
-				cs.add(read);
-				read += line.length() + 1;
-			}
-		} catch (IOException e1) {
-			//
-		}
-		columns = new int[cs.size()];
-		Iterator<Integer> it = cs.iterator();
-		for (int i = 0; i < cs.size(); i ++) {
-			columns[i] = it.next();
-		}
 
 		AST parserAST = parser.getAST();
 		AST rootNode = astFactory.create(PdePreprocessor.ROOT_ID, "AST ROOT");

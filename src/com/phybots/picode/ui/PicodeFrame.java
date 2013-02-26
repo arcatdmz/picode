@@ -72,8 +72,6 @@ public class PicodeFrame extends JFrame {
 	private PoserSelectorPanel poserPanel = null;
 	private PoseLibraryPanel poseLibraryPanel = null;
 
-	private transient PicodeMain picodeMain;
-	private transient ArrayList<PicodeEditorPane> editorPanes;
 	private JMenuBar menuBar;
 	private JMenu mnSketch;
 	private JMenuItem mntmLoad;
@@ -85,6 +83,11 @@ public class PicodeFrame extends JFrame {
 	private JMenuItem mntmRename;
 	private JMenuItem mntmDelete;
 	private JMenuItem mntmSaveAs;
+
+	private transient PicodeMain picodeMain;
+	private transient ArrayList<PicodeEditorPane> editorPanes;
+	private transient PicodeEditor currentEditor;
+	private transient int currentEditorIndex;
 
 	/**
 	 * This is the default constructor
@@ -120,6 +123,9 @@ public class PicodeFrame extends JFrame {
 
 		String title = getTitle(picodeEditor);
 		getTabbedPane().addTab(title, null, picodeEditorPane, null);
+
+		currentEditorIndex = editorPanes.size() - 1;
+		currentEditor = picodeEditor;
 	}
 
 	public void removeEditor(SketchCode code) {
@@ -145,16 +151,11 @@ public class PicodeFrame extends JFrame {
 	}
 
 	public int getCurrentEditorIndex() {
-		return getTabbedPane().getSelectedIndex();
+		return currentEditorIndex;
 	}
 
 	public PicodeEditor getCurrentEditor() {
-		Component selectedComponent = getTabbedPane().getSelectedComponent();
-		if (selectedComponent != null
-				&& selectedComponent instanceof PicodeEditorPane) {
-			return ((PicodeEditorPane) selectedComponent).getPicodeEditor();
-		}
-		return null;
+		return currentEditor;
 	}
 
 	public void updateCurrentEditorName() {
@@ -164,7 +165,7 @@ public class PicodeFrame extends JFrame {
 	}
 	
 	private String getTitle(PicodeEditor picodeEditor) {
-		SketchCode code = getCurrentEditor().getCode();
+		SketchCode code = picodeEditor.getCode();
 		return code.isExtension("pde") ? code.getPrettyName() : code.getFileName();
 	}
 
@@ -208,6 +209,17 @@ public class PicodeFrame extends JFrame {
 				if (launcher != null) {
 					launcher.close();
 				}
+			}
+		});
+		getTabbedPane().addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+                if (e.getSource() instanceof JTabbedPane) {
+                    JTabbedPane pane = (JTabbedPane) e.getSource();
+                    currentEditorIndex = pane.getSelectedIndex();
+                    currentEditor = editorPanes.get(currentEditorIndex).getPicodeEditor();
+                    System.out.println("tab changed: " + currentEditorIndex);
+                }
 			}
 		});
 	}
@@ -355,7 +367,7 @@ public class PicodeFrame extends JFrame {
 
 	private PoserSelectorPanel getPoserPanel() {
 		if (poserPanel == null) {
-			poserPanel = new PoserSelectorPanel(picodeMain.getPoserManager());
+			poserPanel = new PoserSelectorPanel();
 			poserPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		}
 		return poserPanel;

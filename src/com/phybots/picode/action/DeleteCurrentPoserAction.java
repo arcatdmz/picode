@@ -5,20 +5,15 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
-import com.phybots.picode.PicodeMain;
 import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserManager;
 
-public class DeleteActiveRobotAction extends AbstractAction {
+public class DeleteCurrentPoserAction extends AbstractAction {
 	private static final long serialVersionUID = 1526677233343155373L;
-	private PoserManager poserManager;
-
-	public DeleteActiveRobotAction(PoserManager poserManager) {
-		this.poserManager = poserManager;
-	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		PoserManager poserManager = PoserManager.getInstance();
 		Poser poser = poserManager.getCurrentPoser();
 		if (poser == null) {
 			return;
@@ -32,6 +27,6 @@ public class DeleteActiveRobotAction extends AbstractAction {
 		} else {
 			poserManager.setCurrentPoser(null);
 		}
-		poserManager.removePoser(poser);
+		poser.dispose();
 	}
 }

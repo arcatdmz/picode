@@ -46,6 +46,7 @@ public class Action {
 	}
 	
 	private static class ActionService extends ServiceAbstractImpl {
+		private static final long serialVersionUID = 22694340261932745L;
 		private Action action;
 		private int index;
 		private ActionElement currentElement;

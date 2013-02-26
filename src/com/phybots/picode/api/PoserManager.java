@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.camera.CameraManager;
 import com.phybots.utils.ClassUtils;
 
 public class PoserManager {
@@ -46,9 +47,14 @@ public class PoserManager {
 	}
 
 	private PicodeMain picodeMain;
+	private GlobalPoseLibrary globalPoseLibrary;
+	private CameraManager cameraManager;
 	private List<Poser> posers;
 
 	private PoserManager() {
+		cameraManager = new CameraManager();
+		globalPoseLibrary = new GlobalPoseLibrary();
+		posers = new ArrayList<Poser>();
 	}
 
 	public static Set<PoserTypeInfo> getTypeInfos() {
@@ -95,6 +101,14 @@ public class PoserManager {
 		this.picodeMain = picodeMain;
 	}
 
+	public GlobalPoseLibrary getPoseLibrary() {
+		return globalPoseLibrary;
+	}
+
+	public CameraManager getCameraManager() {
+		return cameraManager;
+	}
+
 	public Poser newPoserInstance(PoserInfo poserInfo) {
 		Poser poser;
 		try {
@@ -122,7 +136,7 @@ public class PoserManager {
 		return null;
 	}
 
-	public void addPoser(Poser poser) {
+	void addPoser(Poser poser) {
 		posers.add(poser);
 		if (picodeMain != null) {
 			picodeMain.getFrame();
@@ -130,7 +144,7 @@ public class PoserManager {
 		}
 	}
 
-	public void removePoser(Poser poser) {
+	void removePoser(Poser poser) {
 		if (!posers.remove(poser)) {
 			return;
 		}

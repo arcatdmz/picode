@@ -1,31 +1,26 @@
 package com.phybots.picode.api;
 
-import com.phybots.picode.PicodeMain;
-import com.phybots.picode.PoseLibrary;
 import com.phybots.picode.camera.Camera;
 
 public abstract class Poser {
 
-	protected PicodeMain picodeMain;
 	protected MotorManager motorManager;
-	protected Camera camera;
 	
 	private String name;
 
 	public Poser() {
-		this(null);
+		initialize();
+		PoserManager.getInstance().addPoser(this);
 	}
-
-	public Poser(PicodeMain picodeMain) {
-		this.picodeMain = picodeMain;
-	}
+	
+	protected abstract void initialize();
 
 	public MotorManager getMotorManager() {
 		return motorManager;
 	}
-	
+
 	public Camera getCamera() {
-		return camera;
+		return PoserManager.getInstance().getCameraManager().getCamera(this);
 	}
 
 	public void setName(String name) {
@@ -38,7 +33,9 @@ public abstract class Poser {
 
 	public abstract Pose newPoseInstance();
 
-	public abstract void dispose();
+	public void dispose() {
+		PoserManager.getInstance().removePoser(this);
+	}
 
 	public boolean setPose(Pose pose) {
 		return getMotorManager().setPose(pose);
@@ -59,6 +56,10 @@ public abstract class Poser {
 
 	public PoseLibrary getPoseLibrary() {
 		return null;
+	}
+	
+	public void showCaptureFrame() {
+		//
 	}
 	
 	public String getIdentifier() {

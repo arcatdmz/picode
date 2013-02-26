@@ -9,7 +9,6 @@ import processing.app.PicodeSketch;
 import processing.app.SketchCode;
 import com.phybots.Phybots;
 import com.phybots.picode.action.RunAction;
-import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserManager;
 import com.phybots.picode.api.PoserManager.PoserInfo;
 import com.phybots.picode.builder.Launcher;
@@ -26,10 +25,6 @@ public class PicodeMain {
 	private PicodeSketch sketch;
 
 	private PicodeFrame picodeFrame;
-
-	private PoserManager poserManager;
-	
-	private GlobalPoseLibrary poseLibrary;
 
 	private Launcher launcher;
 
@@ -56,15 +51,9 @@ public class PicodeMain {
 		}
 
 		// Initialize poser manager
-		poserManager = PoserManager.getInstance();
+		PoserManager poserManager = PoserManager.getInstance();
 		poserManager.setIDE(this);
-		Poser poser = poserManager.newPoserInstance(poserInfo);
-		if (poser != null) {
-			poserManager.addPoser(poser);
-		}
-		
-		// Initialize global pose library
-		poseLibrary = new GlobalPoseLibrary();
+		poserManager.newPoserInstance(poserInfo);
 
 		// Launch main UI
 		SwingUtilities.invokeLater(new Runnable() {
@@ -152,14 +141,6 @@ public class PicodeMain {
 
 	public Launcher getLauncher() {
 		return launcher;
-	}
-
-	public PoserManager getPoserManager() {
-		return poserManager;
-	}
-
-	public GlobalPoseLibrary getGlobalPoseLibrary() {
-		return poseLibrary;
 	}
 
 	public static Font getDefaultFont() {

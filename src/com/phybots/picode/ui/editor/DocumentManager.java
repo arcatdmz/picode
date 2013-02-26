@@ -20,14 +20,15 @@ import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
 
-import com.phybots.picode.GlobalPoseLibrary;
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.PoseLibrary;
+import com.phybots.picode.api.GlobalPoseLibrary;
+import com.phybots.picode.api.Pose;
+import com.phybots.picode.api.PoserManager;
 import com.phybots.picode.parser.PdeParser;
 import com.phybots.picode.parser.PdeWalker;
 import com.phybots.picode.ui.editor.Decoration.Type;
 
-import processing.app.PicodeSketch;
+import processing.app.SketchCode;
 import processing.app.SketchException;
 import processing.mode.java.preproc.PdeEmitter;
 import processing.mode.java.preproc.PdePreprocessor;
@@ -87,7 +88,7 @@ public class DocumentManager implements DocumentListener {
 
 	private void initialize() {
 		sc = new StyleContext();
-    sc.getStyle(StyleContext.DEFAULT_STYLE).addAttributes(defaultAttrs);
+		sc.getStyle(StyleContext.DEFAULT_STYLE).addAttributes(defaultAttrs);
 		doc = new DefaultStyledDocument(sc);
 		decorations = new TreeSet<Decoration>();
 		parser = picodeMain.getSketch().getParser();
@@ -95,25 +96,22 @@ public class DocumentManager implements DocumentListener {
 		picodeEditor.setEditorKit(new StyledEditorKit());
 		picodeEditor.setDocument(doc);
 
+		String codeString = picodeEditor.getCode().getProgram();
 		try {
-			String codeString = picodeEditor.getCode().getProgram();
 			doc.insertString(0, codeString, defaultAttrs);
-			updateDecoration();
 		} catch (BadLocationException e) {
 			e.printStackTrace();
-		} catch (SketchException se) {
-			picodeMain.getPintegration().statusError(se);
-		} finally {
-			doc.addDocumentListener(this);
 		}
+
+		update(null);
 	}
 
 	public void insertUpdate(DocumentEvent e) {
-		update(e);
+		onUpdate(e);
 	}
 
 	public void removeUpdate(DocumentEvent e) {
-		update(e);
+		onUpdate(e);
 	}
 
 	public void changedUpdate(DocumentEvent e) {
@@ -135,37 +133,41 @@ public class DocumentManager implements DocumentListener {
 			doc.remove(startIndex, length);
 			doc.insertString(startIndex, text, attrs);
 		} catch (BadLocationException e) {
-			//
+			e.printStackTrace();
 		}
 	}
 
-	private void update(final DocumentEvent e) {
+	private void onUpdate(DocumentEvent de) {
 		String newCode;
 		try {
 			newCode = doc.getText(0, doc.getLength());
-		} catch (BadLocationException ble) {
+		} catch (BadLocationException e) {
+			e.printStackTrace();
 			return;
 		}
 		picodeEditor.getCode().setProgram(newCode);
+		picodeMain.getSketch().setModified(true);
+		update(de);
+	}
 
-		final PicodeSketch sketch = picodeMain.getSketch();
-		sketch.setModified(true);
+	private void update(final DocumentEvent e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				// System.out.println("Updating the view...");
 				int caretPosition = picodeEditor.getCaretPosition();
 				doc.removeDocumentListener(DocumentManager.this);
+
 				try {
-					if (e.getType() == EventType.REMOVE) {
+					if (e != null && e.getType() == EventType.REMOVE) {
 						removeDecoration(e, false);
 					}
 					updateDecoration();
-					picodeMain.getFrame().setStatusText("");
+					picodeMain.getPintegration().statusEmpty();
 				} catch (SketchException se) {
 					removeDecoration(e, true);
 					updateErrorDecoration(se);
 					picodeMain.getPintegration().statusError(se);
 				}
+
 				doc.addDocumentListener(DocumentManager.this);
 				picodeEditor.setCaretPosition(caretPosition);
 			}
@@ -175,6 +177,7 @@ public class DocumentManager implements DocumentListener {
 	private void updateErrorDecoration(SketchException se) {
 		int line = se.getCodeLine();
 		if (line >= 0) {
+
 			Iterator<Decoration> it = decorations.iterator();
 			while (it.hasNext()) {
 				Decoration decoration = it.next();
@@ -183,9 +186,12 @@ public class DocumentManager implements DocumentListener {
 					it.remove();
 				}
 			}
+
 			int startIndex = parser.getIndex(line);
-			Element paragraph = doc.getParagraphElement(startIndex);
-			int length = paragraph.getEndOffset() - startIndex;
+			if (startIndex < 0) startIndex = 0;
+			int endIndex = doc.getParagraphElement(startIndex).getEndOffset();
+			if (endIndex >= doc.getLength()) endIndex --;
+			int length = endIndex - startIndex;
 			if (length > 0) {
 				decorations.add(new Decoration(startIndex, length, Type.ERROR, line));
 				setCharacterAttributes(startIndex, length, errorAttrs);
@@ -194,19 +200,22 @@ public class DocumentManager implements DocumentListener {
 	}
 
 	private void updateDecoration() throws SketchException {
-		AST ast = parser.parse(picodeEditor.getCode());
-		picodeMain.getFrame().setNumberOfLines(picodeEditor.getCode().getLineCount());
+		SketchCode code = picodeEditor.getCode();
+		AST ast = parser.parse(code);
+		picodeMain.getFrame().setNumberOfLines(code.getLineCount());
 
 		decorations.clear();
 		decorate(ast);
 		int index = 0;
 		SketchException se = null;
 		for (Decoration decoration : decorations) {
+
 			int startIndex = decoration.getStartIndex();
 			int length = decoration.getLenth();
 			if (startIndex > index) {
 				setCharacterAttributes(index, startIndex - index, defaultAttrs);
 			}
+
 			SimpleAttributeSet attrs = null;
 			switch (decoration.getType()) {
 			case COMMENT:
@@ -216,30 +225,32 @@ public class DocumentManager implements DocumentListener {
 				attrs = keywordAttrs;
 				break;
 			case POSE:
-				GlobalPoseLibrary poseManager = picodeMain.getGlobalPoseLibrary();
+				GlobalPoseLibrary poseLibrary = PoserManager.getInstance().getPoseLibrary();
 				String poseName = decoration.getOption().toString();
+				Pose pose = poseLibrary.get(poseName);
 				System.out.println("Pose " + poseName);
-				if (poseManager.contains(poseName)) {
-					//attrs = poseManager.getCharacterAttributes(poseName);
-					//TODO
-				} else {
-//					try {
-						//attrs = poseManager.load(poseName).getCharacterAttributes();
-						//TODO
-//					} catch (IOException e) {
+				if (!poseLibrary.contains(poseName)) {
+					try {
+						pose = Pose.load(poseName);
+					} catch (IOException e) {
 						se = new SketchException(
-								"",//e.getMessage(),
+								e.getMessage(),
 								picodeMain.getFrame().getCurrentEditorIndex(),
 								parser.getLine(startIndex), parser.getColumn(startIndex));
-//					}
+					}
+				}
+				if (pose != null) {
+					attrs = pose.getCharacterAttributes();
 				}
 				break;
 			default:
 				break;
 			}
+
 			if (attrs != null) {
 				setCharacterAttributes(startIndex, length, attrs);
 			}
+
 			index = startIndex + length;
 			// System.out.print("Added decoration / ");
 			// System.out.println(decoration);
@@ -255,53 +266,36 @@ public class DocumentManager implements DocumentListener {
 	}
 
 	private void removeDecoration(int startIndex, int length, boolean forceRemoval) {
-		final int esi = startIndex,
-				eei = esi + length;
+		int esi = startIndex, eei = esi + length;
 		Iterator<Decoration> it = decorations.iterator();
 		Decoration decoration;
 		while (it.hasNext()) {
 			decoration = it.next();
 			if (forceRemoval || decoration.getType() == Type.POSE) {
-				final int dsi = decoration.getStartIndex(),
-						dei = dsi + decoration.getLenth();
-				if (esi >= dsi && esi < dei || eei >= dsi
-						&& eei < dei) {
+				int dsi = decoration.getStartIndex(), dei = dsi + decoration.getLenth();
+				if ((esi >= dsi && esi < dei) || (eei >= dsi && eei < dei)) {
 					setCharacterAttributes(
 							decoration.getStartIndex(),
 							decoration.getLenth() - length,
 							defaultAttrs);
 					it.remove();
-					// System.out.print("Removed decoration / ");
-					// System.out.println(decoration);
 				}
 			}
 		}
 	}
 
 	private void decorateKeyword(AST ast) {
-		/*
-		 * System.out.print("keyword: " + ast.getText().replace("\n", "\\n"));
-		 * System.out.print(" index:"); System.out.print(parser.getIndex(ast));
-		 * System.out.print(" length:");
-		 * System.out.println(ast.getText().length());
-		 * doc.setCharacterAttributes( parser.getIndex(ast),
-		 * ast.getText().length(), keywordAttrs, true);
-		 */
-		decorations.add(new Decoration(parser.getIndex(ast), ast.getText()
-				.length(), Decoration.Type.KEYWORD));
+		decorations.add(new Decoration(
+				parser.getIndex(ast),
+				ast.getText().length(),
+				Decoration.Type.KEYWORD));
 	}
 
 	private void decorateComment(CommonHiddenStreamToken tok) {
-		/*
-		 * System.out.print("comment: " + tok.getText().replace("\n", "\\n"));
-		 * System.out.print(" index:"); System.out.print(parser.getIndex(tok));
-		 * System.out.print(" length:");
-		 * System.out.println(tok.getText().length());
-		 * doc.setCharacterAttributes( parser.getIndex(tok),
-		 * tok.getText().length(), commentAttrs, true);
-		 */
-		decorations.add(new Decoration(parser.getIndex(tok), tok.getText()
-				.length(), Decoration.Type.COMMENT));
+		decorations.add(new Decoration(
+				parser.getIndex(tok),
+				tok.getText().length(),
+				Decoration.Type.COMMENT));
 	}
 
 	/**
@@ -314,6 +308,7 @@ public class DocumentManager implements DocumentListener {
 		if (ast == null) {
 			return;
 		}
+
 		final AST child1 = ast.getFirstChild();
 		AST child2 = null;
 		AST child3 = null;
@@ -374,7 +369,7 @@ public class DocumentManager implements DocumentListener {
 		case PdeTokenTypes.MODIFIERS:
 		case PdeTokenTypes.OBJBLOCK:
 		case PdeTokenTypes.CTOR_DEF:
-			// case PdeWalker.METHOD_DEF:
+		// case PdeWalker.METHOD_DEF:
 		case PdeTokenTypes.PARAMETERS:
 		case PdeTokenTypes.PARAMETER_DEF:
 		case PdeTokenTypes.VARIABLE_PARAMETER_DEF:
@@ -844,27 +839,26 @@ public class DocumentManager implements DocumentListener {
 		decorateKeyword(literalIf);
 		dumpHiddenAfter(literalIf);
 
-		final AST condition = literalIf.getFirstChild();
+		AST condition = literalIf.getFirstChild();
 		decorate(condition); // the "if" condition: an EXPR
 
 		// the "then" clause is either an SLIST or an EXPR
-		final AST thenPath = condition.getNextSibling();
+		AST thenPath = condition.getNextSibling();
 		decorate(thenPath);
 
 		// optional "else" clause: an SLIST or an EXPR
 		// what could be simpler?
-		final AST elsePath = thenPath.getNextSibling();
+		AST elsePath = thenPath.getNextSibling();
 		if (elsePath != null) {
-			final AST bestPrintableNode = getBestPrintableNode(elsePath, true);
-      decorateKeyword(elsePath); // TODO Fix this!
+			AST bestPrintableNode = getBestPrintableNode(elsePath, true);
+			decorateKeyword(elsePath); // TODO Fix this!
 			dumpHiddenBefore(bestPrintableNode);
-			final CommonHiddenStreamToken hiddenBefore = ((CommonASTWithHiddenTokens) elsePath)
-					.getHiddenBefore();
+			CommonASTWithHiddenTokens elseTokens = (CommonASTWithHiddenTokens) elsePath;
+			CommonHiddenStreamToken hiddenBefore = elseTokens.getHiddenBefore();
 			if (elsePath.getType() == PdeTokenTypes.SLIST
 					&& elsePath.getNumberOfChildren() == 0
 					&& hiddenBefore == null) {
-				final CommonHiddenStreamToken hiddenAfter = ((CommonASTWithHiddenTokens) elsePath)
-						.getHiddenAfter();
+				CommonHiddenStreamToken hiddenAfter = elseTokens.getHiddenAfter();
 				if (hiddenAfter != null) {
 					dumpHiddenTokens(hiddenAfter);
 				}

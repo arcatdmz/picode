@@ -1,11 +1,9 @@
 package com.phybots.picode.api;
 
-import com.phybots.picode.PicodeMain;
-
 public class HumanMotorManager extends MotorManager {
 
-	public HumanMotorManager(PicodeMain picodeMain, Poser poser) {
-		super(picodeMain, poser);
+	public HumanMotorManager(Poser poser) {
+		super(poser);
 	}
 
 	public void start() {
@@ -16,7 +14,6 @@ public class HumanMotorManager extends MotorManager {
 
 	@Override
 	public Pose getPose() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

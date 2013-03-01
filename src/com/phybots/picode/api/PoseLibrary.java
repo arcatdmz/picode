@@ -1,30 +1,51 @@
 package com.phybots.picode.api;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import javax.swing.Icon;
-import javax.swing.text.SimpleAttributeSet;
+import javax.imageio.ImageIO;
 
 import com.phybots.picode.PicodeSettings;
-import com.phybots.picode.api.PoseLibrary;
-import com.phybots.picode.camera.Camera;
-import com.phybots.picode.ui.list.IconListModel;
-import com.phybots.picode.ui.list.IconProvider;
 
-public class PoseLibrary extends IconListModel<Pose> implements IconProvider {
-	private static final long serialVersionUID = 4052983716336989888L;
-	private Poser poser;
+
+public class PoseLibrary {
+	
+	private static PoseLibrary instance;
+	
+	public static PoseLibrary getInstance() {
+		if (instance == null) {
+			instance = new PoseLibrary();
+		}
+		return instance;
+	}
+	
+	private Map<PoserTypeInfo, TypeBasedPoseLibrary> libraries;
+	private Map<String, Pose> poses;
+	//private PicodeMain picodeMain;
 	private int numPoses;
-
-	public PoseLibrary(Poser poser) {
-		this.poser = poser;
-		initialize();
+	
+	public PoseLibrary() {
+		libraries = new HashMap<PoserTypeInfo, TypeBasedPoseLibrary>();
+		poses = new HashMap<String, Pose>();
+		listPoserTypes();
+		listPoses();
 	}
 
-	private void initialize() {
-		/*
+	private void listPoserTypes() {
+		for (PoserTypeInfo poserType :
+				PoserLibrary.getTypeInfos()) {
+			TypeBasedPoseLibrary library = new TypeBasedPoseLibrary(poserType);
+			libraries.put(poserType, library);
+		}
+	}
+
+	private void listPoses() {
 		File poseFolder = new File(PicodeSettings.getPoseFolderPath());
 		for (File file : poseFolder.listFiles(new FilenameFilter() {
 			public boolean accept(File folder, String fileName) {
@@ -35,96 +56,125 @@ public class PoseLibrary extends IconListModel<Pose> implements IconProvider {
 			}
 		})) {
 			try {
-				load(file.getName().substring(
-						0, file.getName().lastIndexOf(".jpg")));
+				String fileName = file.getName();
+				doLoad(fileName.substring(
+						0, fileName.toLowerCase().lastIndexOf(".jpg")));
 			} catch (IOException e) {
 				// e.printStackTrace();
 			}
 		}
-		*/
-		
 	}
 
-	/*
-	@Override
-	public void add(int index, Object object) {
-		super.add(index, object);
-		numPoses ++;
+	public TypeBasedPoseLibrary getTypeBasedLibrary(PoserTypeInfo poserType) {
+		return libraries.get(poserType);
 	}
 
-	@Override
-	public void addElement(Object object) {
-		super.addElement(object);
-		numPoses ++;
+	public Pose get(String poseName) {
+		return poses.get(poseName);
 	}
 
-	@Override
-	public void insertElementAt(Object object, int index) {
-		super.insertElementAt(object, index);
-		numPoses ++;
-	}
-	*/
-
-	@Override
-	public boolean removeElement(Object object) {
-		if (super.removeElement(object)) {
-			if (object instanceof Pose) {
-				((Pose) object).delete();
-			}
-			return true;
-		}
-		return false;
+	public boolean contains(String poseName) {
+		return poses.containsKey(poseName);
 	}
 
-	public Pose capture() {
-		MotorManager motorManager = poser.getMotorManager();
-		Pose pose = motorManager.getPose();
+	public Pose duplicatePose(Pose pose) {
+		Pose newPose = pose.clone();
+		int i = 0;
 		while (true) {
-			pose.setName(String.format("New pose (%d)", numPoses ++));
+			if (i == 0) {
+				newPose.setName(String.format("Copy of %s", pose.getName()));
+			} else {
+				newPose.setName(String.format("Copy (%d) of %s", i ++, pose.getName()));
+			}
 			if (!new File(
 					PicodeSettings.getPoseFolderPath(),
-					pose.getDataFileName()).exists()) {
+					newPose.getDataFileName()).exists()) {
 				break;
 			}
 		}
-		Camera camera = poser.getCamera();
-		pose.setPhoto(camera.getImage());
 		try {
-			pose.save();
+			newPose.save();
 		} catch (IOException e) {
 			return null;
 		}
-		addElement(pose);
+		addPose(newPose);
+		return newPose;
+	}
+
+	public static Pose load(String name) throws IOException {
+		PoseLibrary poseLibrary = PoseLibrary.getInstance();
+		if (poseLibrary.contains(name)) {
+			return poseLibrary.get(name);
+		}
+		return poseLibrary.doLoad(name);
+	}
+
+	private Pose doLoad(String name) throws IOException {
+		if (contains(name)) {
+			return get(name);
+		}
+
+		// Load pose data.
+		BufferedReader reader = new BufferedReader(new FileReader(new File(
+				PicodeSettings.getPoseFolderPath(), Pose.getDataFileName(name))));
+		String poserIdentifier = reader.readLine().trim();
+
+		// Setup pose instance.
+		String[] poserInfo = poserIdentifier.split(Poser.identifierSeparator, 2);
+		PoserTypeInfo poserType = PoserLibrary.getTypeInfo(poserInfo[0]);
+		Pose pose;
+		try {
+			pose = poserType.poseConstructor.newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+			reader.close();
+			return null; // This shouldn't happen.
+		}
+		pose.setPoserIdentifier(poserIdentifier);
+		pose.setPoserType(poserType);
+		pose.setName(name);
+		pose.load(reader);
+		reader.close();
+
+		// Load the corresponding photo data.
+		String photoFileName = pose.getPhotoFileName();
+		pose.setPhoto(ImageIO.read(new File(
+				PicodeSettings.getPoseFolderPath(), photoFileName)));
+
+		// Add the pose instance to the pose library.
+		addPose(pose);
 		return pose;
 	}
 
-	public Pose get(Object object) {
-		if (object == null) {
-			return null;
+	void addPose(Pose pose) {
+		poses.put(pose.getName(), pose);
+		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
+		library.addElement(pose);
+	}
+
+	void removePose(Pose pose) {
+		String key = null;
+		for (Entry<String, Pose> e : poses.entrySet()) {
+			if (e.getValue() == pose) {
+				key = e.getKey();
+			}
 		}
-		if (object instanceof String) {
-			return get((String) object);
-		} else if (object instanceof Pose) {
-			return (Pose) object;
+		poses.remove(key);
+		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
+		library.removeElement(pose);
+	}
+
+	String newName() {
+		String name = "";
+		while (true) {
+			name = String.format("New pose (%d)", numPoses ++);
+			if (!new File(
+					PicodeSettings.getPoseFolderPath(),
+					Pose.getDataFileName(name)).exists()) {
+				break;
+			}
 		}
-		return null;
+		return name;
 	}
 
-	public Icon getIcon(Object object) {
-		Pose pose = get(object);
-		return pose != null ? pose.getIcon() : null;
-	}
-
-	public String getName(Object object) {
-		Pose pose = get(object);
-		return pose != null ? pose.getName() : null;
-	}
-
-	public SimpleAttributeSet getCharacterAttributes(String poseName) {
-		return getCharacterAttributes(get(poseName));
-	}
-
-	public SimpleAttributeSet getCharacterAttributes(Pose pose) {
-		return pose == null ? null : pose.getCharacterAttributes();
-	}
 }

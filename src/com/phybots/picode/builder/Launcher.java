@@ -54,9 +54,7 @@ public class Launcher implements MessageConsumer {
   
   public Launcher(Builder builder) {
     this.builder = builder;
-    if (builder.getPicodeMain() != null) {
-      builder.getPicodeMain().setLauncher(this);
-    }
+    this.listener = builder.getPicodeMain().getPintegration();
   }
 
   private PicodeFrame getPicodeFrame() {
@@ -134,7 +132,7 @@ public class Launcher implements MessageConsumer {
 //        e.printStackTrace();
 //      }
     }
-    builder.getPicodeMain().setLauncher(null);
+    builder.getPicodeMain().stopSketch();
   }
 
   /**

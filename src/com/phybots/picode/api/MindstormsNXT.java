@@ -20,13 +20,12 @@ public class MindstormsNXT extends PoserWithConnector {
 	}
 
 	@Override
-	public Pose newPoseInstance() {
-		return new MindstormsNXTPose();
-	}
-
-	@Override
 	public void setConnector(String connector) {
-		nxt.setConnector(ConnectorFactory.makeConnector(connector));
+		try {
+			nxt.setConnector(ConnectorFactory.makeConnector(connector));
+		} catch (Exception e) {
+			// Do nothing.
+		}
 	}
 
 	@Override
@@ -35,6 +34,10 @@ public class MindstormsNXT extends PoserWithConnector {
 			return "";
 		}
 		return nxt.getConnector().getConnectionString();
+	}
+
+	public static Class<? extends Pose> getPoseClass() {
+		return MindstormsNXTPose.class;
 	}
 
 	public static Class<? extends Camera> getCameraClass() {

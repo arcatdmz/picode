@@ -10,9 +10,8 @@ public class Human extends Poser {
 		motorManager = new HumanMotorManager(this);
 	}
 
-	@Override
-	public Pose newPoseInstance() {
-		return new HumanPose();
+	public static Class<? extends Pose> getPoseClass() {
+		return HumanPose.class;
 	}
 
 	public static Class<? extends Camera> getCameraClass() {

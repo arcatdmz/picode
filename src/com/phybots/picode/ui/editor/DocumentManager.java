@@ -20,9 +20,8 @@ import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
 
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.api.GlobalPoseLibrary;
+import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.api.Pose;
-import com.phybots.picode.api.PoserManager;
 import com.phybots.picode.parser.PdeParser;
 import com.phybots.picode.parser.PdeWalker;
 import com.phybots.picode.ui.editor.Decoration.Type;
@@ -224,13 +223,13 @@ public class DocumentManager implements DocumentListener {
 				attrs = keywordAttrs;
 				break;
 			case POSE:
-				GlobalPoseLibrary poseLibrary = PoserManager.getInstance().getPoseLibrary();
+				PoseLibrary poseLibrary = PoseLibrary.getInstance();
 				String poseName = decoration.getOption().toString();
 				Pose pose = poseLibrary.get(poseName);
 				System.out.println("Pose " + poseName);
 				if (!poseLibrary.contains(poseName)) {
 					try {
-						pose = Pose.load(poseName);
+						pose = PoseLibrary.load(poseName);
 					} catch (IOException e) {
 						se = new SketchException(
 								e.getMessage(),

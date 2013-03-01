@@ -29,7 +29,22 @@ public class NormalCamera implements Camera {
 	}
 
 	@Override
+	public void dispose() {
+	}
+
+	@Override
 	public BufferedImage getImage() {
 		return camera.getImage();
 	}
+
+	@Override
+	public void showFrame(boolean isVisible) {
+		// TODO Implement this.
+	}
+	
+	@Override
+	public boolean isFrameVisible() {
+		return false;
+	}
+
 }

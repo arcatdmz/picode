@@ -9,15 +9,12 @@ import javax.swing.JScrollPane;
 import processing.app.SketchCode;
 
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.api.GlobalPoseLibrary;
-import com.phybots.picode.api.Pose;
-import com.phybots.picode.api.PoserManager;
+import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.ui.editor.Decoration.Type;
 
 public class PicodeEditor extends JEditorPane {
 	private static final long serialVersionUID = -6366895407636859766L;
 	private static final Font defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
-	private PicodeMain picodeMain;
 	private DocumentManager documentManager;
 	private SketchCode code;
 	private JScrollPane jScrollPane;
@@ -39,9 +36,8 @@ public class PicodeEditor extends JEditorPane {
 					if (decoration != null && decoration.getType() == Type.POSE) {
 						System.out.println(decoration.getOption());
 						String poseName = (String) decoration.getOption();
-						GlobalPoseLibrary poseLibrary = PoserManager.getInstance().getPoseLibrary();
-						Pose pose = poseLibrary.get(poseName);
-						//TODO Implement code to show GUI etc.
+						PoseLibrary poseLibrary = PoseLibrary.getInstance();
+						poseLibrary.get(poseName);
 					}
 				}
 			}

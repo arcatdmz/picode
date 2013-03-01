@@ -17,7 +17,7 @@ public class Picode {
 
 	public static Pose pose(String poseName) {
 		try {
-			return Pose.load(poseName);
+			return PoseLibrary.load(poseName);
 		} catch (IOException e) {
 			return null;
 		}

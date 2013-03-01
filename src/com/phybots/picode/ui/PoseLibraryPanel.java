@@ -24,9 +24,9 @@ import com.phybots.picode.action.EditSelectedPoseNameAction;
 import com.phybots.picode.action.OpenPoseFolderAction;
 import com.phybots.picode.action.ShowCameraFrameAction;
 import com.phybots.picode.api.Pose;
-import com.phybots.picode.api.PoseLibrary;
+import com.phybots.picode.api.TypeBasedPoseLibrary;
 import com.phybots.picode.api.Poser;
-import com.phybots.picode.api.PoserManager;
+import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.ui.list.DefaultListCellEditor;
 import com.phybots.picode.ui.list.IconListRenderer;
 import com.phybots.picode.ui.list.JMutableList;
@@ -67,7 +67,7 @@ public class PoseLibraryPanel extends JPanel {
 		initialize();
 	}
 
-	public void setPoseLibrary(PoseLibrary poseLibrary) {
+	public void setPoseLibrary(TypeBasedPoseLibrary poseLibrary) {
 		if (poseLibrary == null) {
 			jList.setModel(new DefaultListModel<Pose>());
 			jList.setCellRenderer(new IconListRenderer(null));
@@ -149,12 +149,12 @@ public class PoseLibraryPanel extends JPanel {
 
 	private JMutableList<Pose> getJList() {
 		if (jList == null) {
-			Poser poser = PoserManager.getInstance().getCurrentPoser();
+			Poser poser = PoserLibrary.getInstance().getCurrentPoser();
 			if (poser == null) {
 				jList = new JMutableList<Pose>(new DefaultListModel<Pose>());
 				jList.setCellRenderer(new IconListRenderer(null));
 			} else {
-				PoseLibrary poseLibrary = poser.getPoseLibrary();
+				TypeBasedPoseLibrary poseLibrary = poser.getPoseLibrary();
 				jList = new JMutableList<Pose>(poseLibrary);
 				jList.setCellRenderer(new IconListRenderer(poseLibrary));
 			}

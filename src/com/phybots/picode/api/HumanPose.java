@@ -1,8 +1,11 @@
 package com.phybots.picode.api;
 
+import java.awt.Point;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+
+import jp.digitalmuseum.kinect.Joint;
 
 
 public class HumanPose extends Pose {
@@ -38,27 +41,32 @@ public class HumanPose extends Pose {
 	private static final int ANGLE_RIGHT_KNEE = 14;
 
 	private Vector[] joints = null;
+	private Point[] points = null;
 	private double[] angles = new double[15];
 
 	@Override
 	public void load(BufferedReader reader) throws IOException {
 		joints = new Vector[20];
+		points = new Point[20];
 		boolean isError = false;
 		for (int i = 0; i < joints.length; i ++) {
-			reader.mark(256);
+			reader.mark(1024);
 			try {
-				String[] xyz = reader.readLine().trim().split(" ");
-				if (xyz.length == 3) {
+				String[] xyzxy = reader.readLine().trim().split(" ");
+				if (xyzxy.length == 5) {
 					joints[i] = new Vector(
-							Float.valueOf(xyz[0]),
-							Float.valueOf(xyz[1]),
-							Float.valueOf(xyz[2]));
+							Float.valueOf(xyzxy[0]),
+							Float.valueOf(xyzxy[1]),
+							Float.valueOf(xyzxy[2]));
+					points[i] = new Point(
+							Integer.valueOf(xyzxy[3]),
+							Integer.valueOf(xyzxy[4]));
 				} else {
 					isError = true;
 				}
 			} catch (NumberFormatException nfe) {
 				isError = true;
-				reader.reset();
+				reader.reset(); // Behave as if I haven't read anything.
 				break;
 			}
 		}
@@ -75,20 +83,34 @@ public class HumanPose extends Pose {
 		} else {
 			for (int i = 0; i < joints.length; i ++) {
 				writer.write(joints[i].toString());
+				writer.write(String.format(" %d %d", points[i].x, points[i].y));
 				writer.newLine();
 			}
 		}
 	}
 
-	public void importData(float[][] data) {
-		if (data == null) {
-			return;
+	public boolean importData(Joint[] joints) {
+		if (joints == null) {
+			return false;
 		}
-		joints = new Vector[20];
+		this.joints = new Vector[20];
+		this.points = new Point[20];
 		for (int i = 0; i < joints.length; i ++) {
-			joints[i] = new Vector(data[i][0], data[i][1], data[i][2]);
+			if (joints[i] == null) {
+				this.joints = null;
+				this.points = null;
+				return false;
+			}
+			this.joints[i] = new Vector(
+					joints[i].position.x,
+					joints[i].position.y,
+					joints[i].position.z);
+			this.points[i] = new Point(
+					(int) joints[i].screenPosition.x,
+					(int) joints[i].screenPosition.y);
 		}
 		calcAngles();
+		return true;
 	}
 
 	@Override
@@ -297,14 +319,14 @@ public class HumanPose extends Pose {
 	}
 
 	private static class Vector {
-		float x, y, z;
+		double x, y, z;
 		public Vector() {
 			// Do nothing.
 		}
 		public Vector(Vector v) {
 			this(v.x, v.y, v.z);
 		}
-		public Vector(float x, float y, float z) {
+		public Vector(double x, double y, double z) {
 			this.x = x;
 			this.y = y;
 			this.z = z;
@@ -327,7 +349,7 @@ public class HumanPose extends Pose {
 			result.z = x*v.y-y*v.x;
 			return result;
 		}
-		public float dot(Vector v) {
+		public double dot(Vector v) {
 			return x*v.x + y*v.y + z*v.z;
 		}
 		public Vector add(Vector v) {
@@ -344,18 +366,18 @@ public class HumanPose extends Pose {
 			result.z -= v.z;
 			return result;
 		}
-		public Vector div(float div) {
+		public Vector div(double div) {
 			Vector result = new Vector(this);
 			result.x /= div;
 			result.y /= div;
 			result.z /= div;
 			return result;
 		}
-		public Vector mul(float mul) {
+		public Vector mul(double d) {
 			Vector result = new Vector(this);
-			result.x *= mul;
-			result.y *= mul;
-			result.z *= mul;
+			result.x *= d;
+			result.y *= d;
+			result.z *= d;
 			return result;
 		}
 		public String toString() {
@@ -367,7 +389,7 @@ public class HumanPose extends Pose {
 			sb.append(z);
 			return sb.toString();
 		}
-		public float get(int index) {
+		public double get(int index) {
 			switch (index) {
 			case 0: return x;
 			case 1: return y;
@@ -375,7 +397,7 @@ public class HumanPose extends Pose {
 			default: return Float.NaN;
 			}
 		}
-		public void set(int index, float val) {
+		public void set(int index, double val) {
 			switch (index) {
 			case 0: x = val;
 			case 1: y = val;

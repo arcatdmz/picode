@@ -5,5 +5,8 @@ import java.awt.image.BufferedImage;
 public interface Camera {
 	public boolean start();
 	public void stop();
+	public void dispose();
 	public BufferedImage getImage();
+	public void showFrame(boolean isVisible);
+	public boolean isFrameVisible();
 }

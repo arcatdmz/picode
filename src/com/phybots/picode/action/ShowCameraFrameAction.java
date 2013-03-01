@@ -5,17 +5,17 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import com.phybots.picode.api.Poser;
-import com.phybots.picode.api.PoserManager;
+import com.phybots.picode.api.PoserLibrary;
 
 public class ShowCameraFrameAction extends AbstractAction {
 	private static final long serialVersionUID = -2297070480522312162L;
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		PoserManager poserManager = PoserManager.getInstance();
-		Poser currentPoser = poserManager.getCurrentPoser();
+		Poser currentPoser = PoserLibrary.getInstance().getCurrentPoser();
+		System.out.println(currentPoser);
 		if (currentPoser != null) {
-			currentPoser.showCaptureFrame();
+			currentPoser.showCaptureFrame(true);
 		}
 	}
 }

@@ -1,18 +1,23 @@
 package com.phybots.picode.api;
 
+import java.io.IOException;
+
 import com.phybots.picode.camera.Camera;
 
 public abstract class Poser {
 
+	public final static String identifierSeparator = "/";
+
 	protected MotorManager motorManager;
-	
-	private PoseLibrary poseLibrary;
+
 	private String name;
 
+	private PoserTypeInfo poserType;
+
 	public Poser() {
+		setPoserType(PoserLibrary.getTypeInfo(this));
 		initialize();
-		poseLibrary = new PoseLibrary(this);
-		PoserManager.getInstance().addPoser(this);
+		PoserLibrary.getInstance().addPoser(this);
 	}
 	
 	protected abstract void initialize();
@@ -22,7 +27,15 @@ public abstract class Poser {
 	}
 
 	public Camera getCamera() {
-		return PoserManager.getInstance().getCameraManager().getCamera(this);
+		return PoserLibrary.getInstance().getCameraManager().getCamera(this);
+	}
+
+	private void setPoserType(PoserTypeInfo poserType) {
+		this.poserType = poserType;
+	}
+
+	public PoserTypeInfo getPoserType() {
+		return poserType;
 	}
 
 	public void setName(String name) {
@@ -33,10 +46,8 @@ public abstract class Poser {
 		return name;
 	}
 
-	public abstract Pose newPoseInstance();
-
 	public void dispose() {
-		PoserManager.getInstance().removePoser(this);
+		PoserLibrary.getInstance().removePoser(this);
 	}
 
 	public boolean setPose(Pose pose) {
@@ -45,6 +56,23 @@ public abstract class Poser {
 
 	public Pose getPose() {
 		return getMotorManager().getPose();
+	}
+
+	public Pose capture() {
+		PoseLibrary poseLibrary = PoseLibrary.getInstance();
+		Pose pose = getPose();
+		if (pose == null) {
+			return pose;
+		}
+		pose.setName(poseLibrary.newName());
+		pose.setPhoto(getCamera().getImage());
+		try {
+			pose.save();
+		} catch (IOException e) {
+			return null;
+		}
+		poseLibrary.addPose(pose);
+		return pose;
 	}
 
 	public boolean isActing() {
@@ -56,16 +84,16 @@ public abstract class Poser {
 		return action;
 	}
 
-	public PoseLibrary getPoseLibrary() {
-		return null;
+	public TypeBasedPoseLibrary getPoseLibrary() {
+		return PoseLibrary.getInstance().getTypeBasedLibrary(poserType);
 	}
-	
-	public void showCaptureFrame() {
-		//
+
+	public void showCaptureFrame(boolean isVisible) {
+		getCamera().showFrame(isVisible);
 	}
-	
+
 	public String getIdentifier() {
-		return String.format("%s/%s", getClass().getSimpleName(), name);
+		return getClass().getSimpleName();
 	}
 
 	@Override

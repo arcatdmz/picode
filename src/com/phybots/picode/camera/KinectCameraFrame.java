@@ -1,4 +1,4 @@
-package jp.digitalmuseum.kinect;
+package com.phybots.picode.camera;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -8,13 +8,9 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,6 +22,7 @@ import javax.swing.event.ChangeEvent;
 
 import org.apache.thrift.TException;
 
+import com.phybots.picode.action.CapturePoseAction;
 import jp.digitalmuseum.kinect.Frame;
 import jp.digitalmuseum.kinect.Joint;
 import jp.digitalmuseum.kinect.JointType;
@@ -34,28 +31,20 @@ import jp.digitalmuseum.kinect.KinectServiceWrapper;
 import jp.digitalmuseum.kinect.KinectServiceWrapper.FrameListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-public class KinectClientFrame extends JFrame implements FrameListener {
+public class KinectCameraFrame extends JFrame implements FrameListener {
 
 	private static final long serialVersionUID = -1065767804512646130L;
-	private static final int SKELETON_LIFE = 7;
+	static final int SKELETON_LIFE = 7;
 
 	private JPanel contentPane;
 	private JPanel panel;
 	private JSlider slider;
-
-	private final Action startAction = new StartAction();
-	private final Action stopAction = new StopAction();
 	
-	private transient KinectServiceWrapper kinect =
-			new KinectServiceWrapper("localhost", KinectServiceConstants.SERVER_DEFAULT_PORT);
+	private transient KinectServiceWrapper kinect = null;
 	private transient Frame frame;
 	private transient BufferedImage image;
 	private transient short[] depthImageData;
@@ -70,7 +59,8 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					KinectClientFrame frame = new KinectClientFrame();
+					KinectCameraFrame frame = new KinectCameraFrame(
+							new KinectServiceWrapper("localhost", KinectServiceConstants.SERVER_DEFAULT_PORT));
 					frame.pack();
 					frame.setVisible(true);
 				} catch (Exception e) {
@@ -83,8 +73,23 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 	/**
 	 * Create the frame.
 	 */
-	public KinectClientFrame() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public KinectCameraFrame(KinectServiceWrapper wrapper) {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowOpened(WindowEvent e) {
+				kinect.addFrameListener(KinectCameraFrame.this);
+				kinect.start();
+			}
+			@Override
+			public void windowClosing(WindowEvent e) {
+				kinect.stop();
+				kinect.removeFrameListener(KinectCameraFrame.this);
+			}
+		});
+
+		setType(Type.UTILITY);
+		setAlwaysOnTop(true);
+		this.kinect = wrapper;
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -152,7 +157,7 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 					if (frame.joints.size() == 20) {
 						joints = frame.joints;
 						skeletonLife = SKELETON_LIFE;
-					} else {
+					} else if (skeletonLife > 0) {
 						skeletonLife --;
 					}
 					if (skeletonLife > 0) {
@@ -172,13 +177,9 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 				try {
 					boolean isDepthEnabled = kinect.isDepthEnabled();
 					kinect.setDepthEnabled(!isDepthEnabled);
-					kinect.setColorEnabled(isDepthEnabled);
 					System.out.print("Depth stream is ");
 					System.out.println(
 							isDepthEnabled ? "disabled." : "enabled");
-					System.out.print("Color stream is ");
-					System.out.println(
-							isDepthEnabled ? "enabled." : "disabled");
 				} catch (TException te) {
 					te.printStackTrace();
 				}
@@ -212,47 +213,14 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 		contentPane.add(panel_1, BorderLayout.SOUTH);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JButton btnStart = new JButton("Start");
-		btnStart.setAction(startAction);
-		panel_1.add(btnStart);
+		JButton btnCapture = new JButton();
+		btnCapture.setAction(new CapturePoseAction());
+		btnCapture.setText("Capture");
+		panel_1.add(btnCapture);
 		
-		JButton btnStop = new JButton("Stop");
-		btnStop.setAction(stopAction);
-		panel_1.add(btnStop);
+		pack();
 	}
 
-	private class StartAction extends AbstractAction {
-		private static final long serialVersionUID = 4134353985601569086L;
-		public StartAction() {
-			putValue(NAME, "Start");
-			putValue(SHORT_DESCRIPTION, "Start retrieving data from the Kinect camera.");
-		}
-		public void actionPerformed(ActionEvent e) {
-			if (!kinect.start()) {
-				System.err.println("Server is not ready.");
-				return;
-			}
-			try {
-				kinect.addKeyword("Capture");
-				kinect.setVoiceEnabled(true);
-				slider.setValue(kinect.getAngle());
-				kinect.addFrameListener(KinectClientFrame.this);
-			} catch (TException te) {
-				te.printStackTrace();
-			}
-		}
-	}
-	private class StopAction extends AbstractAction {
-		private static final long serialVersionUID = 3031247155212739623L;
-		public StopAction() {
-			putValue(NAME, "Stop");
-			putValue(SHORT_DESCRIPTION, "Stop retrieving data from the Kinect camera.");
-		}
-		public void actionPerformed(ActionEvent e) {
-			kinect.removeFrameListener(KinectClientFrame.this);
-			kinect.stop();
-		}
-	}
 	@Override
 	public void frameUpdated(Frame frame, BufferedImage image, short[] depthImageData) {
 		this.frame = frame;
@@ -267,18 +235,7 @@ public class KinectClientFrame extends JFrame implements FrameListener {
 			}
 			System.out.println();
 			if (save) {
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh-mm-ss");
-				try {
-					File file = new File(sdf.format(new Date()) + ".jpg");
-					ImageIO.write(image, "JPEG",
-							new FileOutputStream(file));
-					System.out.print("Current image is saved as: ");
-					System.out.println(file.getAbsolutePath());
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				new CapturePoseAction().actionPerformed(null);
 			}
 		}
 		panel.repaint();

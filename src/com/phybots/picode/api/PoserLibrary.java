@@ -1,59 +1,79 @@
 package com.phybots.picode.api;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.phybots.picode.PicodeMain;
+import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.CameraManager;
 import com.phybots.utils.ClassUtils;
 
-public class PoserManager {
+@SuppressWarnings("unchecked")
+public class PoserLibrary {
 
-	private static PoserManager instance;
-	private static Set<PoserTypeInfo> poserTypeInfos;
+	private static PoserLibrary instance;
 
-	public static PoserManager getInstance() {
+	public static PoserLibrary getInstance() {
 		if (instance == null) {
-			instance = new PoserManager();
+			instance = new PoserLibrary();
 		}
 		return instance;
 	}
+
+	private static Set<PoserTypeInfo> poserTypeInfos;
 
 	static {
 		Set<Class<? extends Poser>> poserClasses = getPoserClasses();
 		poserTypeInfos = new HashSet<PoserTypeInfo>();
 		for (Class<? extends Poser> poserClass : poserClasses) {
 
-			PoserTypeInfo poserTypeInfo = new PoserTypeInfo();
+			PoserTypeInfo poserType = new PoserTypeInfo();
 
-			poserTypeInfo.typeName = poserClass.getSimpleName();
+			poserType.typeName = poserClass.getSimpleName();
 
 			try {
-				poserTypeInfo.constructor = poserClass.getConstructor(PicodeMain.class);
+				poserType.constructor = poserClass.getConstructor();
 			} catch (Exception e) {
+				e.printStackTrace();
 				continue;
 			}
 
 			if (PoserWithConnector.class.isAssignableFrom(poserClass)) {
-				poserTypeInfo.supportsConnector = true;
+				poserType.supportsConnector = true;
+			}
+
+			try {
+				Method method = poserClass.getMethod("getCameraClass");
+				poserType.cameraClass = (Class<? extends Camera>) method.invoke(null);
+				poserType.cameraConstructor = poserType.cameraClass.getConstructor();
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+
+			try {
+				Method method = poserClass.getMethod("getPoseClass");
+				poserType.poseClass = (Class<? extends Pose>) method.invoke(null);
+				poserType.poseConstructor = poserType.poseClass.getConstructor();
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
 			}
 			
-			poserTypeInfos.add(poserTypeInfo);
+			poserTypeInfos.add(poserType);
 		}
 	}
 
-	private PicodeMain picodeMain;
-	private GlobalPoseLibrary globalPoseLibrary;
+	private PicodeInterface picodeFrame;
 	private CameraManager cameraManager;
 	private List<Poser> posers;
+	private Poser currentPoser;
 
-	private PoserManager() {
+	private PoserLibrary() {
 		cameraManager = new CameraManager();
-		globalPoseLibrary = new GlobalPoseLibrary();
 		posers = new ArrayList<Poser>();
 	}
 
@@ -69,8 +89,14 @@ public class PoserManager {
 		}
 		return null;
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	public static PoserTypeInfo getTypeInfo(Poser poser) {
+		if (poser == null) {
+			return null;
+		}
+		return getTypeInfo(poser.getClass().getSimpleName());
+	}
+
 	private static Set<Class<? extends Poser>> getPoserClasses() {
 		Set<Class<? extends Poser>> classSet = new HashSet<Class<? extends Poser>>();
 
@@ -97,12 +123,8 @@ public class PoserManager {
 		return classSet;
 	}
 
-	public void setIDE(PicodeMain picodeMain) {
-		this.picodeMain = picodeMain;
-	}
-
-	public GlobalPoseLibrary getPoseLibrary() {
-		return globalPoseLibrary;
+	public void attachPicodeFrame(PicodeInterface picodeFrame) {
+		this.picodeFrame = picodeFrame;
 	}
 
 	public CameraManager getCameraManager() {
@@ -112,7 +134,7 @@ public class PoserManager {
 	public Poser newPoserInstance(PoserInfo poserInfo) {
 		Poser poser;
 		try {
-			poser = poserInfo.type.constructor.newInstance(picodeMain);
+			poser = poserInfo.type.constructor.newInstance();
 		} catch (Exception e) {
 			return null;
 		}
@@ -138,9 +160,9 @@ public class PoserManager {
 
 	void addPoser(Poser poser) {
 		posers.add(poser);
-		if (picodeMain != null) {
-			picodeMain.getFrame();
-			//
+		if (picodeFrame != null) {
+			picodeFrame.onAddPoser(poser);
+			setCurrentPoser(poser);
 		}
 	}
 
@@ -149,34 +171,26 @@ public class PoserManager {
 			return;
 		}
 		poser.dispose();
-		if (picodeMain != null) {
-			//
+		if (picodeFrame != null) {
+			picodeFrame.onRemovePoser(poser);
 		}
 	}
 
 	public void setCurrentPoser(Poser poser) {
-		if (picodeMain == null) {
+		if (picodeFrame == null) {
 			return;
+		}
+		if (poser != this.currentPoser) {
+			picodeFrame.onCurrentPoserChange(poser);
+			this.currentPoser = poser;
 		}
 	}
 
 	public Poser getCurrentPoser() {
-		if (picodeMain == null) {
+		if (picodeFrame == null) {
 			return null;
 		}
-		return null;
-	}
-
-	public static class PoserInfo {
-		public PoserTypeInfo type;
-		public String connector;
-		public String name;
-	}
-
-	public static class PoserTypeInfo {
-		public String typeName;
-		public boolean supportsConnector;
-		public Constructor<? extends Poser> constructor;
+		return currentPoser;
 	}
 
 }

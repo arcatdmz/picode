@@ -9,8 +9,9 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.action.NewPoserAction;
 import com.phybots.picode.api.Poser;
-import com.phybots.picode.api.PoserManager;
+import com.phybots.picode.api.PoserLibrary;
 
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -23,8 +24,9 @@ public class PoserSelectorPanel extends JPanel {
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JComboBox<Poser> comboBox;
+	private JButton btnEdit;
 
-	public PoserSelectorPanel() {
+	public PoserSelectorPanel(PicodeMain picodeMain) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWeights = new double[]{1.0, Double.MIN_VALUE};
 		gridBagLayout.rowWeights = new double[]{1.0};
@@ -36,7 +38,7 @@ public class PoserSelectorPanel extends JPanel {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					Poser poser = (Poser)comboBox.getSelectedItem();
 					if (poser != null) {
-						PoserManager.getInstance().setCurrentPoser(poser);
+						PoserLibrary.getInstance().setCurrentPoser(poser);
 					}
 				}
 			}
@@ -49,7 +51,9 @@ public class PoserSelectorPanel extends JPanel {
 		gbc_comboBox.gridy = 0;
 		add(comboBox, gbc_comboBox);
 		
-		JButton btnEdit = new JButton("Edit");
+		btnEdit = new JButton();
+		btnEdit.setAction(new NewPoserAction(picodeMain));
+		btnEdit.setText("Edit");
 		btnEdit.setFont(defaultFont);
 		GridBagConstraints gbc_btnEdit = new GridBagConstraints();
 		gbc_btnEdit.fill = GridBagConstraints.BOTH;
@@ -57,4 +61,22 @@ public class PoserSelectorPanel extends JPanel {
 		gbc_btnEdit.gridy = 0;
 		add(btnEdit, gbc_btnEdit);
 	}
+
+	public void setRunnable(boolean isRunnable) {
+		comboBox.setEnabled(isRunnable);
+		btnEdit.setEnabled(isRunnable);
+	}
+
+	public void addPoser(Poser poser) {
+		comboBox.addItem(poser);
+	}
+	
+	public void removePoser(Poser poser) {
+		comboBox.removeItem(poser);
+	}
+
+	public void setSelectedPoser(Poser poser) {
+		comboBox.setSelectedItem(poser);
+	}
+
 }

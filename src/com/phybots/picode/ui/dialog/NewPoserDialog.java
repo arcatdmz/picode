@@ -16,11 +16,11 @@ import javax.swing.border.EmptyBorder;
 
 import com.phybots.picode.PicodeMain;
 
-public class NewRobotDialog extends JDialog implements ActionListener {
+public class NewPoserDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 355467424630256025L;
 
-	protected final NewRobotPanel contentPanel;
+	protected final NewPoserPanel contentPanel;
 
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
@@ -29,7 +29,7 @@ public class NewRobotDialog extends JDialog implements ActionListener {
 	 */
 	public static void main(String[] args) {
 		try {
-			NewRobotDialog dialog = new NewRobotDialog();
+			NewPoserDialog dialog = new NewPoserDialog();
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -40,10 +40,10 @@ public class NewRobotDialog extends JDialog implements ActionListener {
 	/**
 	 * Create the dialog.
 	 */
-	public NewRobotDialog() {
+	public NewPoserDialog() {
 		setBounds(100, 100, 450, 200);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel = new NewRobotPanel();
+		contentPanel = new NewPoserPanel();
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
@@ -70,7 +70,7 @@ public class NewRobotDialog extends JDialog implements ActionListener {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				actionPerformed(new ActionEvent(NewRobotDialog.this,
+				actionPerformed(new ActionEvent(NewPoserDialog.this,
 						Integer.MIN_VALUE, "Cancel"));
 			}
 		});

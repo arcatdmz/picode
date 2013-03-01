@@ -76,6 +76,7 @@ public class Preprocessor {
     builder.getSketch().ensureExistence();
 
 //    System.out.println("srcFolder is " + srcFolder);
+    builder.getBinFolder().mkdirs();
     builder.setClassPath(builder.getBinFolder().getAbsolutePath());
 
     // figure out the contents of the code folder to see if there

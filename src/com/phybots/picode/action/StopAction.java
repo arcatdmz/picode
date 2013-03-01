@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.builder.Launcher;
 
 public class StopAction extends AbstractAction {
 	private static final long serialVersionUID = 7556364882375393913L;
@@ -17,9 +16,6 @@ public class StopAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		Launcher launcher = picodeMain.getLauncher();
-		if (launcher != null) {
-			launcher.close();
-		}
+		picodeMain.stopSketch();
 	}
 }

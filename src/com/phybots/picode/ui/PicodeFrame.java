@@ -23,8 +23,9 @@ import com.phybots.picode.action.RunAction;
 import com.phybots.picode.action.SaveSketchAction;
 import com.phybots.picode.action.SaveSketchAsAction;
 import com.phybots.picode.action.StopAction;
+import com.phybots.picode.api.PicodeInterface;
 import com.phybots.picode.api.Pose;
-import com.phybots.picode.builder.Launcher;
+import com.phybots.picode.api.Poser;
 import com.phybots.picode.ui.editor.PicodeEditor;
 import com.phybots.picode.ui.editor.PicodeEditorPane;
 
@@ -34,8 +35,6 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -51,7 +50,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.EmptyBorder;
 
-public class PicodeFrame extends JFrame {
+public class PicodeFrame extends JFrame implements PicodeInterface {
 	private static final long serialVersionUID = -7081881044895496089L;
 
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
@@ -100,9 +99,9 @@ public class PicodeFrame extends JFrame {
 	public void setRunnable(boolean isRunnable) {
 		getMnFile().setEnabled(isRunnable);
 		getMnSketch().setEnabled(isRunnable);
-		// getComboBox().setEnabled(isRunnable);//TODO
 		getBtnRun().setEnabled(isRunnable);
 		getBtnStop().setEnabled(!isRunnable);
+		getPoserPanel().setRunnable(isRunnable);
 		getPosePanel().setRunnable(isRunnable);
 	}
 
@@ -201,23 +200,16 @@ public class PicodeFrame extends JFrame {
 		this.setContentPane(getContentPanel());
 		this.setTitle("Picode");
 		editorPanes = new ArrayList<PicodeEditorPane>();
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				Launcher launcher = picodeMain.getLauncher();
-				if (launcher != null) {
-					launcher.close();
-				}
-			}
-		});
 		getTabbedPane().addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
                 if (e.getSource() instanceof JTabbedPane) {
                     JTabbedPane pane = (JTabbedPane) e.getSource();
                     currentEditorIndex = pane.getSelectedIndex();
+                    if (currentEditorIndex < 0) {
+                    	currentEditorIndex = 0;
+                    }
                     currentEditor = editorPanes.get(currentEditorIndex).getPicodeEditor();
-                    System.out.println("tab changed: " + currentEditorIndex);
                 }
 			}
 		});
@@ -364,15 +356,15 @@ public class PicodeFrame extends JFrame {
 		return libraryPane;
 	}
 
-	private PoserSelectorPanel getPoserPanel() {
+	public PoserSelectorPanel getPoserPanel() {
 		if (poserPanel == null) {
-			poserPanel = new PoserSelectorPanel();
+			poserPanel = new PoserSelectorPanel(picodeMain);
 			poserPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		}
 		return poserPanel;
 	}
 
-	private PoseLibraryPanel getPosePanel() {
+	public PoseLibraryPanel getPosePanel() {
 		if (poseLibraryPanel == null) {
 			poseLibraryPanel = new PoseLibraryPanel(picodeMain);
 			poseLibraryPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -502,6 +494,19 @@ public class PicodeFrame extends JFrame {
 			mntmDelete.setText("Delete");
 		}
 		return mntmDelete;
+	}
+
+	public void onAddPoser(Poser poser) {
+		getPoserPanel().addPoser(poser);
+	}
+
+	public void onRemovePoser(Poser poser) {
+		getPoserPanel().removePoser(poser);
+	}
+
+	public void onCurrentPoserChange(Poser poser) {
+		getPoserPanel().setSelectedPoser(poser);
+		getPosePanel().setPoseLibrary(poser.getPoseLibrary());
 	}
 
 }

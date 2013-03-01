@@ -14,13 +14,13 @@ import java.awt.event.ItemListener;
 import java.util.Vector;
 
 import com.phybots.picode.PicodeMain;
-import com.phybots.picode.api.PoserManager;
-import com.phybots.picode.api.PoserManager.PoserInfo;
-import com.phybots.picode.api.PoserManager.PoserTypeInfo;
+import com.phybots.picode.api.PoserInfo;
+import com.phybots.picode.api.PoserLibrary;
+import com.phybots.picode.api.PoserTypeInfo;
 
 import javax.swing.JTextField;
 
-public class NewRobotPanel extends JPanel {
+public class NewPoserPanel extends JPanel {
 	private static final long serialVersionUID = -8644965871351515498L;
 
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
@@ -34,7 +34,7 @@ public class NewRobotPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public NewRobotPanel() {
+	public NewPoserPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0 };
@@ -54,7 +54,7 @@ public class NewRobotPanel extends JPanel {
 		comboBox = new JComboBox<PoserTypeInfo>();
 		comboBox.setFont(defaultFont);
 		comboBox.setModel(new DefaultComboBoxModel<PoserTypeInfo>(
-				new Vector<PoserTypeInfo>(PoserManager.getTypeInfos())));
+				new Vector<PoserTypeInfo>(PoserLibrary.getTypeInfos())));
 		comboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				updatePanelStatus();

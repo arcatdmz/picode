@@ -7,11 +7,13 @@ import java.awt.event.WindowEvent;
 import javax.swing.SwingUtilities;
 import processing.app.PicodeSketch;
 import processing.app.SketchCode;
+import processing.app.SketchException;
+
 import com.phybots.Phybots;
-import com.phybots.picode.action.RunAction;
-import com.phybots.picode.api.PoserManager;
-import com.phybots.picode.api.PoserManager.PoserInfo;
-import com.phybots.picode.builder.Launcher;
+import com.phybots.picode.api.Poser;
+import com.phybots.picode.api.PoserInfo;
+import com.phybots.picode.api.PoserLibrary;
+import com.phybots.picode.builder.Builder;
 import com.phybots.picode.ui.PicodeFrame;
 
 public class PicodeMain {
@@ -26,7 +28,7 @@ public class PicodeMain {
 
 	private PicodeFrame picodeFrame;
 
-	private Launcher launcher;
+	private Builder builder;
 
 	public PicodeMain(String[] args) {
 
@@ -40,7 +42,7 @@ public class PicodeMain {
 				debug = true;
 			} else if (i + 1 < args.length) {
 				if (args[i].equals("-type")) {
-					poserInfo.type = PoserManager.getTypeInfo(args[++i]);
+					poserInfo.type = PoserLibrary.getTypeInfo(args[++i]);
 				} else if (args[i].equals("-address")) {
 					poserInfo.connector = args[++i];
 				}
@@ -50,15 +52,19 @@ public class PicodeMain {
 			Phybots.getInstance().showDebugFrame();
 		}
 
-		// Initialize poser manager
-		PoserManager poserManager = PoserManager.getInstance();
-		poserManager.setIDE(this);
-		poserManager.newPoserInstance(poserInfo);
+		// Initialize poser library
+		PoserLibrary poserLibrary = PoserLibrary.getInstance();
+		poserLibrary.newPoserInstance(poserInfo);
+
+		// Initialize pose library
+		// PoseLibrary poseLibrary = PoseLibrary.getInstance();
+		// poseLibrary.attachMain(this);
 
 		// Launch main UI
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				initGUI();
+				PoserLibrary.getInstance().attachPicodeFrame(picodeFrame);
 			}
 		});
 	}
@@ -78,12 +84,17 @@ public class PicodeMain {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				Phybots.getInstance().dispose();
+				PicodeMain.this.dispose();
 				e.getWindow().dispose();
 			}
 		});
 	}
 
 	public void dispose() {
+		PoserLibrary.getInstance().getCameraManager().dispose();
+		if (builder != null) {
+			builder.stop();
+		}
 	}
 
 	public ProcessingIntegration getPintegration() {
@@ -91,12 +102,6 @@ public class PicodeMain {
 			pintegration = new ProcessingIntegration(this);
 		}
 		return pintegration;
-	}
-
-	public void afterRun() {
-	}
-
-	public void beforeRun() {
 	}
 
 	public PicodeFrame getFrame() {
@@ -121,29 +126,39 @@ public class PicodeMain {
 		return sketch;
 	}
 
-	/**
-	 * VMを起動させるためのLauncherオブジェクトへの参照を更新する。 引数がnullでないときはVMが起動したときで、
-	 * 引数がnullのときはVMがシャットダウンしたときである。 後者の場合はロボットとの接続を回復する。
-	 * 
-	 * @param launcher
-	 * @see RunAction#actionPerformed(java.awt.event.ActionEvent)
-	 * @see Launcher#launch(boolean)
-	 */
-	public void setLauncher(Launcher launcher) {
-		this.launcher = launcher;
-		if (launcher == null) {
-			// connectActiveRobot();
+	public void runSketch() {
+		picodeFrame.setRunnable(false);
+		if (builder != null) {
+			builder.stop();
+		}
+
+		// Hide capture frame before we run the app.
+		Poser poser = PoserLibrary.getInstance().getCurrentPoser();
+		if (poser != null && poser.getCamera().isFrameVisible()) {
+			poser.getCamera().showFrame(false);
+		}
+
+		// Run the app.
+		builder = new Builder(this, sketch);
+		try {
+			builder.run();
+		} catch (SketchException se) {
+			builder = null;
 			picodeFrame.setRunnable(true);
-		} else {
-			picodeFrame.setRunnable(false);
+			getPintegration().statusError(se);
 		}
 	}
 
-	public Launcher getLauncher() {
-		return launcher;
+	public void stopSketch() {
+		if (builder != null) {
+			builder.stop();
+			builder = null;
+			picodeFrame.setRunnable(true);
+		}
 	}
 
 	public static Font getDefaultFont() {
 		return Phybots.getInstance().getDefaultFont();
 	}
+
 }

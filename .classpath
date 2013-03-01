@@ -9,6 +9,7 @@
 	<classpathentry kind="lib" path="lib/core/library/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="lib/core/library/jogl-all-natives-windows-amd64.jar"/>
 	<classpathentry kind="lib" path="lib/core/library/jogl-all.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/kinect.jar"/>
 	<classpathentry kind="lib" path="lib/phybots/library/bluecove-2.1.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/phybots/library/capture-1.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/phybots/library/connector-1.0.4.jar"/>
@@ -23,6 +24,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="processing/lib/ecj.jar"/>
-	<classpathentry kind="lib" path="kinect/java/KinectThriftClient.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

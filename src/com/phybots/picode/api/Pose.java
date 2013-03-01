@@ -6,10 +6,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -24,40 +22,10 @@ public abstract class Pose implements Cloneable {
 	private BufferedImage photo;
 	private Icon icon;
 	private SimpleAttributeSet attrs;
-	private Poser poser;
+	private String poserIdentifier;
+	private PoserTypeInfo poserType;
 
 	Pose() {
-	}
-
-	public static Pose load(String name) throws IOException {
-
-		// Load pose data.
-		BufferedReader reader = new BufferedReader(new FileReader(new File(
-				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
-		String poserIdentifier = reader.readLine().trim();
-
-		// Find the corresponding poser.
-		PoserManager poserManager = PoserManager.getInstance();
-		Poser poser = poserManager.findPoser(poserIdentifier);
-		if (poser == null) {
-			System.err.println("Poser not found: " + poserIdentifier);
-		}
-
-		// Setup pose instance.
-		Pose pose = poser.newPoseInstance();
-		pose.poser = poser;
-		pose.name = name;
-		pose.load(reader);
-		reader.close();
-
-		// Load the corresponding photo data.
-		String photoFileName = pose.getPhotoFileName();
-		pose.setPhoto(ImageIO.read(new File(
-				PicodeSettings.getPoseFolderPath(), photoFileName)));
-		
-		// Add the pose instance to the corresponding pose library.
-		poserManager.getPoseLibrary().addPose(pose);
-		return pose;
 	}
 
 	public void delete() {
@@ -69,7 +37,8 @@ public abstract class Pose implements Cloneable {
 		if (photoFile.exists()) {
 			photoFile.delete();
 		}
-		PoserManager.getInstance().getPoseLibrary().removePose(this);
+		PoseLibrary poseLibrary = PoseLibrary.getInstance();
+		poseLibrary.removePose(this);
 	}
 
 	public void save() throws IOException {
@@ -77,7 +46,7 @@ public abstract class Pose implements Cloneable {
 		// Save the pose data.
 		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
 				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
-		writer.write(poser.getIdentifier());
+		writer.write(poserIdentifier);
 		writer.newLine();
 		save(writer);
 		writer.close();
@@ -89,11 +58,27 @@ public abstract class Pose implements Cloneable {
 		}
 	}
 
+	public String getPoserIdentifier() {
+		return poserIdentifier;
+	}
+
+	void setPoserIdentifier(String poserIdentifier) {
+		this.poserIdentifier = poserIdentifier;
+	}
+	
+	public PoserTypeInfo getPoserType() {
+		return poserType;
+	}
+
+	void setPoserType(PoserTypeInfo poserType) {
+		this.poserType = poserType;
+	}
+
 	public String getName() {
 		return name;
 	}
 
-	public void setName(String name) {
+	void setName(String name) {
 		this.name = name;
 	}
 
@@ -141,7 +126,7 @@ public abstract class Pose implements Cloneable {
 		return photo;
 	}
 
-	public void setPhoto(BufferedImage photo) {
+	void setPhoto(BufferedImage photo) {
 		this.photo = photo;
 		if (photo == null) {
 			return;
@@ -202,4 +187,5 @@ public abstract class Pose implements Cloneable {
 		g2.dispose();
 		return newImage;
 	}
+
 }

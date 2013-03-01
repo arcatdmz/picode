@@ -6,26 +6,26 @@ import java.util.List;
 import javax.swing.AbstractAction;
 
 import com.phybots.picode.api.Poser;
-import com.phybots.picode.api.PoserManager;
+import com.phybots.picode.api.PoserLibrary;
 
 public class DeleteCurrentPoserAction extends AbstractAction {
 	private static final long serialVersionUID = 1526677233343155373L;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		PoserManager poserManager = PoserManager.getInstance();
-		Poser poser = poserManager.getCurrentPoser();
+		PoserLibrary poserLibrary = PoserLibrary.getInstance();
+		Poser poser = poserLibrary.getCurrentPoser();
 		if (poser == null) {
 			return;
 		}
-		List<Poser> posers = poserManager.getPosers();
+		List<Poser> posers = poserLibrary.getPosers();
 		int index = posers.indexOf(poser);
 		if (index < posers.size() - 1) {
-			poserManager.setCurrentPoser(posers.get(index + 1));
+			poserLibrary.setCurrentPoser(posers.get(index + 1));
 		} else if (index > 0) {
-			poserManager.setCurrentPoser(posers.get(index - 1));
+			poserLibrary.setCurrentPoser(posers.get(index - 1));
 		} else {
-			poserManager.setCurrentPoser(null);
+			poserLibrary.setCurrentPoser(null);
 		}
 		poser.dispose();
 	}

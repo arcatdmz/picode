@@ -1,12 +1,13 @@
 connector - a communication package for Windows/Mac/Linux
-Copyright (C) 2010 Jun KATO
+================================================================
+Copyright (C) 2009-2013 Jun Kato
 
-version 1.0.4
+version 1.0.5
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 "connector" is a simple wrapper package for connecting Java VM
 to external devices through TCP/IP, Serial and Parallel,
-Bluetooth Serial Port Profile.
+Bluetooth Serial Port Profile and LEGO Fantom API.
 
 This library is distributed under MPL 1.1/GPL 2.0/LGPL 2.1
 triple license. Please read LICENSE.txt for the detail.
@@ -19,6 +20,10 @@ LGPL v 2.1 + Linking Over Controlled Interface.
 BlueCove is used for bluetooth connection. It is developed at
 http://bluecove.org/ and distributed under Apache License,
 Version 2.0.
+
+jfantom from LeJOS project is used for LEGO Fantom connection.
+It is developed at http://lejos.sourceforge.net/ and
+distributed under Mozilla Publiic License 1.0.
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 http://phybots.com/

@@ -11,9 +11,10 @@
 	<classpathentry kind="lib" path="lib/core/library/jogl-all.jar"/>
 	<classpathentry kind="lib" path="lib/kinect/library/kinect.jar"/>
 	<classpathentry kind="lib" path="lib/phybots/library/bluecove-2.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/phybots/library/fantom.jar"/>
 	<classpathentry kind="lib" path="lib/phybots/library/capture-1.0.3.jar"/>
-	<classpathentry kind="lib" path="lib/phybots/library/connector-1.0.4.jar"/>
-	<classpathentry kind="lib" path="lib/phybots/library/phybots-core-1.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/phybots/library/connector-1.0.5.jar"/>
+	<classpathentry kind="lib" path="lib/phybots/library/phybots-core-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/phybots/library/PhybotsP5.jar"/>
 	<classpathentry kind="lib" path="processing/lib/antlr.jar"/>
 	<classpathentry kind="lib" path="processing/lib/jna.jar"/>

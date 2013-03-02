@@ -1,7 +1,7 @@
 Phybots - a toolkit for making robotic things
-Copyright (C) 2012 Jun KATO
+Copyright (C) 2009-2013 Jun Kato
 
-version 1.0.0
+version 1.0.1
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 "Phybots" is a Java toolkit to prototype "robotic things."

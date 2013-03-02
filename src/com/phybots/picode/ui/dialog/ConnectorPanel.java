@@ -19,6 +19,7 @@ import javax.swing.event.DocumentListener;
 import jp.digitalmuseum.connector.BluetoothConnector;
 import jp.digitalmuseum.connector.Connector;
 import jp.digitalmuseum.connector.ConnectorFactory;
+import jp.digitalmuseum.connector.FantomConnector;
 import jp.digitalmuseum.connector.RXTXConnector;
 import jp.digitalmuseum.connector.SocketConnector;
 
@@ -84,7 +85,7 @@ public class ConnectorPanel extends JPanel {
 
 		comboBox = new JComboBox<String>();
 		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {
-				"Bluetooth", "Serial port", "HTTP", "TCP/IP" }));
+				"Fantom USB", "Bluetooth", "Serial port", "HTTP", "TCP/IP" }));
 		comboBox.setFont(defaultFont);
 		GridBagConstraints gbc_connectorComboBox = new GridBagConstraints();
 		gbc_connectorComboBox.anchor = GridBagConstraints.WEST;
@@ -137,22 +138,26 @@ public class ConnectorPanel extends JPanel {
 			textField.setText("");
 			return;
 		}
-		if (connector.startsWith(RXTXConnector.CON_PREFIX)) {
+		if (connector.startsWith(FantomConnector.CON_PREFIX)) {
+			comboBox.setSelectedIndex(0);
+			textField.setText(
+					connector.substring(FantomConnector.CON_PREFIX.length()));
+		} else if (connector.startsWith(BluetoothConnector.CON_PREFIX)) {
 			comboBox.setSelectedIndex(1);
+			textField.setText(
+					connector.substring(BluetoothConnector.CON_PREFIX.length()));
+		} else if (connector.startsWith(RXTXConnector.CON_PREFIX)) {
+			comboBox.setSelectedIndex(2);
 			textField.setText(
 					connector.substring(RXTXConnector.CON_PREFIX.length()));
 		} else if (connector.startsWith(SocketConnector.CON_PREFIX)) {
-			comboBox.setSelectedIndex(2);
+			comboBox.setSelectedIndex(3);
 			textField.setText(
 					connector.substring(SocketConnector.CON_PREFIX.length()));
 		} else if (connector.startsWith(SocketConnector.CON_PREFIX2)) {
-			comboBox.setSelectedIndex(2);
+			comboBox.setSelectedIndex(4);
 			textField.setText(
 					connector.substring(SocketConnector.CON_PREFIX2.length()));
-		} else if (connector.startsWith(BluetoothConnector.CON_PREFIX)) {
-			comboBox.setSelectedIndex(0);
-			textField.setText(
-					connector.substring(BluetoothConnector.CON_PREFIX.length()));
 		}
 	}
 
@@ -162,18 +167,21 @@ public class ConnectorPanel extends JPanel {
 		}
 		String prefix = "";
 		switch (comboBox.getSelectedIndex()) {
-		case 1:
-			prefix = RXTXConnector.CON_PREFIX;
-			break;
-		case 2:
-			prefix = SocketConnector.CON_PREFIX2;
-			break;
-		case 3:
-			prefix = SocketConnector.CON_PREFIX;
-			break;
 		case 0:
 		default:
+			prefix = FantomConnector.CON_PREFIX;
+			break;
+		case 1:
 			prefix = BluetoothConnector.CON_PREFIX;
+			break;
+		case 2:
+			prefix = RXTXConnector.CON_PREFIX;
+			break;
+		case 3:
+			prefix = SocketConnector.CON_PREFIX2;
+			break;
+		case 4:
+			prefix = SocketConnector.CON_PREFIX;
 			break;
 		}
 		return prefix + textField.getText();

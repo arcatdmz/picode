@@ -13,6 +13,8 @@ public class CapturePoseAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		Poser poser = PoserLibrary.getInstance().getCurrentPoser();
-		poser.capture();
+		if (poser != null) {
+			poser.capture();
+		}
 	}
 }

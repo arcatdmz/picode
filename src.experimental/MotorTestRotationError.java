@@ -9,18 +9,35 @@ import com.phybots.entity.MindstormsNXT.OutputState;
 import jp.digitalmuseum.connector.FantomConnector;
 
 
-public class MindstormsNXTMotorTest {
+public class MotorTestRotationError {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		new MindstormsNXTMotorTest();
+		new MotorTestRotationError();
 	}
 
-	public MindstormsNXTMotorTest() {
+	public MotorTestRotationError() {
 		initialize();
 		test();
+	}
+
+	private MindstormsNXTExtension ext;
+	private void initialize() {
+		MindstormsNXT.latency = 0;
+
+		// Find connected NXT.
+		String[] ids = FantomConnector.queryIdentifiers();
+		if (ids == null) {
+			System.err.println("No NXT found.");
+			return;
+		}
+
+		// Instantiate NXT.
+		FantomConnector fc = new FantomConnector(ids[0]);
+		MindstormsNXT nxt = new MindstormsNXT(fc);
+		nxt.removeDifferentialWheels();
+		MindstormsNXTExtension ext = new MindstormsNXTExtension(nxt, MindstormsNXT.Port.A);
+		nxt.addExtension(ext);
+		this.ext = nxt.requestResource(MindstormsNXTExtension.class, this);
 	}
 
 	private void test() {
@@ -73,38 +90,20 @@ public class MindstormsNXTMotorTest {
 		}
 	}
 
-	private MindstormsNXTExtension ext;
-	private void initialize() {
-		// Find connected NXT.
-		String[] ids = FantomConnector.queryIdentifiers();
-		if (ids == null) {
-			System.err.println("No NXT found.");
-			return;
-		}
-
-		// Instantiate NXT.
-		FantomConnector fc = new FantomConnector(ids[0]);
-		MindstormsNXT nxt = new MindstormsNXT(fc);
-		nxt.removeDifferentialWheels();
-		MindstormsNXTExtension ext = new MindstormsNXTExtension(nxt, MindstormsNXT.Port.A);
-		nxt.addExtension(ext);
-		this.ext = nxt.requestResource(MindstormsNXTExtension.class, this);
-	}
-
 	private Result multipleTest(int power, int goal, int num) {
 		long startTime = new Date().getTime();
 		int diff = 0;
 		for (int i = 0; i < num; i ++) {
 			diff += singleTest(power, goal);
 		}
-		long endTime = new Date().getTime();
+		long endTime = new Date().getTime() - 1000;
 		return new Result((float)diff / num, (endTime - startTime) / num);
 	}
 
 	private int singleTest(int power, int goal) {
 
 		OutputState os = ext.getOutputState();
-		int lastCount = os.tachoCount;
+		int lastCount = os.rotationCount;
 
 		ext.setOutputState(
 				(byte) power,
@@ -114,21 +113,26 @@ public class MindstormsNXTMotorTest {
 				MindstormsNXT.MOTOR_RUN_STATE_RUNNING,
 				goal);
 
+		// long then = new Date().getTime();
 		while (true) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			os = ext.getOutputState();
 			if (os.runState != MindstormsNXT.MOTOR_RUN_STATE_RUNNING) {
 				break;
 			}
 		}
+		// long now = new Date().getTime();
+		// System.out.println(now - then);
 		// System.out.print("rotated: ");
 		// System.out.println(os.tachoCount - lastCount);
 
-		int diff = Math.abs(os.tachoCount - lastCount - goal);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		os = ext.getOutputState();
+
+		int diff = Math.abs(os.rotationCount - lastCount - goal);
 		// System.out.print("diff: ");
 		// System.out.println(diff);
 

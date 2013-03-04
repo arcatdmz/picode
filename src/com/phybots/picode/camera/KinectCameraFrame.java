@@ -79,6 +79,11 @@ public class KinectCameraFrame extends JFrame implements FrameListener {
 			public void windowOpened(WindowEvent e) {
 				kinect.addFrameListener(KinectCameraFrame.this);
 				kinect.start();
+				try {
+					slider.setValue(kinect.getAngle());
+				} catch (TException e1) {
+					e1.printStackTrace();
+				}
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {

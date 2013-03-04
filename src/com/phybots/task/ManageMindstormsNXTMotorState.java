@@ -186,8 +186,8 @@ public class ManageMindstormsNXTMotorState extends TaskAbstractImpl {
 		// System.out.println(ext.getPort() + ": " + diff + " /w pow " + power);
 		ext.setOutputState(
 				(byte) (diff > 0 ? power : -power),
-				MindstormsNXT.MOTORON | MindstormsNXT.BRAKE | MindstormsNXT.REGULATED,
-				MindstormsNXT.REGULATION_MODE_MOTOR_SPEED,
+				MindstormsNXT.MOTORON, // | MindstormsNXT.BRAKE, | MindstormsNXT.REGULATED,
+				0, //MindstormsNXT.REGULATION_MODE_MOTOR_SPEED,
 				0,
 				MindstormsNXT.MOTOR_RUN_STATE_RUNNING,
 				0);

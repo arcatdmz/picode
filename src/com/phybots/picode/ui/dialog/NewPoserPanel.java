@@ -42,7 +42,7 @@ public class NewPoserPanel extends JPanel {
 		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		setLayout(gridBagLayout);
 
-		JLabel lblRobotType = new JLabel("Robot type:");
+		JLabel lblRobotType = new JLabel("Poser type:");
 		lblRobotType.setFont(defaultFont);
 		GridBagConstraints gbc_lblRobotType = new GridBagConstraints();
 		gbc_lblRobotType.insets = new Insets(0, 0, 5, 5);

@@ -3,6 +3,7 @@
 	<classpathentry kind="src" path="processing/generated"/>
 	<classpathentry kind="src" path="processing/src"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src.experimental"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/core/library/core.jar"/>
 	<classpathentry kind="lib" path="lib/core/library/gluegen-rt-natives-windows-amd64.jar"/>

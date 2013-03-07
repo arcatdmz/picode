@@ -1,3 +1,4 @@
+package nxt.setoutputstate;
 import java.util.Date;
 
 import com.phybots.entity.MindstormsNXT;

@@ -1,3 +1,4 @@
+package nxt.setoutputstate;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;

@@ -18,13 +18,10 @@ import com.phybots.entity.MindstormsNXT;
 import com.phybots.entity.MindstormsNXT.MindstormsNXTExtension;
 import com.phybots.gui.ImageProviderPanel;
 import com.phybots.service.Camera;
+import com.phybots.task.NXTMotorControl;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import jp.digitalmuseum.connector.FantomConnector;
 
 public class NXTRecordAndPlayFrame extends JFrame {
@@ -32,8 +29,7 @@ public class NXTRecordAndPlayFrame extends JFrame {
 	private JPanel contentPane;
 	private JList<Pose> list;
 	private transient Camera camera;
-	private transient Motors motors;
-	private transient ExecutorService es;
+	private transient NXTMotorControl nmc;
 
 	/**
 	 * Launch the application.
@@ -53,91 +49,31 @@ public class NXTRecordAndPlayFrame extends JFrame {
 
 		// Instantiate NXT.
 		FantomConnector fc = new FantomConnector(ids[0]);
+		fc.connect();
 		final MindstormsNXT nxt = new MindstormsNXT(fc);
 		nxt.removeDifferentialWheels();
 		nxt.addExtension(
 				new MindstormsNXTExtension(
 						nxt, MindstormsNXT.Port.A));
-		nxt.addExtension(
-				new MindstormsNXTExtension(
-						nxt, MindstormsNXT.Port.B));
-		nxt.addExtension(
-				new MindstormsNXTExtension(
-						nxt, MindstormsNXT.Port.C));
+//		nxt.addExtension(
+//				new MindstormsNXTExtension(
+//						nxt, MindstormsNXT.Port.B));
+//		nxt.addExtension(
+//				new MindstormsNXTExtension(
+//						nxt, MindstormsNXT.Port.C));
 
 		// Setup motors instance.
-		final Motors motors = new Motors();
-		motors.a = nxt.requestResource(MindstormsNXTExtension.class, null);
-		motors.b = nxt.requestResource(MindstormsNXTExtension.class, null);
-		motors.c = nxt.requestResource(MindstormsNXTExtension.class, null);
+		final NXTMotorControl nmc = new NXTMotorControl(
+			new MindstormsNXTExtension[] {
+				nxt.requestResource(MindstormsNXTExtension.class, nxt),
+				nxt.requestResource(MindstormsNXTExtension.class, nxt),
+				nxt.requestResource(MindstormsNXTExtension.class, nxt)
+			}, fc);
+		nmc.start();
 
-		/*
-		int power = 70;
-		int goal = 180;
-
-		int a = motors.a.getOutputState().rotationCount;
-		System.out.println(a);
-		motors.a.setOutputState(
-				(byte) power,
-				MindstormsNXT.MOTORON | MindstormsNXT.REGULATED | MindstormsNXT.BRAKE,
-				MindstormsNXT.REGULATION_MODE_MOTOR_SPEED,
-				0,
-				MindstormsNXT.MOTOR_RUN_STATE_RUNNING,
-				goal);
-		try {
-			Thread.sleep(100);
-		} catch (Exception e) {
-			
-		}
-
-		int b = motors.b.getOutputState().rotationCount;
-		System.out.println(b);
-		motors.b.setOutputState(
-				(byte) power,
-				MindstormsNXT.MOTORON | MindstormsNXT.REGULATED | MindstormsNXT.BRAKE,
-				MindstormsNXT.REGULATION_MODE_MOTOR_SPEED,
-				0,
-				MindstormsNXT.MOTOR_RUN_STATE_RUNNING,
-				goal);
-		try {
-			Thread.sleep(100);
-		} catch (Exception e) {
-			
-		}
-
-		int c = motors.c.getOutputState().rotationCount;
-		System.out.println(c);
-		motors.c.setOutputState(
-				(byte) power,
-				MindstormsNXT.MOTORON | MindstormsNXT.REGULATED | MindstormsNXT.BRAKE,
-				MindstormsNXT.REGULATION_MODE_MOTOR_SPEED,
-				0,
-				MindstormsNXT.MOTOR_RUN_STATE_RUNNING,
-				goal);
-
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		int a_ = motors.a.getOutputState().rotationCount;
-		System.out.println(a_ - a);
-		int b_ = motors.a.getOutputState().rotationCount;
-		System.out.println(b_ - b);
-		int c_ = motors.a.getOutputState().rotationCount;
-		System.out.println(c_ - c);
-		*/
-		
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				NXTRecordAndPlayFrame frame = new NXTRecordAndPlayFrame(camera, motors);
-
-				// Setup motors instance.
-				motors.a = nxt.requestResource(MindstormsNXTExtension.class, frame);
-				motors.b = nxt.requestResource(MindstormsNXTExtension.class, frame);
-				motors.c = nxt.requestResource(MindstormsNXTExtension.class, frame);
-
+				NXTRecordAndPlayFrame frame = new NXTRecordAndPlayFrame(camera, nmc);
 				frame.setVisible(true);
 			}
 		});
@@ -146,10 +82,9 @@ public class NXTRecordAndPlayFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public NXTRecordAndPlayFrame(Camera camera, Motors motors) {
-		this.camera = camera;
-		this.motors = motors;
-		this.es = Executors.newCachedThreadPool();
+	public NXTRecordAndPlayFrame(Camera camera_, NXTMotorControl nmc_) {
+		this.camera = camera_;
+		this.nmc = nmc_;
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -179,8 +114,13 @@ public class NXTRecordAndPlayFrame extends JFrame {
 		JButton btnRecordPose = new JButton("Record");
 		btnRecordPose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Pose pose = Pose.retrieveFrom(NXTRecordAndPlayFrame.this.motors);
-				((DefaultListModel<Pose>)list.getModel()).addElement(pose);
+				synchronized (NXTRecordAndPlayFrame.this) {
+					Pose pose = new Pose();
+					pose.a = nmc.getRotationCount(MindstormsNXT.Port.A);
+					pose.b = nmc.getRotationCount(MindstormsNXT.Port.B);
+					pose.c = nmc.getRotationCount(MindstormsNXT.Port.C);
+					((DefaultListModel<Pose>)list.getModel()).addElement(pose);
+				}
 			}
 		});
 		GridBagConstraints gbc_btnRecordPose = new GridBagConstraints();
@@ -194,21 +134,13 @@ public class NXTRecordAndPlayFrame extends JFrame {
 		JButton btnPlayPose = new JButton("Play");
 		btnPlayPose.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Pose pose = list.getSelectedValue();
-				if (pose != null) {
-					pose.applyTo(NXTRecordAndPlayFrame.this.motors);
-					es.execute(new Runnable() {
-						public void run() {
-							while (true) {
-								// Retrieve current pose
-								Pose p = Pose.retrieveFrom(NXTRecordAndPlayFrame.this.motors);
-								if (!p.isActing()) {
-									System.out.println("finished action: " + p.toString());
-									break;
-								}
-							}
-						}
-					});
+				synchronized (NXTRecordAndPlayFrame.this) {
+					Pose pose = list.getSelectedValue();
+					if (pose != null) {
+						nmc.setRotationCount(pose.a, MindstormsNXT.Port.A);
+						nmc.setRotationCount(pose.b, MindstormsNXT.Port.B);
+						nmc.setRotationCount(pose.c, MindstormsNXT.Port.C);
+					}
 				}
 			}
 		});
@@ -231,4 +163,5 @@ public class NXTRecordAndPlayFrame extends JFrame {
 
 		pack();
 	}
+
 }

@@ -38,7 +38,11 @@ public class NXTRecordAndPlayFrame extends JFrame {
 
 		// Start the camera.
 		final Camera camera = new Camera();
-		camera.start();
+		try {
+			camera.start();
+		} catch (IllegalStateException e) {
+			// Do nothing.
+		}
 
 		// Find connected NXT.
 		String[] ids = FantomConnector.queryIdentifiers();

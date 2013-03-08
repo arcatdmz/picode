@@ -26,5 +26,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="processing/lib/ecj.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/libthrift-0.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="lib/kinect/library/slf4j-log4j12-1.5.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -39,6 +39,8 @@ package nxt.motorcontrol;
 
 import com.phybots.entity.MindstormsNXT;
 import com.phybots.entity.PhysicalRobot;
+import com.phybots.entity.MindstormsNXT.MindstormsNXTExtension;
+
 import robot.RobotInfo;
 
 public class ExecuteMotorControl {
@@ -59,6 +61,16 @@ public class ExecuteMotorControl {
 			System.out.println("connection failed");
 			return;
 		}
+		((MindstormsNXT)robot).removeDifferentialWheels();
+		((MindstormsNXT)robot).addExtension(
+				"MindstormsNXTExtension", MindstormsNXT.Port.A);
+		MindstormsNXTExtension ext = robot.requestResource(
+				MindstormsNXTExtension.class, robot);
+
+		// Get initial rotation count.
+		int initialCount = ext.getOutputState().rotationCount;
+		System.out.print("rotation count: ");
+		System.out.println(initialCount);
 
 		// Execute motor control.
 		String currentProgramName = MindstormsNXT.getCurrentProgramName(robot.getConnector());
@@ -152,6 +164,14 @@ public class ExecuteMotorControl {
 				(byte)0, (byte)0, true, robot.getConnector());
 		System.out.print("reply (2nd trial): ");
 		System.out.println(message); // expects 01: port A is ready.
+
+		// Get current rotation count.
+		int finalCount = ext.getOutputState().rotationCount;
+		System.out.print("rotation count: ");
+		System.out.println(finalCount);
+		System.out.print("error: ");
+		System.out.print(finalCount - initialCount - tachoLimit);
+		System.out.println(" degrees");
 	}
 
 }

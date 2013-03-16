@@ -39,13 +39,22 @@ public class MindstormsNXTPose extends Pose {
 
 	@Override
 	public boolean eq(Pose pose) {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
+		return eq(pose, .3f);
 	}
 
 	@Override
 	public boolean eq(Pose pose, float maxDifference) {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
+		if (!(pose instanceof MindstormsNXTPose)) {
+			return false;
+		}
+		MindstormsNXTPose p = (MindstormsNXTPose) pose;
+		double distance = 0;
+		for (int i = 0; i < rotationCounts.length; i ++) {
+			double diff = rotationCounts[i] - p.rotationCounts[i]; // 0 ~
+			distance += diff*diff;
+		}
+		distance = Math.sqrt(distance/(360*360*rotationCounts.length));
+		// System.out.println("distance: " + distance);
+		return distance == Double.NaN ? false : distance < maxDifference;
 	}
 }

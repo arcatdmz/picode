@@ -15,7 +15,7 @@ import jp.digitalmuseum.kinect.KinectServiceConstants;
 import jp.digitalmuseum.kinect.KinectServiceWrapper;
 import jp.digitalmuseum.kinect.KinectServiceWrapper.FrameListener;
 
-public class KinectCamera implements Camera, FrameListener {
+public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 
 	public static final String KINECT_PATH = "./kinect/csharp/ConsoleKinectServer.exe";
 	public static final int SKELETON_LIFE = 7;
@@ -131,6 +131,9 @@ public class KinectCamera implements Camera, FrameListener {
 			}
 		}
 		this.colorImage = colorImage;
+		for (CameraImageListener listener : listeners) {
+			listener.imageUpdated(colorImage);
+		}
 	}
 
 	private void setLatestJoints(Map<JointType, Joint> joints) {

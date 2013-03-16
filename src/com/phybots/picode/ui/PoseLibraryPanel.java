@@ -203,7 +203,7 @@ public class PoseLibraryPanel extends JPanel {
 						return textField.getText();
 					} else {
 						pose.rename(textField.getText());
-						// TODO replace pose name in the text editor.
+						// P5TODO replace pose name in the text editor.
 						return pose;
 					}
 				}

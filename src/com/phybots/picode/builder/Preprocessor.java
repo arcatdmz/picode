@@ -234,7 +234,7 @@ public class Preprocessor {
       // so instead it's done using a regexp
 
 //      System.err.println("and then she tells me " + tsre.toString());
-      // TODO not tested since removing ORO matcher.. ^ could be a problem
+      // P5TODO not tested since removing ORO matcher.. ^ could be a problem
       String mess = "^line (\\d+):(\\d+):\\s";
 
       String[] matches = PApplet.match(tsre.toString(), mess);
@@ -267,7 +267,7 @@ public class Preprocessor {
       throw pe;
 
     } catch (Exception ex) {
-      // TODO better method for handling this?
+      // P5TODO better method for handling this?
       System.err.println("Uncaught exception type:" + ex.getClass());
       ex.printStackTrace();
       throw new SketchException(ex.toString());

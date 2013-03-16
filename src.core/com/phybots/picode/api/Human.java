@@ -5,6 +5,15 @@ import com.phybots.picode.camera.KinectCamera;
 
 public class Human extends Poser {
 
+	public Human() {
+		// Do nothing.
+	}
+
+	public Human(String name) {
+		this();
+		setName(name);
+	}
+
 	@Override
 	protected void initialize() {
 		motorManager = new HumanMotorManager(this);

@@ -12,7 +12,6 @@ import processing.app.SketchException;
 import com.phybots.Phybots;
 import com.phybots.picode.api.Human;
 import com.phybots.picode.api.PoseLibrary;
-import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.builder.Builder;
 import com.phybots.picode.ui.PicodeFrame;
@@ -46,13 +45,6 @@ public class PicodeMain {
 			Phybots.getInstance().showDebugFrame();
 		}
 
-		// Initialize poser library
-		PoserLibrary.getInstance();
-
-		// Initialize pose library
-		// PoseLibrary poseLibrary = PoseLibrary.getInstance();
-		// poseLibrary.attachMain(this);
-
 		// Launch main UI
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -61,7 +53,7 @@ public class PicodeMain {
 				PoserLibrary.getInstance().attachIDE(picodeFrame);
 
 				// Add human instance by default.
-				PoserLibrary.getInstance().setCurrentPoser(new Human());
+				new Human("No name");
 			}
 		});
 	}

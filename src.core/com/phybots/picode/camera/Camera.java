@@ -7,4 +7,6 @@ public interface Camera {
 	public void stop();
 	public void dispose();
 	public BufferedImage getImage();
+	public void addImageListener(CameraImageListener listener);
+	public boolean removeImageListener(CameraImageListener listener);
 }

@@ -423,7 +423,7 @@ public class PicodeSketch {
     }
 
     // ask for new name of file (internal to window)
-    // TODO maybe just popup a text area?
+    // P5TODO maybe just popup a text area?
     renamingCode = true;
     String prompt = (getCurrentIndex() == 0) ?
       "New name for sketch:" : "New name for file:";
@@ -812,7 +812,7 @@ public class PicodeSketch {
   public boolean saveAs() throws IOException {
     String newParentDir = null;
     String newName = null;
-    // TODO rewrite this to use shared version from PApplet
+    // P5TODO rewrite this to use shared version from PApplet
     final String PROMPT = "Save sketch folder as...";
     if (Preferences.getBoolean("chooser.files.native")) {
       // get new name for folder
@@ -1167,13 +1167,13 @@ public class PicodeSketch {
       }
       setCurrentCode(filename);
       picodeMain.getPintegration().headerRepaint();
-      if (isUntitled()) {  // TODO probably not necessary? problematic?
+      if (isUntitled()) {  // P5TODO probably not necessary? problematic?
         // Mark the new code as modified so that the sketch is saved
         getCurrent().setModified(true);
       }
 
     } else {
-      if (isUntitled()) {  // TODO probably not necessary? problematic?
+      if (isUntitled()) {  // P5TODO probably not necessary? problematic?
         // If a file has been added, mark the main code as modified so
         // that the sketch is properly saved.
         code[0].setModified(true);

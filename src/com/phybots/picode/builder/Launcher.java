@@ -149,7 +149,7 @@ public class Launcher implements MessageConsumer {
     //params.add("-Xaprof");  // allocation profiler
     //params.add("-Xrunhprof:cpu=samples");  // old-style profiler
 
-    // TODO change this to use run.args = true, run.args.0, run.args.1, etc.
+    // P5TODO change this to use run.args = true, run.args.0, run.args.1, etc.
     // so that spaces can be included in the arg names
     String options = Preferences.get("run.options");
     if (options.length() > 0) {
@@ -532,7 +532,7 @@ public class Launcher implements MessageConsumer {
       // At this point, disable the run button.
       // This happens when the sketch is exited by hitting ESC,
       // or the user manually closes the sketch window.
-      // TODO this should be handled better, should it not?
+      // P5TODO this should be handled better, should it not?
       /*
       if (editor != null) {
         editor.deactivateRun();
@@ -616,7 +616,7 @@ public class Launcher implements MessageConsumer {
                                            final RunnerListener listener) {
     if (exceptionClass.equals("java.lang.OutOfMemoryError")) {
       if (message.contains("exceeds VM budget")) {
-        // TODO this is a kludge for Android, since there's no memory preference
+        // P5TODO this is a kludge for Android, since there's no memory preference
         listener.statusError("OutOfMemoryError: This code attempts to use more memory than available.");
         System.err.println("An OutOfMemoryError means that your code is either using up too much memory");
         System.err.println("because of a bug (e.g. creating an array that's too large, or unintentionally");
@@ -656,7 +656,7 @@ public class Launcher implements MessageConsumer {
   }
 
 
-  // TODO: This may be called more than one time per error in the VM,
+  // P5TODO This may be called more than one time per error in the VM,
   // presumably because exceptions might be wrapped inside others,
   // and this will fire for both.
   protected void reportException(String message, ObjectReference or, ThreadReference thread) {
@@ -736,9 +736,9 @@ public class Launcher implements MessageConsumer {
   }
 
   public void close() {
-    // TODO make sure stop() has already been called to exit the sketch
+    // P5TODO make sure stop() has already been called to exit the sketch
 
-    // TODO actually kill off the vm here
+    // P5TODO actually kill off the vm here
     if (vm != null) {
       try {
         vm.exit(0);
@@ -746,7 +746,7 @@ public class Launcher implements MessageConsumer {
       } catch (com.sun.jdi.VMDisconnectedException vmde) {
         // if the vm has disconnected on its own, ignore message
         //System.out.println("harmless disconnect " + vmde.getMessage());
-        // TODO shouldn't need to do this, need to do more cleanup
+        // P5TODO shouldn't need to do this, need to do more cleanup
       }
       vm = null;
     }

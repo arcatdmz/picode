@@ -270,7 +270,6 @@ public class JMutableList<T> extends JList<T> implements CellEditorListener {
 			MouseEvent e2 = SwingUtilities.convertMouseEvent(JMutableList.this,
 					e, dispatchComponent);
 			dispatchComponent.dispatchEvent(e2);
-			// TODO Here, the text field does not get its focus...
 			return true;
 		}
 

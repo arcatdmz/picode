@@ -17,13 +17,12 @@ import jp.digitalmuseum.kinect.KinectServiceWrapper.FrameListener;
 
 public class KinectCamera implements Camera, FrameListener {
 
-	private static final String KINECT_PATH = "./kinect/csharp/ConsoleKinectServer.exe";
+	public static final String KINECT_PATH = "./kinect/csharp/ConsoleKinectServer.exe";
+	public static final int SKELETON_LIFE = 7;
 	private static Process kinectProcess;
 
 	private KinectServiceWrapper wrapper = new KinectServiceWrapper(
 			"localhost", KinectServiceConstants.SERVER_DEFAULT_PORT);
-	private KinectCameraFrame window = new KinectCameraFrame(
-			wrapper);
 
 	private Frame frame;
 	private Joint[] joints;
@@ -124,7 +123,7 @@ public class KinectCamera implements Camera, FrameListener {
 		if (frame.getJointsSize() == 20) {
 			Arrays.fill(this.joints, null);
 			setLatestJoints(frame.getJoints());
-			skeletonLife = KinectCameraFrame.SKELETON_LIFE;
+			skeletonLife = SKELETON_LIFE;
 		} else if (skeletonLife > 0) {
 			skeletonLife --;
 			if (skeletonLife == 0) {
@@ -155,16 +154,6 @@ public class KinectCamera implements Camera, FrameListener {
 		this.joints[HumanPose.KNEE_LEFT] = joints.get(JointType.KNEE_LEFT);
 		this.joints[HumanPose.ANKLE_LEFT] = joints.get(JointType.ANKLE_LEFT);
 		this.joints[HumanPose.FOOT_LEFT] = joints.get(JointType.FOOT_LEFT);
-	}
-
-	@Override
-	public void showFrame(boolean isVisible) {
-		window.setVisible(isVisible);
-	}
-
-	@Override
-	public boolean isFrameVisible() {
-		return window.isVisible();
 	}
 
 }

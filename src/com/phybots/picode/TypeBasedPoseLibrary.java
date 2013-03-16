@@ -1,7 +1,10 @@
-package com.phybots.picode.api;
+package com.phybots.picode;
 
 import javax.swing.Icon;
-import com.phybots.picode.api.TypeBasedPoseLibrary;
+
+import com.phybots.picode.TypeBasedPoseLibrary;
+import com.phybots.picode.api.Pose;
+import com.phybots.picode.api.PoserTypeInfo;
 import com.phybots.picode.ui.list.IconListModel;
 import com.phybots.picode.ui.list.IconProvider;
 

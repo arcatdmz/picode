@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
 <project name="Processing PDE" default="build">
   <import file="build-core.xml" />
+  <import file="build-resources.xml" />
 
   <target name="clean" description="Clean the build directories">
-    <delete dir="bin" />
-    <delete file="picode.jar" />
+    <delete dir="${picode-classes.dir}" />
+    <delete file="${picode-jar.name}" />
   </target>
 
   <target name="compile" description="Compile sources">
 
-    <mkdir dir="bin" />
+    <mkdir dir="${picode-classes.dir}" />
 
     <!-- ant seems to nuke ${java.home} for some reason, pointing at the JRE
 	 subfolder instead of the actual JDK found at JAVA_HOME. 
@@ -40,18 +41,24 @@
 
     <javac source="1.6" 
 	   target="1.6" 
-	   destdir="bin" 
+	   destdir="${picode-classes.dir}" 
 	   encoding="UTF-8" 
 	   includeAntRuntime="false" 
 	   classpath="${picode-classpath}"
 	   debug="on">
-      <src path="src" />
+      <src path="${picode-src-core.dir}" />
+      <src path="${picode-src.dir}" />
       <src path="processing/src" />
       <src path="processing/generated" />
     </javac>
   </target>
 
   <target name="build" depends="compile" description="Build PDE">
-    <jar basedir="bin" destfile="picode.jar" />
+    <jar destfile="picode.jar">
+		<fileset dir="${picode-classes.dir}" />
+		<fileset dir="${picode-src.dir}" />
+		<fileset dir="${picode-src-core.dir}" />
+		<fileset dir="${picode-resources.dir}" />
+    </jar>
   </target>
 </project>

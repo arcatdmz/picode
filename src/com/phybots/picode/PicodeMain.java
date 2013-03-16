@@ -10,8 +10,9 @@ import processing.app.SketchCode;
 import processing.app.SketchException;
 
 import com.phybots.Phybots;
+import com.phybots.picode.api.Human;
+import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.api.Poser;
-import com.phybots.picode.api.PoserInfo;
 import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.builder.Builder;
 import com.phybots.picode.ui.PicodeFrame;
@@ -35,17 +36,10 @@ public class PicodeMain {
 		ProcessingIntegration.init();
 
 		// Get parameters
-		PoserInfo poserInfo = new PoserInfo();
 		boolean debug = false;
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].equals("-debug")) {
 				debug = true;
-			} else if (i + 1 < args.length) {
-				if (args[i].equals("-type")) {
-					poserInfo.type = PoserLibrary.getTypeInfo(args[++i]);
-				} else if (args[i].equals("-address")) {
-					poserInfo.connector = args[++i];
-				}
 			}
 		}
 		if (debug) {
@@ -53,8 +47,7 @@ public class PicodeMain {
 		}
 
 		// Initialize poser library
-		PoserLibrary poserLibrary = PoserLibrary.getInstance();
-		poserLibrary.newPoserInstance(poserInfo);
+		PoserLibrary.getInstance();
 
 		// Initialize pose library
 		// PoseLibrary poseLibrary = PoseLibrary.getInstance();
@@ -64,7 +57,11 @@ public class PicodeMain {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				initGUI();
-				PoserLibrary.getInstance().attachPicodeFrame(picodeFrame);
+				PoseLibrary.getInstance().attachIDE(picodeFrame);
+				PoserLibrary.getInstance().attachIDE(picodeFrame);
+
+				// Add human instance by default.
+				PoserLibrary.getInstance().setCurrentPoser(new Human());
 			}
 		});
 	}
@@ -133,10 +130,11 @@ public class PicodeMain {
 		}
 
 		// Hide capture frame before we run the app.
-		Poser poser = PoserLibrary.getInstance().getCurrentPoser();
-		if (poser != null && poser.getCamera().isFrameVisible()) {
-			poser.getCamera().showFrame(false);
-		}
+		// TODO To be implemented.
+//		Poser poser = PoserLibrary.getInstance().getCurrentPoser();
+//		if (poser != null && poser.getCamera().isFrameVisible()) {
+//			poser.getCamera().showFrame(false);
+//		}
 
 		// Run the app.
 		builder = new Builder(this, sketch);

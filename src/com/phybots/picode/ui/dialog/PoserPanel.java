@@ -20,7 +20,7 @@ import com.phybots.picode.api.PoserTypeInfo;
 
 import javax.swing.JTextField;
 
-public class NewPoserPanel extends JPanel {
+public class PoserPanel extends JPanel {
 	private static final long serialVersionUID = -8644965871351515498L;
 
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
@@ -34,7 +34,7 @@ public class NewPoserPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public NewPoserPanel() {
+	public PoserPanel() {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0 };
@@ -102,6 +102,10 @@ public class NewPoserPanel extends JPanel {
 		gbc_panel.gridx = 1;
 		gbc_panel.gridy = 2;
 		add(panel, gbc_panel);
+	}
+	
+	public void setPoserTypeSelectable(boolean isSelectable) {
+		comboBox.setEnabled(isSelectable);
 	}
 	
 	public void setPoserInfo(PoserInfo poserInfo) {

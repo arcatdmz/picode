@@ -14,6 +14,7 @@ import javax.swing.SwingConstants;
 import java.awt.FlowLayout;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.TypeBasedPoseLibrary;
 import com.phybots.picode.action.DeleteFileAction;
 import com.phybots.picode.action.LoadSketchAction;
 import com.phybots.picode.action.NewFileAction;
@@ -26,6 +27,9 @@ import com.phybots.picode.action.StopAction;
 import com.phybots.picode.api.PicodeInterface;
 import com.phybots.picode.api.Pose;
 import com.phybots.picode.api.Poser;
+import com.phybots.picode.api.PoserLibrary;
+import com.phybots.picode.api.PoserTypeInfo;
+import com.phybots.picode.api.PoserWithConnector;
 import com.phybots.picode.ui.editor.PicodeEditor;
 import com.phybots.picode.ui.editor.PicodeEditorPane;
 
@@ -36,7 +40,9 @@ import javax.swing.KeyStroke;
 
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
@@ -49,6 +55,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.EmptyBorder;
+import javax.swing.ImageIcon;
 
 public class PicodeFrame extends JFrame implements PicodeInterface {
 	private static final long serialVersionUID = -7081881044895496089L;
@@ -86,6 +93,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private transient ArrayList<PicodeEditorPane> editorPanes;
 	private transient PicodeEditor currentEditor;
 	private transient int currentEditorIndex;
+	private transient Map<PoserTypeInfo, TypeBasedPoseLibrary> libraries;
 
 	/**
 	 * This is the default constructor
@@ -200,6 +208,8 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		this.setContentPane(getContentPanel());
 		this.setTitle("Picode");
 		editorPanes = new ArrayList<PicodeEditorPane>();
+		libraries = new HashMap<PoserTypeInfo, TypeBasedPoseLibrary>();
+		listPoserTypes();
 		getTabbedPane().addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -213,6 +223,18 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
                 }
 			}
 		});
+	}
+
+	private void listPoserTypes() {
+		for (PoserTypeInfo poserType :
+				PoserLibrary.getTypeInfos()) {
+			TypeBasedPoseLibrary library = new TypeBasedPoseLibrary(poserType);
+			libraries.put(poserType, library);
+		}
+	}
+
+	public TypeBasedPoseLibrary getTypeBasedLibrary(PoserTypeInfo poserType) {
+		return libraries.get(poserType);
 	}
 
 	/**
@@ -279,7 +301,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		if (btnRun == null) {
 			btnRun = new JButton();
 			btnRun.setAction(new RunAction(picodeMain));
-			btnRun.setText("Run");
+			btnRun.setIcon(new ImageIcon(PicodeFrame.class.getResource("/run.png")));
 			btnRun.setFont(defaultFont);
 			btnRun.setToolTipText("Compile and run this script");
 		}
@@ -295,7 +317,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		if (btnStop == null) {
 			btnStop = new JButton();
 			btnStop.setAction(new StopAction(picodeMain));
-			btnStop.setText("Stop");
+			btnStop.setIcon(new ImageIcon(PicodeFrame.class.getResource("/stop.png")));
 			btnStop.setFont(defaultFont);
 		}
 		return btnStop;
@@ -359,7 +381,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	public PoserSelectorPanel getPoserPanel() {
 		if (poserPanel == null) {
 			poserPanel = new PoserSelectorPanel(picodeMain);
-			poserPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+			poserPanel.setBorder(new EmptyBorder(5, 5, 0, 5));
 		}
 		return poserPanel;
 	}
@@ -497,16 +519,32 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	}
 
 	public void onAddPoser(Poser poser) {
-		getPoserPanel().addPoser(poser);
+		if (poser instanceof PoserWithConnector) {
+			getPoserPanel().onAddPoserWithConnector(poser);
+		}
 	}
 
 	public void onRemovePoser(Poser poser) {
-		getPoserPanel().removePoser(poser);
+		if (poser instanceof PoserWithConnector) {
+			getPoserPanel().onRemovePoserWithConnector(poser);
+		}
 	}
 
 	public void onCurrentPoserChange(Poser poser) {
-		getPoserPanel().setSelectedPoser(poser);
-		getPosePanel().setPoseLibrary(poser.getPoseLibrary());
+		getPoserPanel().onCurrentPoserChange(poser);
+		if (poser != null) {
+			getPosePanel().setPoseLibrary(
+					libraries.get(poser.getPoserType()));
+		}
 	}
 
+	public void onAddPose(Pose pose) {
+		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
+		library.addElement(pose);
+	}
+
+	public void onRemovePose(Pose pose) {
+		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
+		library.removeElement(pose);
+	}
 }

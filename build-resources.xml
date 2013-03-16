@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="picode-resources" default="picode-resources-jar" basedir=".">
+
+	<!-- ****Properties**** -->
+
+	<property name="picode-resources.dir" value="resources" />
+
+	<!-- Jar file name -->
+	<property name="picode-resources-jar.name" value="picode-resources.jar" />
+
+	<!-- ****Targets**** -->
+
+	<!-- Jar -->
+	<target name="picode-resources-jar">
+		<jar jarfile="${picode-resources-jar.name}" >
+			<fileset dir="${picode-resources.dir}" />
+		</jar>
+	</target>
+
+	<!-- Clean -->
+	<target name="picode-resources-clean">
+		<delete file="${picode-resources-jar.name}" />
+	</target>
+</project>

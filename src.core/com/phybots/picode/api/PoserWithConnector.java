@@ -9,4 +9,11 @@ public abstract class PoserWithConnector extends Poser {
 		return String.format("%s%s%s", super.getIdentifier(), Poser.identifierSeparator, getConnector());
 	}
 
+	@Override
+	public PoserInfo getInfo() {
+		PoserInfo poserInfo = super.getInfo();
+		poserInfo.connector = getConnector();
+		return poserInfo;
+	}
+
 }

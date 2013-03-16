@@ -37,14 +37,4 @@ public class NormalCamera implements Camera {
 		return camera.getImage();
 	}
 
-	@Override
-	public void showFrame(boolean isVisible) {
-		// TODO Implement this.
-	}
-	
-	@Override
-	public boolean isFrameVisible() {
-		return false;
-	}
-
 }

@@ -38,7 +38,6 @@ import java.awt.event.WindowEvent;
 public class KinectCameraFrame extends JFrame implements FrameListener {
 
 	private static final long serialVersionUID = -1065767804512646130L;
-	static final int SKELETON_LIFE = 7;
 
 	private JPanel contentPane;
 	private JPanel panel;
@@ -161,7 +160,7 @@ public class KinectCameraFrame extends JFrame implements FrameListener {
 
 					if (frame.joints.size() == 20) {
 						joints = frame.joints;
-						skeletonLife = SKELETON_LIFE;
+						skeletonLife = KinectCamera.SKELETON_LIFE;
 					} else if (skeletonLife > 0) {
 						skeletonLife --;
 					}

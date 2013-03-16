@@ -47,8 +47,8 @@ public class PoserLibrary {
 
 			try {
 				Method method = poserClass.getMethod("getCameraClass");
-				poserType.cameraClass = (Class<? extends Camera>) method.invoke(null);
-				poserType.cameraConstructor = poserType.cameraClass.getConstructor();
+				poserType.defaultCameraClass = (Class<? extends Camera>) method.invoke(null);
+				poserType.defaultCameraConstructor = poserType.defaultCameraClass.getConstructor();
 			} catch (Exception e) {
 				e.printStackTrace();
 				continue;
@@ -67,7 +67,7 @@ public class PoserLibrary {
 		}
 	}
 
-	private PicodeInterface picodeFrame;
+	private PicodeInterface ide;
 	private CameraManager cameraManager;
 	private List<Poser> posers;
 	private Poser currentPoser;
@@ -123,8 +123,8 @@ public class PoserLibrary {
 		return classSet;
 	}
 
-	public void attachPicodeFrame(PicodeInterface picodeFrame) {
-		this.picodeFrame = picodeFrame;
+	public void attachIDE(PicodeInterface ide) {
+		this.ide = ide;
 	}
 
 	public CameraManager getCameraManager() {
@@ -160,8 +160,8 @@ public class PoserLibrary {
 
 	void addPoser(Poser poser) {
 		posers.add(poser);
-		if (picodeFrame != null) {
-			picodeFrame.onAddPoser(poser);
+		if (ide != null) {
+			ide.onAddPoser(poser);
 			setCurrentPoser(poser);
 		}
 	}
@@ -171,26 +171,22 @@ public class PoserLibrary {
 			return;
 		}
 		poser.dispose();
-		if (picodeFrame != null) {
-			picodeFrame.onRemovePoser(poser);
+		if (ide != null) {
+			ide.onRemovePoser(poser);
 		}
 	}
 
 	public void setCurrentPoser(Poser poser) {
-		if (picodeFrame == null) {
-			return;
-		}
-		if (poser != this.currentPoser) {
-			picodeFrame.onCurrentPoserChange(poser);
+		if (ide != null
+				&& poser != this.currentPoser) {
+			ide.onCurrentPoserChange(poser);
 			this.currentPoser = poser;
 		}
 	}
 
 	public Poser getCurrentPoser() {
-		if (picodeFrame == null) {
-			return null;
-		}
-		return currentPoser;
+		return ide == null ?
+				null : currentPoser;
 	}
 
 }

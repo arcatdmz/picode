@@ -8,16 +8,18 @@
 	<property name="picode-version" value="0.1.0" />
 
 	<!-- Dependent class pathes -->
-	<property name="pde.classpath" value="./lib/core/library/core.jar; ${env.JAVA_HOME}/lib/tools.jar; ./processing/lib/ant.jar; ./processing/lib/ant-launcher.jar; ./processing/lib/antlr.jar; ./processing/lib/apple.jar; ./processing/lib/jdt-core.jar; ./processing/lib/jna.jar; ./processing/lib/org-netbeans-swing-outline.jar"/>
-	<property name="picode-classpath" value="${pde.classpath}; ./bin; ./lib/phybots/library/phybots-core-1.0.0.jar; ./lib/phybots/library/connector-1.0.4.jar; ./lib/phybots/library/bluecove-2.1.1-SNAPSHOT.jar" />
+	<property name="pde.classpath" value="./lib/core/library/core.jar; ${env.JAVA_HOME}/lib/tools.jar; ./processing/lib/ant.jar; ./processing/lib/ant-launcher.jar; ./processing/lib/antlr.jar; ./processing/lib/apple.jar; ./processing/lib/jdt-core.jar; ./processing/lib/jna.jar; ./processing/lib/org-netbeans-swing-outline.jar; ./processing/lib/ecj.jar"/>
+	<property name="phybots.classpath" value="./lib/phybots/library/phybots-core-1.0.2.jar; ./lib/phybots/library/connector-1.0.5.jar; ./lib/phybots/library/capture-1.0.3.jar; ./lib/phybots/library/bluecove-2.1.1-SNAPSHOT.jar" />
+	<property name="kinect.classpath" value="./lib/kinect/library/kinect.jar; ./lib/kinect/library/libthrift-0.9.0.jar; ./lib/kinect/slf4j-api-1.5.8.jar; ./lib/kinect/slf4j-simple-1.5.8.jar" />
+	<property name="picode-classpath" value="./bin; ${pde.classpath}; ${phybots.classpath}; ${kinect.classpath}" />
 
 	<!-- Source directory -->
 	<property name="picode-src.dir" value="src" />
-	<property name="picode-src.includes" value="com/phybots/picode/api/*.java" />
+	<property name="picode-src-core.dir" value="src.core" />
 
 	<!-- Classes destination directory -->
-	<property name="picode-classes.dir" value="bin.picode" />
-	<property name="picode-classes.includes" value="com/phybots/picode/api/*.class" />
+	<property name="picode-classes.dir" value="bin" />
+	<property name="picode-classes-core.dir" value="bin.core" />
 
 	<!-- Javadoc destination -->
 	<property name="picode-javadoc.dir" value="docs" />
@@ -30,43 +32,42 @@
 
 	<!-- Jar -->
 	<target name="picode-jar" depends="picode-compile">
-		<mkdir dir="${picode-jar.dir} "/>
+		<mkdir dir="${picode-jar.dir}"/>
 		<jar jarfile="${picode-jar.dir}${picode-jar.name}" >
-			<fileset dir="${picode-classes.dir}" includes="${picode-bin.includes}" />
-			<fileset dir="${picode-src.dir}" includes="${picode-src.includes}" />
+			<fileset dir="${picode-classes-core.dir}" />
+			<fileset dir="${picode-src-core.dir}" />
 		</jar>
-		<delete dir="${picode-classes.dir}" />
+		<delete dir="${picode-classes-core.dir}" />
 	</target>
 
 	<!-- Compile -->
 	<target name="picode-compile">
-		<mkdir dir="${picode-classes.dir}" />
-		<javac srcdir="${picode-src.dir}" destdir="${picode-classes.dir}"
+		<mkdir dir="${picode-classes-core.dir}" />
+		<javac srcdir="${picode-src-core.dir}" destdir="${picode-classes-core.dir}"
 				target="1.6"
 				source="1.6"
 				optimize="on"
-				includes="${picode-src.includes}"
 				classpath="${picode-classpath}" />
 	</target>
 
 	<!-- Javadoc -->
 	<target name="picode-javadoc">
-		<javadoc sourcepath="${picode-src.dir}"
+		<javadoc
+			sourcepath="${picode-src-core.dir}"
 			destdir="${picode-javadoc.dir}"
 			charset="UTF-8"
 			encoding="UTF-8"
 			docencoding="UTF-8"
 			locale="en"
 			classpath="${picode-classpath}"
-			bottom="Copyright by Jun Kato (arc@dmz) at http://junkato.jp/" />
+			bottom="Copyright by Jun Kato (arc@dmz) at http://junkato.jp/">
+		</javadoc>
 	</target>
 
 	<!-- Clean -->
 	<target name="picode-clean">
-		<delete dir="${picode-classes.dir}" />
+		<delete dir="${picode-classes-core.dir}" />
 		<delete dir="${picode-javadoc.dir}" />
-		<delete>
-			<fileset dir="./" includes="${picode-jar.name}" />
-		</delete>
+		<delete file="${picode-jar.dir}${picode-jar.name}" />
 	</target>
 </project>

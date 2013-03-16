@@ -13,6 +13,8 @@ public class DeleteSelectedPoseAction extends AbstractAction {
 
 	public DeleteSelectedPoseAction(PicodeMain picodeMain) {
 		this.picodeMain = picodeMain;
+		putValue(NAME, "Delete");
+		putValue(SHORT_DESCRIPTION, "Delete the selected pose.");
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public class PoserLibraryPanel extends JPanel {
 		JButton btnRemovePoser = new JButton("New button");
 		panel_1.add(btnRemovePoser);
 		
-		JPanel panel_2 = new NewPoserPanel();
+		JPanel panel_2 = new PoserPanel();
 		panel_2.setBorder(new EmptyBorder(5, 5, 5, 5));
 		splitPane.setRightComponent(panel_2);
 

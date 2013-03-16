@@ -12,6 +12,8 @@ public class StopAction extends AbstractAction {
 
 	public StopAction(PicodeMain picodeMain) {
 		this.picodeMain = picodeMain;
+		putValue(NAME, "Stop");
+		putValue(SHORT_DESCRIPTION, "Stop the running sketch.");
 	}
 
 	@Override

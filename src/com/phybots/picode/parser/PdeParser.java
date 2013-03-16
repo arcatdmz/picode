@@ -59,7 +59,7 @@ public class PdeParser {
 		PicodeSketch sketch = null;
 		AST ast = null;
 		try {
-			sketch = PicodeSettings.getDefaultSketch();
+			sketch = new PicodeSketch(null, PicodeSettings.getDefaultSketchPath());
 			PdeParser parser = new PdeParser(sketch);
 			ast = parser.parse(0);
 

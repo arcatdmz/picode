@@ -1,9 +1,6 @@
 package com.phybots.picode;
 
 import java.io.File;
-import java.io.IOException;
-
-import processing.app.PicodeSketch;
 
 public class PicodeSettings {
 
@@ -21,9 +18,9 @@ public class PicodeSettings {
 		return System.getProperty("user.dir") + "\\p5\\bin";
 	}
 
-  public static File getExamplesFolder() {
-    return new File(getExamplesFolderPath());
-  }
+	public static File getExamplesFolder() {
+		return new File(getExamplesFolderPath());
+	}
 
 	/**
 	 * サンプル置き場
@@ -37,21 +34,14 @@ public class PicodeSettings {
 	}
 
 	public static String getPoseFolderURL() {
-		return "file:" + (File.separatorChar == '/' ?
-				getPoseFolderPath() :
-				getPoseFolderPath().replace(File.separator, "/"));
-	}
-
-	public static PicodeSketch getDefaultSketch(PicodeMain picodeMain) throws IOException {
-		return new PicodeSketch(picodeMain, getDefaultSketchPath());
-	}
-
-	public static PicodeSketch getDefaultSketch() throws IOException {
-		return getDefaultSketch(null);
+		return "file:"
+				+ (File.separatorChar == '/' ? getPoseFolderPath()
+						: getPoseFolderPath().replace(File.separator, "/"));
 	}
 
 	public static String getDefaultSketchPath() {
-		return System.getProperty("user.dir") + "\\projects\\HelloWorld\\HelloWorld.pde";
+		return System.getProperty("user.dir")
+				+ "\\projects\\HelloWorld\\HelloWorld.pde";
 	}
 
 	public static File getLibrariesFolder() {
@@ -69,4 +59,5 @@ public class PicodeSettings {
 	public static String getProjectsFolderPath() {
 		return System.getProperty("user.dir") + "\\projects";
 	}
+
 }

@@ -10,7 +10,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentEvent.EventType;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
@@ -41,7 +40,6 @@ public class DocumentManager implements DocumentListener {
 	private static SimpleAttributeSet defaultAttrs;
 	private static SimpleAttributeSet commentAttrs;
 	private static SimpleAttributeSet keywordAttrs;
-	private static SimpleAttributeSet iconAttrs;
 	private static SimpleAttributeSet errorAttrs;
 
 	private PicodeMain picodeMain;
@@ -66,9 +64,6 @@ public class DocumentManager implements DocumentListener {
 				new Color(0x80, 0x00, 0x80));
 		keywordAttrs.addAttribute(StyleConstants.Bold, true);
 
-		iconAttrs = new SimpleAttributeSet(defaultAttrs);
-		iconAttrs.removeAttribute(StyleConstants.FontFamily);
-
 		errorAttrs = new SimpleAttributeSet(defaultAttrs);
 		errorAttrs.addAttribute(StyleConstants.Background,
 				new Color(0xcc, 0xcc, 0xcc));
@@ -78,10 +73,6 @@ public class DocumentManager implements DocumentListener {
 		this.picodeMain = picodeMain;
 		this.picodeEditor = picodeEditor;
 		initialize();
-	}
-
-	public static AttributeSet getIconAttributes() {
-		return iconAttrs.copyAttributes();
 	}
 
 	private void initialize() {

@@ -84,16 +84,20 @@ public abstract class Poser {
 		return action;
 	}
 
-	public TypeBasedPoseLibrary getPoseLibrary() {
-		return PoseLibrary.getInstance().getTypeBasedLibrary(poserType);
-	}
-
 	public void showCaptureFrame(boolean isVisible) {
-		getCamera().showFrame(isVisible);
+		//TODO To be implemented.
+		// getCamera().showFrame(isVisible);
 	}
 
 	public String getIdentifier() {
 		return getClass().getSimpleName();
+	}
+
+	public PoserInfo getInfo() {
+		PoserInfo poserInfo = new PoserInfo();
+		poserInfo.name = getName();
+		poserInfo.type = getPoserType();
+		return poserInfo;
 	}
 
 	@Override

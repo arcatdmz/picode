@@ -9,22 +9,27 @@ import com.phybots.picode.api.PoserTypeInfo;
 
 public class CameraManager {
 	
-	private Map<PoserTypeInfo, Camera> cameras;
+	private Map<Poser, Camera> cameras;
 	
 	public CameraManager() {
-		cameras = new HashMap<PoserTypeInfo, Camera>();
+		cameras = new HashMap<Poser, Camera>();
+	}
+
+	public void putCamera(Poser poser, Camera camera) {
+		cameras.put(poser, camera);
 	}
 
 	public Camera getCamera(Poser poser) {
 		if (poser == null) {
 			return null;
 		}
-		PoserTypeInfo poserType = PoserLibrary.getTypeInfo(poser);
-		Camera camera = cameras.get(poserType);
+		Camera camera = cameras.get(poser);
 		if (camera == null) {
+			// Instantiate the default camera.
+			PoserTypeInfo poserType = PoserLibrary.getTypeInfo(poser);
 			try {
-				camera = poserType.cameraConstructor.newInstance();
-				cameras.put(poserType, camera);
+				camera = poserType.defaultCameraConstructor.newInstance();
+				cameras.put(poser, camera);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

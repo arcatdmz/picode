@@ -15,7 +15,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 import com.phybots.picode.PicodeSettings;
-import com.phybots.picode.ui.editor.DocumentManager;
 
 public abstract class Pose implements Cloneable {
 	private String name;
@@ -26,6 +25,25 @@ public abstract class Pose implements Cloneable {
 	private PoserTypeInfo poserType;
 
 	Pose() {
+	}
+
+	private static SimpleAttributeSet getBaseAttributes() {
+		SimpleAttributeSet attrs = new SimpleAttributeSet();
+		attrs.removeAttribute(StyleConstants.FontFamily);
+		return attrs;
+	}
+
+	public static BufferedImage resizeImage(BufferedImage srcImage, int nw, int nh) {
+		double sx = (double) nw / srcImage.getWidth();
+		double sy = (double) nh / srcImage.getHeight();
+		AffineTransform trans = AffineTransform.getScaleInstance(sx, sy);
+
+		BufferedImage newImage = new BufferedImage(
+				nw, nh, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = newImage.createGraphics();
+		g2.drawImage(srcImage, trans, null);
+		g2.dispose();
+		return newImage;
 	}
 
 	public void delete() {
@@ -133,8 +151,7 @@ public abstract class Pose implements Cloneable {
 		}
 		icon = new ImageIcon(
 				resizeImage(photo, 160, 120));
-		attrs = new SimpleAttributeSet(
-				DocumentManager.getIconAttributes());
+		attrs = getBaseAttributes();
 		StyleConstants.setIcon(attrs, icon);
 	}
 
@@ -173,19 +190,6 @@ public abstract class Pose implements Cloneable {
 			// Never happens.
 			return null;
 		}
-	}
-
-	public static BufferedImage resizeImage(BufferedImage srcImage, int nw, int nh) {
-		double sx = (double) nw / srcImage.getWidth();
-		double sy = (double) nh / srcImage.getHeight();
-		AffineTransform trans = AffineTransform.getScaleInstance(sx, sy);
-
-		BufferedImage newImage = new BufferedImage(
-				nw, nh, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g2 = newImage.createGraphics();
-		g2.drawImage(srcImage, trans, null);
-		g2.dispose();
-		return newImage;
 	}
 
 }

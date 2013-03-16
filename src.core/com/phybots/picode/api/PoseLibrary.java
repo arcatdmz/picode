@@ -25,23 +25,27 @@ public class PoseLibrary {
 		return instance;
 	}
 	
-	private Map<PoserTypeInfo, TypeBasedPoseLibrary> libraries;
 	private Map<String, Pose> poses;
-	//private PicodeMain picodeMain;
+	private PicodeInterface ide;
 	private int numPoses;
 	
 	public PoseLibrary() {
-		libraries = new HashMap<PoserTypeInfo, TypeBasedPoseLibrary>();
 		poses = new HashMap<String, Pose>();
-		listPoserTypes();
 		listPoses();
 	}
 
-	private void listPoserTypes() {
-		for (PoserTypeInfo poserType :
-				PoserLibrary.getTypeInfos()) {
-			TypeBasedPoseLibrary library = new TypeBasedPoseLibrary(poserType);
-			libraries.put(poserType, library);
+	public static Pose load(String name) throws IOException {
+		PoseLibrary poseLibrary = PoseLibrary.getInstance();
+		if (poseLibrary.contains(name)) {
+			return poseLibrary.get(name);
+		}
+		return poseLibrary.doLoad(name);
+	}
+
+	public void attachIDE(PicodeInterface ide) {
+		this.ide = ide;
+		for (Pose pose : poses.values()) {
+			ide.onAddPose(pose);
 		}
 	}
 
@@ -63,10 +67,6 @@ public class PoseLibrary {
 				// e.printStackTrace();
 			}
 		}
-	}
-
-	public TypeBasedPoseLibrary getTypeBasedLibrary(PoserTypeInfo poserType) {
-		return libraries.get(poserType);
 	}
 
 	public Pose get(String poseName) {
@@ -99,14 +99,6 @@ public class PoseLibrary {
 		}
 		addPose(newPose);
 		return newPose;
-	}
-
-	public static Pose load(String name) throws IOException {
-		PoseLibrary poseLibrary = PoseLibrary.getInstance();
-		if (poseLibrary.contains(name)) {
-			return poseLibrary.get(name);
-		}
-		return poseLibrary.doLoad(name);
 	}
 
 	private Pose doLoad(String name) throws IOException {
@@ -148,8 +140,9 @@ public class PoseLibrary {
 
 	void addPose(Pose pose) {
 		poses.put(pose.getName(), pose);
-		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
-		library.addElement(pose);
+		if (ide != null) {
+			ide.onAddPose(pose);
+		}
 	}
 
 	void removePose(Pose pose) {
@@ -160,8 +153,9 @@ public class PoseLibrary {
 			}
 		}
 		poses.remove(key);
-		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
-		library.removeElement(pose);
+		if (ide != null) {
+			ide.onRemovePose(pose);
+		}
 	}
 
 	String newName() {

@@ -15,12 +15,13 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.api.PoserInfo;
 
-public class NewPoserDialog extends JDialog implements ActionListener {
+public class PoserEditDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 355467424630256025L;
 
-	protected final NewPoserPanel contentPanel;
+	protected final PoserPanel contentPanel;
 
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
@@ -29,7 +30,7 @@ public class NewPoserDialog extends JDialog implements ActionListener {
 	 */
 	public static void main(String[] args) {
 		try {
-			NewPoserDialog dialog = new NewPoserDialog();
+			PoserEditDialog dialog = new PoserEditDialog();
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -40,40 +41,59 @@ public class NewPoserDialog extends JDialog implements ActionListener {
 	/**
 	 * Create the dialog.
 	 */
-	public NewPoserDialog() {
+	public PoserEditDialog() {
 		setBounds(100, 100, 450, 200);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel = new NewPoserPanel();
+		contentPanel = new PoserPanel();
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPanel.setPoserTypeSelectable(isNew());
+		if (!isNew()) {
+			contentPanel.setPoserInfo(getOriginalPoserInfo());
+		}
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				okButton.setFont(defaultFont);
-				okButton.addActionListener(this);
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				JButton btnOk = new JButton("OK");
+				btnOk.setActionCommand("OK");
+				btnOk.setFont(defaultFont);
+				btnOk.addActionListener(this);
+				buttonPane.add(btnOk);
+				getRootPane().setDefaultButton(btnOk);
+			}
+			if (!isNew()) {
+				JButton btnRemove = new JButton("Remove");
+				btnRemove.setActionCommand("Remove");
+				btnRemove.setFont(defaultFont);
+				btnRemove.addActionListener(this);
+				buttonPane.add(btnRemove);
 			}
 			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				cancelButton.setFont(defaultFont);
-				cancelButton.addActionListener(this);
-				buttonPane.add(cancelButton);
+				JButton btnCancel = new JButton("Cancel");
+				btnCancel.setActionCommand("Cancel");
+				btnCancel.setFont(defaultFont);
+				btnCancel.addActionListener(this);
+				buttonPane.add(btnCancel);
 			}
 		}
 		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				actionPerformed(new ActionEvent(NewPoserDialog.this,
+				actionPerformed(new ActionEvent(PoserEditDialog.this,
 						Integer.MIN_VALUE, "Cancel"));
 			}
 		});
+	}
+
+	private boolean isNew() {
+		return getOriginalPoserInfo() == null;
+	}
+
+	protected PoserInfo getOriginalPoserInfo() {
+		return null;
 	}
 
 	@Override

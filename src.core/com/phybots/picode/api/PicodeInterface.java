@@ -8,4 +8,7 @@ public interface PicodeInterface {
 
 	public void onCurrentPoserChange(Poser poser);
 
+	public void onAddPose(Pose pose);
+
+	public void onRemovePose(Pose pose);
 }

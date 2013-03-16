@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.TypeBasedPoseLibrary;
 import com.phybots.picode.action.ApplySelectedPoseAction;
 import com.phybots.picode.action.DeleteSelectedPoseAction;
 import com.phybots.picode.action.DuplicateSelectedPoseAction;
@@ -24,7 +25,6 @@ import com.phybots.picode.action.EditSelectedPoseNameAction;
 import com.phybots.picode.action.OpenPoseFolderAction;
 import com.phybots.picode.action.ShowCameraFrameAction;
 import com.phybots.picode.api.Pose;
-import com.phybots.picode.api.TypeBasedPoseLibrary;
 import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.ui.list.DefaultListCellEditor;
@@ -37,6 +37,8 @@ import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import javax.swing.JSeparator;
 import java.awt.FlowLayout;
+import javax.swing.ImageIcon;
+import javax.swing.border.EmptyBorder;
 
 public class PoseLibraryPanel extends JPanel {
 	private static final long serialVersionUID = 5622163966849443710L;
@@ -111,7 +113,8 @@ public class PoseLibraryPanel extends JPanel {
 	private JPanel getJPanel() {
 		if (jPanel == null) {
 			jPanel = new JPanel();
-			jPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+			jPanel.setBorder(new EmptyBorder(5, 0, 0, 0));
+			jPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 			jPanel.add(getBtnAddPose());
 			jPanel.add(getBtnDeletePose());
 		}
@@ -122,7 +125,7 @@ public class PoseLibraryPanel extends JPanel {
 		if (btnAddPose == null) {
 			btnAddPose = new JButton();
 			btnAddPose.setAction(new ShowCameraFrameAction());
-			btnAddPose.setText("+");
+			btnAddPose.setIcon(new ImageIcon(PoseLibraryPanel.class.getResource("/camera.png")));
 			btnAddPose.setFont(defaultFont);
 		}
 		return btnAddPose;
@@ -132,7 +135,7 @@ public class PoseLibraryPanel extends JPanel {
 		if (btnDeletePose == null) {
 			btnDeletePose = new JButton();
 			btnDeletePose.setAction(new DeleteSelectedPoseAction(picodeMain));
-			btnDeletePose.setText("-");
+			btnDeletePose.setIcon(new ImageIcon(PoseLibraryPanel.class.getResource("/trashcan.png")));
 			btnDeletePose.setFont(defaultFont);
 		}
 		return btnDeletePose;
@@ -154,7 +157,8 @@ public class PoseLibraryPanel extends JPanel {
 				jList = new JMutableList<Pose>(new DefaultListModel<Pose>());
 				jList.setCellRenderer(new IconListRenderer(null));
 			} else {
-				TypeBasedPoseLibrary poseLibrary = poser.getPoseLibrary();
+				TypeBasedPoseLibrary poseLibrary =
+						picodeMain.getFrame().getTypeBasedLibrary(poser.getPoserType());
 				jList = new JMutableList<Pose>(poseLibrary);
 				jList.setCellRenderer(new IconListRenderer(poseLibrary));
 			}

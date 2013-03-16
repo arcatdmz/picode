@@ -11,6 +11,8 @@ public class RunAction extends AbstractAction {
 
 	public RunAction(PicodeMain picodeMain) {
 		this.picodeMain = picodeMain;
+		putValue(NAME, "Run");
+		putValue(SHORT_DESCRIPTION, "Run the current sketch.");
 	}
 
 	@Override

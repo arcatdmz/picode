@@ -12,23 +12,11 @@ version 0.0.1
 Download [DirectShow for Java wrapper](http://www.humatic.de/htools/dsj.htm) and place dsj.{dll|jar} in
 .\lib\phybots\library\ directory.
 
-Then, simply double-click picode.jar or launch picode.cmd with arguments as described below:
-
-```
-# With Kinect
-.\picode.cmd -type Human
-# With MindstormsNXT
-.\picode.cmd -type MindstormsNXT -address btspp://deadbeaf
-```
+Then, simply double-click picode.cmd
 
 ### Mac OS X
 
-Simply double-click picode.jar or launch picode.sh with arguments as described below:
-
-```
-# With MindstormsNXT (Kinect is not supported at this moment.)
-./picode.sh -type MindstormsNXT -address btspp://deadbeaf
-```
+Simply double-click picode.sh
 
 ### Supported hardware
 

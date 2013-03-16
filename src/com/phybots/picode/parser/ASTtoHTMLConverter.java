@@ -32,7 +32,7 @@ public class ASTtoHTMLConverter {
 		ProcessingIntegration.init();
 		PicodeSketch sketch = null;
 		try {
-			sketch = PicodeSettings.getDefaultSketch();
+			sketch = new PicodeSketch(null, PicodeSettings.getDefaultSketchPath());
 			PdeParser parser = new PdeParser(sketch);
 			AST ast = parser.parse(0);
 			FileWriter writer = new FileWriter(sketch.getMainFilePath() + ".html");

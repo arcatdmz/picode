@@ -7,6 +7,4 @@ public interface Camera {
 	public void stop();
 	public void dispose();
 	public BufferedImage getImage();
-	public void showFrame(boolean isVisible);
-	public boolean isFrameVisible();
 }

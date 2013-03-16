@@ -22,7 +22,7 @@ public class Builder {
 		ProcessingIntegration.init();
 		PicodeSketch sketch = null;
 		try {
-			sketch = PicodeSettings.getDefaultSketch();
+			sketch = new PicodeSketch(null, PicodeSettings.getDefaultSketchPath());
 			Builder builder = new Builder(null, sketch);
 			builder.run();
 		} catch (IOException e) {

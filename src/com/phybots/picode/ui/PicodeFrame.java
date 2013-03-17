@@ -531,7 +531,9 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 
 	public void onCurrentPoserChange(Poser poser) {
 		getPoserPanel().onCurrentPoserChange(poser);
-		if (poser != null) {
+		if (poser == null) {
+			getPosePanel().setPoseLibrary(null);
+		} else {
 			getPosePanel().setPoseLibrary(
 					libraries.get(poser.getPoserType()));
 		}

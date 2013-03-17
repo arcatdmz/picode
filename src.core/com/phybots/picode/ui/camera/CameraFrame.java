@@ -29,10 +29,13 @@ import javax.swing.JComponent;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.AbstractAction;
+import javax.swing.SwingWorker;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.MouseAdapter;
-
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.Action;
 
 public class CameraFrame extends JFrame {
@@ -101,6 +104,33 @@ public class CameraFrame extends JFrame {
 		setGlassPane(new LockingGlassPane());
 		getGlassPane().setVisible(false);
 		pack();
+
+		addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+				if (pnlCamera != null) {
+					getGlassPane().setVisible(true);
+					new SwingWorker<Object, Object>() {
+						@Override
+						public Object doInBackground() {
+							return pnlCamera.start();
+						}
+						@Override
+						public void done() {
+							getGlassPane().setVisible(false);
+						}
+					}.execute();
+				}
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (pnlCamera != null) {
+					pnlCamera.stop();
+				}
+			}
+		});
 	}
 
 	@Override

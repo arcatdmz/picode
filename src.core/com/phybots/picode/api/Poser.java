@@ -65,7 +65,10 @@ public abstract class Poser {
 			return pose;
 		}
 		pose.setName(poseLibrary.newName());
-		pose.setPhoto(getCamera().getImage());
+		Camera camera = getCamera();
+		if (camera != null) {
+			pose.setPhoto(camera.getImage());
+		}
 		try {
 			pose.save();
 		} catch (IOException e) {

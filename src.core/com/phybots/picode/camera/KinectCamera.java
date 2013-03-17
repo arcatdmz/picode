@@ -65,10 +65,14 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 
 	@Override
 	public boolean start() {
+
+		// Start the server if needed.
 		if (!wrapper.start()) {
 			if (!KinectCamera.startServer()) {
 				return false;
 			}
+
+			// Wait for the server.
 			for (int i = 0; i < 10; i ++) {
 				try {
 					Thread.sleep(500);
@@ -83,14 +87,30 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 				return false;
 			}
 		}
-		try {
-			wrapper.setColorEnabled(true);
-			wrapper.setDepthEnabled(false);
-			wrapper.addKeyword("Capture");
-			wrapper.setVoiceEnabled(true);
-		} catch (TException e) {
-			throw new IllegalStateException(e);
+
+		// Initialize the sever configuration.
+		for (int i = 0; i <= 20; i ++) {
+			try {
+				wrapper.setColorEnabled(true);
+				wrapper.setDepthEnabled(false);
+				wrapper.addKeyword("Capture");
+				wrapper.setVoiceEnabled(true);
+				break;
+			} catch (TException e) {
+				if (i == 10) {
+					throw new IllegalStateException(e);
+				}
+
+				// If there's any error, restart the session.
+				wrapper.start();
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e1) {
+					// Do nothing.
+				}
+			}
 		}
+
 		wrapper.addFrameListener(this);
 		return true;
 	}
@@ -104,6 +124,7 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 
 	@Override
 	public void dispose() {
+		stop();
 		stopServer();
 	}
 

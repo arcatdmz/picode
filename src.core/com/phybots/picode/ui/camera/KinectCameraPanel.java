@@ -6,8 +6,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -96,17 +94,6 @@ public class KinectCameraPanel extends CameraPanelAbstractImpl implements FrameL
 		slider.setMinimum(-27);
 		slider.setOrientation(SwingConstants.VERTICAL);
 		add(slider, BorderLayout.EAST);
-
-		addComponentListener(new ComponentAdapter() {
-
-			@Override
-			public void componentShown(ComponentEvent e) {
-			}
-
-			@Override
-			public void componentHidden(ComponentEvent e) {
-			}
-		});
 	}
 
 	public boolean start() {

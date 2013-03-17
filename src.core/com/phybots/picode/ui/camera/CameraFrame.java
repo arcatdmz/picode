@@ -1,6 +1,9 @@
 package com.phybots.picode.ui.camera;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.DefaultFocusTraversalPolicy;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -22,10 +25,14 @@ import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.CameraManager;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.MouseAdapter;
+
 import javax.swing.Action;
 
 public class CameraFrame extends JFrame {
@@ -36,6 +43,7 @@ public class CameraFrame extends JFrame {
 	private JPanel pnlDefaultCamera;
 	private JRadioButton rdbtnPrimary;
 	private JRadioButton rdbtnSecondary;
+	private JButton btnCapture;
 
 	private transient CameraPanelAbstractImpl pnlCamera;
 	private transient Map<Camera, CameraPanelAbstractImpl> pnlCameras;
@@ -75,7 +83,7 @@ public class CameraFrame extends JFrame {
 		contentPane.add(pnlButtons, BorderLayout.SOUTH);
 		pnlButtons.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		JButton btnCapture = new JButton();
+		btnCapture = new JButton();
 		btnCapture.setAction(new CapturePoseAction());
 		btnCapture.setIcon(new ImageIcon(CameraFrame.class.getResource("/camera.png")));
 		btnCapture.setFont(defaultFont);
@@ -89,6 +97,9 @@ public class CameraFrame extends JFrame {
 		es = Executors.newSingleThreadExecutor();
 
 		setPoser(null);
+		
+		setGlassPane(new LockingGlassPane());
+		getGlassPane().setVisible(false);
 		pack();
 	}
 
@@ -111,6 +122,8 @@ public class CameraFrame extends JFrame {
 			pnlCamera = null;
 			rdbtnPrimary.setEnabled(false);
 			rdbtnSecondary.setEnabled(false);
+			btnCapture.setEnabled(false);
+			contentPane.repaint();
 			return;
 		}
 
@@ -138,6 +151,7 @@ public class CameraFrame extends JFrame {
 			rdbtnSecondary.setEnabled(true);
 			rdbtnSecondary.setSelected(poser.getPoserType().secondaryCameraClass.isInstance(camera));
 		}
+		btnCapture.setEnabled(true);
 
 		pnlCamera = pnlCameras.get(camera);
 		if (pnlCamera == null) {
@@ -152,6 +166,7 @@ public class CameraFrame extends JFrame {
 	private void startCurrentCamera(Poser poser) {
 		final CameraPanelAbstractImpl pnlCamera_ = pnlCamera;
 		final Poser poser_ = poser;
+		getGlassPane().setVisible(true);
 		es.execute(new Runnable() {
 			public void run() {
 				try {
@@ -162,6 +177,7 @@ public class CameraFrame extends JFrame {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				getGlassPane().setVisible(false);
 			}
 		});
 	}
@@ -213,6 +229,34 @@ public class CameraFrame extends JFrame {
 			if (camera == null) return;
 			hideCurrentCamera();
 			setCurrentCamera(poser, camera);
+		}
+	}
+
+	/**
+	 * <a href="http://terai.xrea.jp/Swing/WaitCursor.html">Swing/WaitCursor</a>
+	 */
+	private static class LockingGlassPane extends JComponent {
+		private static final long serialVersionUID = -5849931332134848601L;
+
+		public LockingGlassPane() {
+			setOpaque(false);
+			setFocusTraversalPolicy(new DefaultFocusTraversalPolicy() {
+				private static final long serialVersionUID = -1604235471535054871L;
+				@Override
+				public boolean accept(Component c) {
+					return false;
+				}
+			});
+			addKeyListener(new KeyAdapter() {});
+			addMouseListener(new MouseAdapter() {});
+			requestFocusInWindow();
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		}
+
+		@Override
+		public void setVisible(boolean flag) {
+			super.setVisible(flag);
+			setFocusTraversalPolicyProvider(flag);
 		}
 	}
 }

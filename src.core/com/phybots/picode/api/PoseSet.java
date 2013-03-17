@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * TODO [Enhancement] Machine learning support. To be implemented.
+ */
 public class PoseSet implements Serializable {
 	private static final long serialVersionUID = 4193868468972287510L;
 	private Set<Pose> positiveSamples;

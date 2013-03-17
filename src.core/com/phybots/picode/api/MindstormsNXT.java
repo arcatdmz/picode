@@ -8,33 +8,49 @@ import com.phybots.picode.camera.KinectCamera;
 import com.phybots.picode.camera.NormalCamera;
 
 public class MindstormsNXT extends PoserWithConnector {
-	private com.phybots.entity.MindstormsNXT nxt;
+	com.phybots.entity.MindstormsNXT raw;
 
 	@Override
 	protected void initialize() {
-		nxt = new com.phybots.entity.MindstormsNXT();
-		nxt.removeDifferentialWheels();
-		nxt.addExtension("MindstormsNXTExtension", Port.A);
-		nxt.addExtension("MindstormsNXTExtension", Port.B);
-		nxt.addExtension("MindstormsNXTExtension", Port.C);
+		raw = new com.phybots.entity.MindstormsNXT();
+		raw.removeDifferentialWheels();
+		raw.addExtension("MindstormsNXTExtension", Port.A);
+		raw.addExtension("MindstormsNXTExtension", Port.B);
+		raw.addExtension("MindstormsNXTExtension", Port.C);
 		motorManager = new MindstormsNXTMotorManager(this);
 	}
 
 	@Override
 	public void setConnector(String connector) {
 		try {
-			nxt.setConnector(ConnectorFactory.makeConnector(connector));
+			raw.setConnector(ConnectorFactory.makeConnector(connector));
 		} catch (Exception e) {
 			// Do nothing.
+			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public String getConnector() {
-		if (nxt.getConnector() == null) {
+		if (raw.getConnector() == null) {
 			return "";
 		}
-		return nxt.getConnector().getConnectionString();
+		return raw.getConnector().getConnectionString();
+	}
+
+	@Override
+	public boolean connect() {
+		boolean connected = raw.connect();
+		if (connected) {
+			getMotorManager().start();
+		}
+		return connected;
+	}
+
+	@Override
+	public void disconnect() {
+		getMotorManager().stop();
+		raw.disconnect();
 	}
 
 	public static Class<? extends Pose> getPoseClass() {

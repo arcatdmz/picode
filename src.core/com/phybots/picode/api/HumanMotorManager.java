@@ -1,6 +1,5 @@
 package com.phybots.picode.api;
 
-import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.KinectCamera;
 
 public class HumanMotorManager extends MotorManager {
@@ -15,20 +14,18 @@ public class HumanMotorManager extends MotorManager {
 	public void stop() {
 	}
 
-	/**
-	 * returns new pose instance w/ pose data w/o photo and name
-	 * @see Poser#getPose()
-	 * @see Poser#capture()
-	 */
 	@Override
 	public Pose getPose() {
 		Poser poser = getPoser();
-		Camera camera = PoserLibrary.getInstance().getCameraManager().getCamera(poser);
-		KinectCamera kinectCamera = (KinectCamera) camera;
+		KinectCamera camera = PoserLibrary.getInstance().getCameraManager().getCamera(
+				KinectCamera.class);
+		if (camera == null) {
+			return null;
+		}
 		HumanPose pose = new HumanPose();
 		pose.setPoserIdentifier(poser.getIdentifier());
 		pose.setPoserType(poser.getPoserType());
-		if (!pose.importData(kinectCamera.getLatestJoints())) {
+		if (!pose.importData(camera.getLatestJoints())) {
 			return null;
 		}
 		return pose;

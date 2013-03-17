@@ -17,8 +17,8 @@ import javax.swing.JList;
 import com.phybots.entity.MindstormsNXT;
 import com.phybots.entity.MindstormsNXT.MindstormsNXTExtension;
 import com.phybots.gui.ImageProviderPanel;
+import com.phybots.picode.api.MindstormsNXTMotorManager.MotorControlService;
 import com.phybots.service.Camera;
-import com.phybots.task.NXTMotorControl;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -29,7 +29,7 @@ public class NXTRecordAndPlayFrame extends JFrame {
 	private JPanel contentPane;
 	private JList<Pose> list;
 	private transient Camera camera;
-	private transient NXTMotorControl nmc;
+	private transient MotorControlService nmc;
 
 	/**
 	 * Launch the application.
@@ -67,7 +67,7 @@ public class NXTRecordAndPlayFrame extends JFrame {
 //						nxt, MindstormsNXT.Port.C));
 
 		// Setup motors instance.
-		final NXTMotorControl nmc = new NXTMotorControl(
+		final MotorControlService nmc = new MotorControlService(
 			new MindstormsNXTExtension[] {
 				nxt.requestResource(MindstormsNXTExtension.class, nxt),
 				nxt.requestResource(MindstormsNXTExtension.class, nxt),
@@ -86,7 +86,7 @@ public class NXTRecordAndPlayFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public NXTRecordAndPlayFrame(Camera camera_, NXTMotorControl nmc_) {
+	public NXTRecordAndPlayFrame(Camera camera_, MotorControlService nmc_) {
 		this.camera = camera_;
 		this.nmc = nmc_;
 

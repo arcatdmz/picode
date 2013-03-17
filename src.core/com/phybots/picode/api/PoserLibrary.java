@@ -158,11 +158,14 @@ public class PoserLibrary {
 		try {
 			poser = poserInfo.type.constructor.newInstance();
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 		poser.setName(poserInfo.name);
 		if (poserInfo.type.supportsConnector) {
-			((PoserWithConnector) poser).setConnector(poserInfo.connector);
+			PoserWithConnector p = (PoserWithConnector) poser;
+			p.setConnector(poserInfo.connector);
+			p.connect();
 		}
 		return poser;
 	}

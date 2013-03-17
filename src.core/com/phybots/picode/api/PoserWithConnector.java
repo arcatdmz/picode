@@ -3,6 +3,14 @@ package com.phybots.picode.api;
 public abstract class PoserWithConnector extends Poser {
 	public abstract void setConnector(String connector);
 	public abstract String getConnector();
+	public abstract boolean connect();
+	public abstract void disconnect();
+
+	@Override
+	public void dispose() {
+		disconnect();
+		super.dispose();
+	}
 
 	@Override
 	public String getIdentifier() {

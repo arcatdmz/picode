@@ -164,9 +164,17 @@ public class ConnectorPanel extends JPanel {
 			return null;
 		}
 		String prefix = "";
+		String option = textField.getText();
 		switch (comboBox.getSelectedIndex()) {
 		case 0:
 		default:
+			// Return the default identifier.
+			if (option.equals("")) {
+				String[] ids = FantomConnector.queryIdentifiers();
+				if (ids != null) {
+					return ids[0];
+				}
+			}
 			prefix = FantomConnector.CON_PREFIX;
 			break;
 		case 1:
@@ -182,7 +190,7 @@ public class ConnectorPanel extends JPanel {
 			prefix = SocketConnector.CON_PREFIX;
 			break;
 		}
-		return prefix + textField.getText();
+		return prefix + option;
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import com.phybots.Phybots;
 import com.phybots.entity.MindstormsNXT;
 import com.phybots.entity.MindstormsNXT.MindstormsNXTExtension;
 import com.phybots.entity.MindstormsNXT.Port;
-import com.phybots.task.NXTMotorControl;
+import com.phybots.picode.api.MindstormsNXTMotorManager.MotorControlService;
 
 public class ExecuteMotorControlViaService {
 
@@ -33,7 +33,7 @@ public class ExecuteMotorControlViaService {
 		MindstormsNXT.latency = 0;
 		MindstormsNXTExtension ext = new MindstormsNXTExtension(con, Port.A);
 
-		final NXTMotorControl mc = new NXTMotorControl(new MindstormsNXTExtension[] {
+		final MotorControlService mc = new MotorControlService(new MindstormsNXTExtension[] {
 			ext, null, null
 		}, con);
 		mc.start();

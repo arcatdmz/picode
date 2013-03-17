@@ -2,6 +2,10 @@ package com.phybots.picode.api;
 
 import java.io.IOException;
 
+/**
+ * Singleton. Entry point for apps to get posture data.
+ * @author Jun Kato
+ */
 public class Picode {
 	private static Picode instance = null;
 

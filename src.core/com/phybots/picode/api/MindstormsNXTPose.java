@@ -12,6 +12,23 @@ public class MindstormsNXTPose extends Pose {
 		rotationCounts = new int[3];
 	}
 
+	boolean importData(int[] rotationCounts) {
+		if (rotationCounts == null
+				|| rotationCounts.length != this.rotationCounts.length)
+			return false;
+		for (int i = 0; i < rotationCounts.length; i ++) {
+			if (rotationCounts[i] == Integer.MAX_VALUE) {
+				return false;
+			}
+			this.rotationCounts[i] = rotationCounts[i];
+		}
+		return true;
+	}
+
+	int[] getData() {
+		return rotationCounts.clone();
+	}
+
 	@Override
 	public void load(BufferedReader reader) throws IOException {
 		for (int i = 0; i < rotationCounts.length; i ++) {

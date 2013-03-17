@@ -2,9 +2,6 @@
 ## Eclipse
 #################
 
-bin/
-bin.core/
-
 *.pydevproject
 #.project
 .metadata
@@ -169,4 +166,6 @@ pip-log.txt
 dsj.*
 
 p5/
+/bin
 /bin.core
+/docs

@@ -43,10 +43,11 @@ public class CameraManager {
 		return camera;
 	}
 
-	public Camera getCamera(Class<? extends Camera> cameraClass) {
+	@SuppressWarnings("unchecked")
+	public <C extends Camera> C getCamera(Class<C> cameraClass) {
 		for (Camera camera : cameras) {
 			if (cameraClass.isInstance(camera)) {
-				return camera;
+				return (C) camera;
 			}
 		}
 		for (PoserTypeInfo poserType : PoserLibrary.getTypeInfos()) {
@@ -54,7 +55,7 @@ public class CameraManager {
 				try {
 					Camera camera = poserType.defaultCameraConstructor.newInstance();
 					cameras.add(camera);
-					return camera;
+					return (C) camera;
 				} catch (Exception e) {
 					// Do nothing.
 				}
@@ -62,7 +63,7 @@ public class CameraManager {
 				try {
 					Camera camera = poserType.secondaryCameraConstructor.newInstance();
 					cameras.add(camera);
-					return camera;
+					return (C) camera;
 				} catch (Exception e) {
 					// Do nothing.
 				}

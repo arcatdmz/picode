@@ -50,6 +50,85 @@ public class HumanPose extends Pose {
 	private double[] angles = new double[15];
 	private BasicStroke stroke = new BasicStroke(10);
 
+	public static void drawSkeleton(Graphics g, Point[] points, int x, int y) {
+		drawLine(g, x, y, points,
+				HIP_CENTER,
+				SPINE,
+				SHOULDER_CENTER,
+				HEAD);
+		drawLine(g, x, y, points,
+				SHOULDER_CENTER,
+				SHOULDER_RIGHT,
+				ELBOW_RIGHT,
+				WRIST_RIGHT,
+				HAND_RIGHT);
+		drawLine(g, x, y, points,
+				SHOULDER_CENTER,
+				SHOULDER_LEFT,
+				ELBOW_LEFT,
+				WRIST_LEFT,
+				HAND_LEFT);
+		drawLine(g, x, y, points,
+				HIP_CENTER,
+				HIP_RIGHT,
+				KNEE_RIGHT,
+				ANKLE_RIGHT,
+				FOOT_RIGHT);
+		drawLine(g, x, y, points,
+				HIP_CENTER,
+				HIP_LEFT,
+				KNEE_LEFT,
+				ANKLE_LEFT,
+				FOOT_LEFT);
+	}
+
+	private static void drawLine(Graphics g, int x, int y, Point[] points, int... keys) {
+		Point sp = points[keys[0]];
+		int sx = 0, sy = 0;
+		if (sp != null) {
+			sx = sp.x + x;
+			sy = sp.y + y;
+		}
+		for (int i = 1; i < keys.length; i ++) {
+			Point ep = points[keys[i]];
+			int ex = 0, ey = 0;
+			if (ep != null) {
+				ex = ep.x + x;
+				ey = ep.y + y;
+			}
+			if (sp != null && ep != null) {
+				g.drawLine(sx, sy, ex, ey);
+			}
+			sp = ep;
+			sx = ex;
+			sy = ey;
+		}
+	}
+
+	boolean importData(Joint[] joints) {
+		if (joints == null ||
+				joints.length != 20)
+			return false;
+		this.joints = new Vector[20];
+		this.points = new Point[20];
+		for (int i = 0; i < joints.length; i ++) {
+			if (joints[i] == null) {
+				this.joints = null;
+				this.points = null;
+				return false;
+			}
+			this.joints[i] = new Vector(
+					joints[i].position.x,
+					joints[i].position.y,
+					joints[i].position.z);
+			this.points[i] = new Point(
+					(int) joints[i].screenPosition.x,
+					(int) joints[i].screenPosition.y);
+		}
+		calcAngles();
+		return true;
+	}
+
 	@Override
 	public void load(BufferedReader reader) throws IOException {
 		joints = new Vector[20];
@@ -106,85 +185,6 @@ public class HumanPose extends Pose {
 		drawSkeleton(g, points, 0, 0);
 		g.dispose();
 		super.updateIcon(overlayed);
-	}
-
-	public static void drawSkeleton(Graphics g, Point[] points, int x, int y) {
-		drawLine(g, x, y, points,
-				HIP_CENTER,
-				SPINE,
-				SHOULDER_CENTER,
-				HEAD);
-		drawLine(g, x, y, points,
-				SHOULDER_CENTER,
-				SHOULDER_RIGHT,
-				ELBOW_RIGHT,
-				WRIST_RIGHT,
-				HAND_RIGHT);
-		drawLine(g, x, y, points,
-				SHOULDER_CENTER,
-				SHOULDER_LEFT,
-				ELBOW_LEFT,
-				WRIST_LEFT,
-				HAND_LEFT);
-		drawLine(g, x, y, points,
-				HIP_CENTER,
-				HIP_RIGHT,
-				KNEE_RIGHT,
-				ANKLE_RIGHT,
-				FOOT_RIGHT);
-		drawLine(g, x, y, points,
-				HIP_CENTER,
-				HIP_LEFT,
-				KNEE_LEFT,
-				ANKLE_LEFT,
-				FOOT_LEFT);
-	}
-
-	private static void drawLine(Graphics g, int x, int y, Point[] points, int... keys) {
-		Point sp = points[keys[0]];
-		int sx = 0, sy = 0;
-		if (sp != null) {
-			sx = sp.x + x;
-			sy = sp.y + y;
-		}
-		for (int i = 1; i < keys.length; i ++) {
-			Point ep = points[keys[i]];
-			int ex = 0, ey = 0;
-			if (ep != null) {
-				ex = ep.x + x;
-				ey = ep.y + y;
-			}
-			if (sp != null && ep != null) {
-				g.drawLine(sx, sy, ex, ey);
-			}
-			sp = ep;
-			sx = ex;
-			sy = ey;
-		}
-	}
-
-	public boolean importData(Joint[] joints) {
-		if (joints == null) {
-			return false;
-		}
-		this.joints = new Vector[20];
-		this.points = new Point[20];
-		for (int i = 0; i < joints.length; i ++) {
-			if (joints[i] == null) {
-				this.joints = null;
-				this.points = null;
-				return false;
-			}
-			this.joints[i] = new Vector(
-					joints[i].position.x,
-					joints[i].position.y,
-					joints[i].position.z);
-			this.points[i] = new Point(
-					(int) joints[i].screenPosition.x,
-					(int) joints[i].screenPosition.y);
-		}
-		calcAngles();
-		return true;
 	}
 
 	@Override

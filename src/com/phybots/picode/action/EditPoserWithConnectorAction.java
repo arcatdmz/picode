@@ -39,9 +39,11 @@ public class EditPoserWithConnectorAction extends AbstractAction {
 			public void actionPerformed(ActionEvent e) {
 				String command = e.getActionCommand();
 				if (command.equals("OK")) {
+					p.disconnect();
 					PoserInfo poserInfo = contentPanel.getPoserInfo();
 					p.setName(poserInfo.name);
 					p.setConnector(poserInfo.connector);
+					p.connect();
 				} else if (command.equals("Remove")) {
 					p.dispose();
 				}

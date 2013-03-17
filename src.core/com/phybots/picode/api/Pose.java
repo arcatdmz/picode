@@ -149,6 +149,10 @@ public abstract class Pose implements Cloneable {
 		if (photo == null) {
 			return;
 		}
+		updateIcon(photo);
+	}
+
+	void updateIcon(BufferedImage photo) {
 		icon = new ImageIcon(
 				resizeImage(photo, 160, 120));
 		attrs = getBaseAttributes();

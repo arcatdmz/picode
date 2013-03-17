@@ -1,6 +1,11 @@
 package com.phybots.picode.api;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -43,6 +48,7 @@ public class HumanPose extends Pose {
 	private Vector[] joints = null;
 	private Point[] points = null;
 	private double[] angles = new double[15];
+	private BasicStroke stroke = new BasicStroke(10);
 
 	@Override
 	public void load(BufferedReader reader) throws IOException {
@@ -86,6 +92,74 @@ public class HumanPose extends Pose {
 				writer.write(String.format(" %d %d", points[i].x, points[i].y));
 				writer.newLine();
 			}
+		}
+	}
+
+	@Override
+	void updateIcon(BufferedImage photo) {
+		BufferedImage overlayed = new BufferedImage(
+				photo.getWidth(), photo.getHeight(), photo.getType());
+		Graphics2D g = overlayed.createGraphics();
+		g.drawImage(photo, 0, 0, null);
+		g.setColor(Color.green);
+		g.setStroke(stroke);
+		drawSkeleton(g, points, 0, 0);
+		g.dispose();
+		super.updateIcon(overlayed);
+	}
+
+	public static void drawSkeleton(Graphics g, Point[] points, int x, int y) {
+		drawLine(g, x, y, points,
+				HIP_CENTER,
+				SPINE,
+				SHOULDER_CENTER,
+				HEAD);
+		drawLine(g, x, y, points,
+				SHOULDER_CENTER,
+				SHOULDER_RIGHT,
+				ELBOW_RIGHT,
+				WRIST_RIGHT,
+				HAND_RIGHT);
+		drawLine(g, x, y, points,
+				SHOULDER_CENTER,
+				SHOULDER_LEFT,
+				ELBOW_LEFT,
+				WRIST_LEFT,
+				HAND_LEFT);
+		drawLine(g, x, y, points,
+				HIP_CENTER,
+				HIP_RIGHT,
+				KNEE_RIGHT,
+				ANKLE_RIGHT,
+				FOOT_RIGHT);
+		drawLine(g, x, y, points,
+				HIP_CENTER,
+				HIP_LEFT,
+				KNEE_LEFT,
+				ANKLE_LEFT,
+				FOOT_LEFT);
+	}
+
+	private static void drawLine(Graphics g, int x, int y, Point[] points, int... keys) {
+		Point sp = points[keys[0]];
+		int sx = 0, sy = 0;
+		if (sp != null) {
+			sx = sp.x + x;
+			sy = sp.y + y;
+		}
+		for (int i = 1; i < keys.length; i ++) {
+			Point ep = points[keys[i]];
+			int ex = 0, ey = 0;
+			if (ep != null) {
+				ex = ep.x + x;
+				ey = ep.y + y;
+			}
+			if (sp != null && ep != null) {
+				g.drawLine(sx, sy, ex, ey);
+			}
+			sp = ep;
+			sx = ex;
+			sy = ey;
 		}
 	}
 

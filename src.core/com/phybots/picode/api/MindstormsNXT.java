@@ -4,6 +4,7 @@ import jp.digitalmuseum.connector.ConnectorFactory;
 
 import com.phybots.entity.MindstormsNXT.Port;
 import com.phybots.picode.camera.Camera;
+import com.phybots.picode.camera.KinectCamera;
 import com.phybots.picode.camera.NormalCamera;
 
 public class MindstormsNXT extends PoserWithConnector {
@@ -42,6 +43,10 @@ public class MindstormsNXT extends PoserWithConnector {
 
 	public static Class<? extends Camera> getCameraClass() {
 		return NormalCamera.class;
+	}
+
+	public static Class<? extends Camera> getSecondaryCameraClass() {
+		return KinectCamera.class;
 	}
 
 }

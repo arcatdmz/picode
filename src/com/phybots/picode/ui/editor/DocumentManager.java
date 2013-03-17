@@ -843,7 +843,7 @@ public class DocumentManager implements DocumentListener {
 		AST elsePath = thenPath.getNextSibling();
 		if (elsePath != null) {
 			AST bestPrintableNode = getBestPrintableNode(elsePath, true);
-			decorateKeyword(elsePath); // TODO Fix this!
+			decorateKeyword(elsePath); // TODO "else" statement visualization bug.
 			dumpHiddenBefore(bestPrintableNode);
 			CommonASTWithHiddenTokens elseTokens = (CommonASTWithHiddenTokens) elsePath;
 			CommonHiddenStreamToken hiddenBefore = elseTokens.getHiddenBefore();

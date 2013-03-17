@@ -69,7 +69,7 @@ public class Launcher implements MessageConsumer {
 
   private SketchException placeException(String message, String filename,
                                          int lineNumber) {
-    // TODO Auto-generated method stub
+    // TODO [Enhancement] Exception visualization.
     return null;
   }
 

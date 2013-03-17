@@ -18,12 +18,10 @@ import com.phybots.picode.PicodeMain;
 import com.phybots.picode.api.PoserInfo;
 
 public class PoserEditDialog extends JDialog implements ActionListener {
-
 	private static final long serialVersionUID = 355467424630256025L;
+	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	protected final PoserPanel contentPanel;
-
-	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	/**
 	 * Launch the application.

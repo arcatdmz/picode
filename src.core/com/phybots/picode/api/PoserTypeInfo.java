@@ -11,10 +11,13 @@ public class PoserTypeInfo {
 	public Class<? extends Pose> poseClass;
 	public Constructor<? extends Pose> poseConstructor;
 	public Class<? extends Camera> defaultCameraClass;
+	public Class<? extends Camera> secondaryCameraClass;
 	public Constructor<? extends Camera> defaultCameraConstructor;
+	public Constructor<? extends Camera> secondaryCameraConstructor;
 
 	@Override
 	public String toString() {
 		return typeName;
 	}
+
 }

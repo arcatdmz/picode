@@ -60,12 +60,12 @@ public class ProcessingIntegration implements RunnerListener {
   }
 
   public int getSelectionStart() {
-    // TODO 自動生成されたメソッド・スタブ
+    // TODO [Enhancement] Code area selection.
     return 0;
   }
 
   public int getSelectionStop() {
-    // TODO 自動生成されたメソッド・スタブ
+    // TODO [Enhancement] Code area selection.
     return 0;
   }
 
@@ -120,12 +120,12 @@ public class ProcessingIntegration implements RunnerListener {
   }
 
   public void removeRecent() {
-    // TODO Auto-generated method stub
+    // TODO [Enhancement] Recent sketch list.
     
   }
 
   public void addRecent() {
-    // TODO Auto-generated method stub
+    // TODO [Enhancement] Recent sketch list.
     
   }
 
@@ -342,8 +342,7 @@ public class ProcessingIntegration implements RunnerListener {
   // Base methods are implemented below.
 
   public void baseRebuildSketchbookMenus() {
-    // TODO Auto-generated method stub
-    
+	  // Do nothing.
   }
 
   /**
@@ -400,7 +399,7 @@ public class ProcessingIntegration implements RunnerListener {
           // The error is at the end of this current chunk of code,
           // so the last line needs to be selected.
           line = code.getLineCount() - 1;
-//TODO Implement this.
+//TODO Do we really need this?
 //          if (code.getLineText(line).length() == 0) {
 //            // The last line may be zero length, meaning nothing to select.
 //            // If so, back up one more line.
@@ -410,7 +409,7 @@ public class ProcessingIntegration implements RunnerListener {
         if (line < 0 || line >= code.getLineCount()) {
           System.err.println("Bad error line: " + line);
         } else {
-// TODO Implement this.
+// TODO [Enhancement] Code area selection.
 //          textarea.select(textarea.getLineStartOffset(line),
 //                          textarea.getLineStopOffset(line) - 1);
         }
@@ -441,8 +440,8 @@ public class ProcessingIntegration implements RunnerListener {
    * Show a notice message in the editor status bar.
    */
   public void statusNotice(String msg) {
-//TODO Implement this.
-//    status.notice(msg);
+	//TODO [Enhancement] Show notice.
+	//    status.notice(msg);
   }
 
 
@@ -452,10 +451,10 @@ public class ProcessingIntegration implements RunnerListener {
    * Clear the status area.
    */
   public void clearNotice(String msg) {
-//TODO Implement this.
-//    if (status.message.equals(msg)) {
-//      statusEmpty();
-//    }
+	//TODO [Enhancement] Show notice.
+	//    if (status.message.equals(msg)) {
+	//      statusEmpty();
+	//    }
   }
 
 

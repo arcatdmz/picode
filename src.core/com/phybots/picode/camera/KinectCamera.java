@@ -4,9 +4,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
+
 import org.apache.thrift.TException;
 
 import com.phybots.picode.api.HumanPose;
+import com.phybots.picode.ui.camera.CameraPanelAbstractImpl;
+import com.phybots.picode.ui.camera.KinectCameraPanel;
 
 import jp.digitalmuseum.kinect.Frame;
 import jp.digitalmuseum.kinect.Joint;
@@ -28,7 +31,7 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 	private Joint[] joints;
 	private BufferedImage colorImage;
 	private int skeletonLife;
-	
+
 	public KinectCamera() {
 		joints = new Joint[20];
 	}
@@ -108,7 +111,11 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 	public BufferedImage getImage() {
 		return colorImage;
 	}
-	
+
+	public KinectServiceWrapper getKinect() {
+		return wrapper;
+	}
+
 	public Frame getFrame() {
 		return frame;
 	}
@@ -159,4 +166,8 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 		this.joints[HumanPose.FOOT_LEFT] = joints.get(JointType.FOOT_LEFT);
 	}
 
+	@Override
+	public CameraPanelAbstractImpl newPanelInstance() {
+		return new KinectCameraPanel(this);
+	}
 }

@@ -85,8 +85,8 @@ public abstract class Poser {
 	}
 
 	public void showCaptureFrame(boolean isVisible) {
-		//TODO To be implemented.
-		// getCamera().showFrame(isVisible);
+		PoserLibrary.getInstance().setCurrentPoser(this);
+		PoserLibrary.getInstance().showCameraFrame(isVisible);
 	}
 
 	public String getIdentifier() {

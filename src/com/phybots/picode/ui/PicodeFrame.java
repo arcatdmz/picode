@@ -59,7 +59,6 @@ import javax.swing.ImageIcon;
 
 public class PicodeFrame extends JFrame implements PicodeInterface {
 	private static final long serialVersionUID = -7081881044895496089L;
-
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JPanel contentPanel = null;
@@ -547,4 +546,5 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
 		library.removeElement(pose);
 	}
+
 }

@@ -28,14 +28,12 @@ import com.phybots.picode.PicodeMain;
 import java.awt.GridBagLayout;
 
 public class ConnectorPanel extends JPanel {
-
 	private static final long serialVersionUID = 7247928302975753877L;
+	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JComboBox<String> comboBox;
 	private JTextField textField;
 	private JButton btnTest;
-
-	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	/**
 	 * Create the panel.

@@ -25,9 +25,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 public class PoserSelectorPanel extends JPanel {
-
 	private static final long serialVersionUID = -3583127135224098029L;
-
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JComboBox<Object> comboBox;
@@ -58,6 +56,7 @@ public class PoserSelectorPanel extends JPanel {
 		JButton btnSelectHuman = new JButton();
 		btnSelectHuman.setAction(selectHumanAction);
 		btnSelectHuman.setIcon(new ImageIcon(PoserSelectorPanel.class.getResource("/human.png")));
+		btnSelectHuman.setFont(defaultFont);
 		GridBagConstraints gbc_btnHuman = new GridBagConstraints();
 		gbc_btnHuman.insets = new Insets(0, 0, 0, 5);
 		gbc_btnHuman.weighty = 1.0;
@@ -71,6 +70,7 @@ public class PoserSelectorPanel extends JPanel {
 		JButton btnSelectRobot = new JButton();
 		btnSelectRobot.setAction(selectRobotAction);
 		btnSelectRobot.setIcon(new ImageIcon(PoserSelectorPanel.class.getResource("/robot.png")));
+		btnSelectRobot.setFont(defaultFont);
 		GridBagConstraints gbc_btnRobot = new GridBagConstraints();
 		gbc_btnRobot.fill = GridBagConstraints.BOTH;
 		gbc_btnRobot.weighty = 1.0;

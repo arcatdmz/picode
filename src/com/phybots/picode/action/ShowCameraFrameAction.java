@@ -18,10 +18,8 @@ public class ShowCameraFrameAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		Poser currentPoser = PoserLibrary.getInstance().getCurrentPoser();
-		System.out.println(currentPoser);
 		if (currentPoser != null) {
-			// TODO To be implemented.
-			// currentPoser.showCaptureFrame(true);
+			currentPoser.showCaptureFrame(true);
 		}
 	}
 }

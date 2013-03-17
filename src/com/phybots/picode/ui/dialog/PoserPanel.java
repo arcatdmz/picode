@@ -22,7 +22,6 @@ import javax.swing.JTextField;
 
 public class PoserPanel extends JPanel {
 	private static final long serialVersionUID = -8644965871351515498L;
-
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JComboBox<PoserTypeInfo> comboBox;

@@ -42,14 +42,13 @@ import javax.swing.border.EmptyBorder;
 
 public class PoseLibraryPanel extends JPanel {
 	private static final long serialVersionUID = 5622163966849443710L;
+	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private JPanel jPanel;
 	private JButton btnAddPose;
 	private JButton btnDeletePose;
 	private JScrollPane jScrollPane;
 	private JMutableList<Pose> jList;
-
-	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
 	private transient PicodeMain picodeMain;
 	private JPopupMenu popupMenu;

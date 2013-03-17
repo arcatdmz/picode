@@ -5,4 +5,4 @@
  * @author arc
  *
  */
-package com.phybots.picode.camera;
+package com.phybots.picode.ui.camera;

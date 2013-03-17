@@ -1,7 +1,9 @@
 package com.phybots.picode.camera;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserLibrary;
@@ -9,38 +11,72 @@ import com.phybots.picode.api.PoserTypeInfo;
 
 public class CameraManager {
 	
-	private Map<Poser, Camera> cameras;
+	private Set<Camera> cameras;
+	private Map<Poser, Camera> camerasMap;
 	
 	public CameraManager() {
-		cameras = new HashMap<Poser, Camera>();
+		cameras = new HashSet<Camera>();
+		camerasMap = new HashMap<Poser, Camera>();
 	}
 
 	public void putCamera(Poser poser, Camera camera) {
-		cameras.put(poser, camera);
+		cameras.add(camera);
+		camerasMap.put(poser, camera);
 	}
 
 	public Camera getCamera(Poser poser) {
 		if (poser == null) {
 			return null;
 		}
-		Camera camera = cameras.get(poser);
+		Camera camera = camerasMap.get(poser);
 		if (camera == null) {
-			// Instantiate the default camera.
 			PoserTypeInfo poserType = PoserLibrary.getTypeInfo(poser);
-			try {
-				camera = poserType.defaultCameraConstructor.newInstance();
-				cameras.put(poser, camera);
-			} catch (Exception e) {
-				e.printStackTrace();
+			camera = getCamera(poserType.defaultCameraClass);
+			if (camera == null) {
+				camera = getCamera(poserType.secondaryCameraClass);
+				if (camera == null) {
+					return null;
+				}
 			}
+			camerasMap.put(poser, camera);
 		}
 		return camera;
 	}
 
+	public Camera getCamera(Class<? extends Camera> cameraClass) {
+		for (Camera camera : cameras) {
+			if (cameraClass.isInstance(camera)) {
+				return camera;
+			}
+		}
+		for (PoserTypeInfo poserType : PoserLibrary.getTypeInfos()) {
+			if (cameraClass == poserType.defaultCameraClass) {
+				try {
+					Camera camera = poserType.defaultCameraConstructor.newInstance();
+					cameras.add(camera);
+					return camera;
+				} catch (Exception e) {
+					// Do nothing.
+				}
+			} else if (cameraClass == poserType.secondaryCameraClass) {
+				try {
+					Camera camera = poserType.secondaryCameraConstructor.newInstance();
+					cameras.add(camera);
+					return camera;
+				} catch (Exception e) {
+					// Do nothing.
+				}
+			}
+		}
+		return null;
+	}
+
 	public void dispose() {
-		for (Camera camera : cameras.values()) {
+		for (Camera camera : cameras) {
 			camera.dispose();
 		}
+		cameras.clear();
+		camerasMap.clear();
 	}
 
 }

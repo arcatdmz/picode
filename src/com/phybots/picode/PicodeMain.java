@@ -80,7 +80,7 @@ public class PicodeMain {
 	}
 
 	public void dispose() {
-		PoserLibrary.getInstance().getCameraManager().dispose();
+		PoserLibrary.getInstance().dispose();
 		if (builder != null) {
 			builder.stop();
 		}
@@ -122,11 +122,7 @@ public class PicodeMain {
 		}
 
 		// Hide capture frame before we run the app.
-		// TODO To be implemented.
-//		Poser poser = PoserLibrary.getInstance().getCurrentPoser();
-//		if (poser != null && poser.getCamera().isFrameVisible()) {
-//			poser.getCamera().showFrame(false);
-//		}
+		PoserLibrary.getInstance().showCameraFrame(false);
 
 		// Run the app.
 		builder = new Builder(this, sketch);

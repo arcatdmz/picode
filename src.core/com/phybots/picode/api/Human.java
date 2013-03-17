@@ -27,4 +27,8 @@ public class Human extends Poser {
 		return KinectCamera.class;
 	}
 
+	public static Class<? extends Camera> getSecondaryCameraClass() {
+		return null;
+	}
+
 }

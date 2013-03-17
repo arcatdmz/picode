@@ -9,6 +9,7 @@ import java.util.Set;
 
 import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.CameraManager;
+import com.phybots.picode.ui.camera.CameraFrame;
 import com.phybots.utils.ClassUtils;
 
 @SuppressWarnings("unchecked")
@@ -55,6 +56,18 @@ public class PoserLibrary {
 			}
 
 			try {
+				Method method = poserClass.getMethod("getSecondaryCameraClass");
+				poserType.secondaryCameraClass = (Class<? extends Camera>) method.invoke(null);
+				if (poserType.secondaryCameraClass != null) {
+					poserType.secondaryCameraConstructor =
+							poserType.secondaryCameraClass.getConstructor();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				continue;
+			}
+
+			try {
 				Method method = poserClass.getMethod("getPoseClass");
 				poserType.poseClass = (Class<? extends Pose>) method.invoke(null);
 				poserType.poseConstructor = poserType.poseClass.getConstructor();
@@ -68,9 +81,10 @@ public class PoserLibrary {
 	}
 
 	private PicodeInterface ide;
-	private CameraManager cameraManager;
 	private List<Poser> posers;
 	private Poser currentPoser;
+	private CameraManager cameraManager;
+	private CameraFrame cameraFrame;
 
 	private PoserLibrary() {
 		cameraManager = new CameraManager();
@@ -131,6 +145,14 @@ public class PoserLibrary {
 		return cameraManager;
 	}
 
+	public void showCameraFrame(boolean isVisible) {
+		if (cameraFrame == null) {
+			cameraFrame = new CameraFrame();
+			cameraFrame.setPoser(currentPoser);
+		}
+		cameraFrame.setVisible(isVisible);
+	}
+
 	public Poser newPoserInstance(PoserInfo poserInfo) {
 		Poser poser;
 		try {
@@ -180,13 +202,23 @@ public class PoserLibrary {
 		if (ide != null
 				&& poser != this.currentPoser) {
 			ide.onCurrentPoserChange(poser);
-			this.currentPoser = poser;
+		}
+		this.currentPoser = poser;
+		if (cameraFrame != null) {
+			cameraFrame.setPoser(currentPoser);
 		}
 	}
 
 	public Poser getCurrentPoser() {
-		return ide == null ?
-				null : currentPoser;
+		return currentPoser;
+	}
+
+	public void dispose() {
+		if (cameraFrame != null) {
+			cameraFrame.dispose();
+			cameraFrame = null;
+		}
+		cameraManager.dispose();
 	}
 
 }

@@ -2,6 +2,8 @@ package com.phybots.picode.camera;
 
 import java.awt.image.BufferedImage;
 
+import com.phybots.picode.ui.camera.CameraPanelAbstractImpl;
+import com.phybots.picode.ui.camera.NormalCameraPanel;
 import com.phybots.service.ImageProvider.ImageListener;
 
 public class NormalCamera extends CameraAbstractImpl implements ImageListener {
@@ -46,6 +48,11 @@ public class NormalCamera extends CameraAbstractImpl implements ImageListener {
 		for (CameraImageListener listener : listeners) {
 			listener.imageUpdated(image);
 		}
+	}
+
+	@Override
+	public CameraPanelAbstractImpl newPanelInstance() {
+		return new NormalCameraPanel(this);
 	}
 
 }

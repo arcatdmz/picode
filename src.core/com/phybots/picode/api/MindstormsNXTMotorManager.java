@@ -98,7 +98,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			currentStates = new OutputState[3];
 			goals = new int[3];
 			powers = new int[]{ 30, 30, 30 };
-			setInterval(100);
+			setInterval(200);
 		}
 	
 		public boolean isActing() {
@@ -220,6 +220,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			for (int i = 0; i < 3; i ++) {
 				if (motors[i] != null) {
 					currentStates[i] = motors[i].getOutputState();
+					sleep(5);
 				}
 			}
 
@@ -228,6 +229,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				if (goals[i] != Integer.MAX_VALUE) {
 					if (startMotorControl(i)) {
 						goals[i] = Integer.MAX_VALUE;
+						sleep(5);
 					}
 				}
 			}
@@ -263,9 +265,14 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				return true;
 			}
 
+			// Check raw output state.
 			OutputState currentState = currentStates[port];
+			if (currentState.runState != MindstormsNXT.MOTOR_RUN_STATE_IDLE) {
+				return false;
+			}
+
+			// If we've already reached the goal, do nothing.
 			int goal = goals[port];
-	
 			if (goal == currentState.rotationCount) {
 				return true;
 			}
@@ -279,7 +286,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 						(byte)1, connector);
 
 				// Pause before receiving motor status.
-				sleep(20); // 10 + 10 // 10 [ms] was not enough!!
+				sleep(10);
 
 				// Receive motor status.
 				String message = MindstormsNXT.messageRead(
@@ -309,7 +316,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				int mode = 0;
 	
 				// Pause before sending a string motor command message.
-				sleep(15); // 15
+				sleep(5); // 15 - 10
 
 				// Send a motor command message.
 				String command = String.format("1%1d%03d%06d%1d",

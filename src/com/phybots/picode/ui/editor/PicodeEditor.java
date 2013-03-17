@@ -57,4 +57,9 @@ public class PicodeEditor extends JEditorPane {
 	public SketchCode getCode() {
 		return code;
 	}
+
+	public DocumentManager getDocumentManager() {
+		return documentManager;
+	}
+
 }

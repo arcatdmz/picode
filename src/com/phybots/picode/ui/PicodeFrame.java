@@ -24,6 +24,7 @@ import com.phybots.picode.action.RunAction;
 import com.phybots.picode.action.SaveSketchAction;
 import com.phybots.picode.action.SaveSketchAsAction;
 import com.phybots.picode.action.StopAction;
+import com.phybots.picode.action.ToggleInlinePhotoEnabled;
 import com.phybots.picode.api.PicodeInterface;
 import com.phybots.picode.api.Pose;
 import com.phybots.picode.api.Poser;
@@ -56,6 +57,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.EmptyBorder;
 import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 
 public class PicodeFrame extends JFrame implements PicodeInterface {
 	private static final long serialVersionUID = -7081881044895496089L;
@@ -83,9 +85,9 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private JTabbedPane tabbedPane;
 	private JMenuItem mntmNew;
 	private JMenu mnFile;
-	private JMenuItem mntmNew_1;
-	private JMenuItem mntmRename;
-	private JMenuItem mntmDelete;
+	private JMenuItem mntmNewFile;
+	private JMenuItem mntmRenameFile;
+	private JMenuItem mntmDeleteFile;
 	private JMenuItem mntmSaveAs;
 
 	private transient PicodeMain picodeMain;
@@ -93,6 +95,8 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private transient PicodeEditor currentEditor;
 	private transient int currentEditorIndex;
 	private transient Map<PoserTypeInfo, TypeBasedPoseLibrary> libraries;
+	private JMenu mnView;
+	private JCheckBoxMenuItem chckbxmntmShowInlinePhotos;
 
 	/**
 	 * This is the default constructor
@@ -189,6 +193,10 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 
 	public void editSelectedPoseName() {
 		getPosePanel().editSelectedPoseName();
+	}
+
+	public boolean isInlinePhotoEnabled() {
+		return getChckbxmntmShowInlinePhotos().isSelected();
 	}
 
 	@Override
@@ -398,6 +406,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 			menuBar = new JMenuBar();
 			menuBar.add(getMnSketch());
 			menuBar.add(getMnFile());
+			menuBar.add(getMnView());
 		}
 		return menuBar;
 	}
@@ -405,6 +414,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private JMenu getMnSketch() {
 		if (mnSketch == null) {
 			mnSketch = new JMenu("Sketch");
+			mnSketch.setMnemonic('s');
 			mnSketch.add(getMntmNew());
 			mnSketch.add(getMntmLoad());
 			mnSketch.add(getMntmSave());
@@ -477,44 +487,62 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private JMenu getMnFile() {
 		if (mnFile == null) {
 			mnFile = new JMenu("File");
-			mnFile.add(getMntmNew_1());
-			mnFile.add(getMntmRename());
-			mnFile.add(getMntmDelete());
+			mnFile.setMnemonic('f');
+			mnFile.add(getMntmNewFile());
+			mnFile.add(getMntmRenameFile());
+			mnFile.add(getMntmDeleteFile());
 		}
 		return mnFile;
 	}
 
-	private JMenuItem getMntmNew_1() {
-		if (mntmNew_1 == null) {
-			mntmNew_1 = new JMenuItem();
-			mntmNew_1.setAction(new NewFileAction(picodeMain));
-			mntmNew_1.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
+	private JMenuItem getMntmNewFile() {
+		if (mntmNewFile == null) {
+			mntmNewFile = new JMenuItem();
+			mntmNewFile.setAction(new NewFileAction(picodeMain));
+			mntmNewFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T,
 					InputEvent.CTRL_MASK));
-			mntmNew_1.setText("New");
+			mntmNewFile.setText("New");
 		}
-		return mntmNew_1;
+		return mntmNewFile;
 	}
 
-	private JMenuItem getMntmRename() {
-		if (mntmRename == null) {
-			mntmRename = new JMenuItem();
-			mntmRename.setAction(new RenameFileAction(picodeMain));
-			mntmRename.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,
+	private JMenuItem getMntmRenameFile() {
+		if (mntmRenameFile == null) {
+			mntmRenameFile = new JMenuItem();
+			mntmRenameFile.setAction(new RenameFileAction(picodeMain));
+			mntmRenameFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R,
 					InputEvent.CTRL_MASK));
-			mntmRename.setText("Rename");
+			mntmRenameFile.setText("Rename");
 		}
-		return mntmRename;
+		return mntmRenameFile;
 	}
 
-	private JMenuItem getMntmDelete() {
-		if (mntmDelete == null) {
-			mntmDelete = new JMenuItem();
-			mntmDelete.setAction(new DeleteFileAction(picodeMain));
-			mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
+	private JMenuItem getMntmDeleteFile() {
+		if (mntmDeleteFile == null) {
+			mntmDeleteFile = new JMenuItem();
+			mntmDeleteFile.setAction(new DeleteFileAction(picodeMain));
+			mntmDeleteFile.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D,
 					InputEvent.CTRL_MASK));
-			mntmDelete.setText("Delete");
+			mntmDeleteFile.setText("Delete");
 		}
-		return mntmDelete;
+		return mntmDeleteFile;
+	}
+
+	private JMenu getMnView() {
+		if (mnView == null) {
+			mnView = new JMenu("View");
+			mnView.setMnemonic('v');
+			mnView.add(getChckbxmntmShowInlinePhotos());
+		}
+		return mnView;
+	}
+	private JCheckBoxMenuItem getChckbxmntmShowInlinePhotos() {
+		if (chckbxmntmShowInlinePhotos == null) {
+			chckbxmntmShowInlinePhotos = new JCheckBoxMenuItem();
+			chckbxmntmShowInlinePhotos.setSelected(true);
+			chckbxmntmShowInlinePhotos.setAction(new ToggleInlinePhotoEnabled(picodeMain));
+		}
+		return chckbxmntmShowInlinePhotos;
 	}
 
 	public void onAddPoser(Poser poser) {

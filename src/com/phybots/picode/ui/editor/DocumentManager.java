@@ -50,6 +50,8 @@ public class DocumentManager implements DocumentListener {
 	private SortedSet<Decoration> decorations;
 	private PdeParser parser;
 
+	private boolean isInlinePhotoEnabled = true;
+
 	static {
 		defaultAttrs = new SimpleAttributeSet();
 		StyleConstants.setFontFamily(defaultAttrs, PicodeEditor.getDefaultFont().getFamily());
@@ -93,6 +95,32 @@ public class DocumentManager implements DocumentListener {
 		}
 
 		update(null);
+	}
+
+	public boolean isInlinePhotoEnabled() {
+		return isInlinePhotoEnabled;
+	}
+
+	public void setInlinePhotoEnabled(boolean isInlinePhotoEnabled) {
+		this.isInlinePhotoEnabled = isInlinePhotoEnabled;
+
+		// Remove existing photo decorations.
+		if (!isInlinePhotoEnabled) {
+			for (Iterator<Decoration> it = decorations.iterator(); it.hasNext();) {
+				Decoration decoration = it.next();
+				if (decoration.getType() == Type.POSE) {
+					setCharacterAttributes(
+							decoration.getStartIndex(),
+							decoration.getLenth(),
+							defaultAttrs);
+					it.remove();
+				}
+			}
+
+		// Add photo decorations.
+		} else {
+			update(null);
+		}
 	}
 
 	public void insertUpdate(DocumentEvent e) {
@@ -139,7 +167,7 @@ public class DocumentManager implements DocumentListener {
 		update(de);
 	}
 
-	private void update(final DocumentEvent e) {
+	public void update(final DocumentEvent e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				int caretPosition = picodeEditor.getCaretPosition();
@@ -214,6 +242,10 @@ public class DocumentManager implements DocumentListener {
 				attrs = keywordAttrs;
 				break;
 			case POSE:
+				if (!isInlinePhotoEnabled) {
+					attrs = defaultAttrs;
+					break;
+				}
 				PoseLibrary poseLibrary = PoseLibrary.getInstance();
 				String poseName = decoration.getOption().toString();
 				Pose pose = poseLibrary.get(poseName);

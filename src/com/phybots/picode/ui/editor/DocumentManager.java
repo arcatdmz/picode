@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
@@ -53,6 +54,7 @@ public class DocumentManager implements DocumentListener {
 	private PdeParser parser;
 
 	private boolean isInlinePhotoEnabled = true;
+	private Pattern photoApiPattern = Pattern.compile("Picode\\.pose\\(\"(.+?)\"\\)");
 
 	static {
 		defaultAttrs = new SimpleAttributeSet();
@@ -147,6 +149,9 @@ public class DocumentManager implements DocumentListener {
 	}
 
 	private void setCharacterAttributes(int startIndex, int length, SimpleAttributeSet attrs) {
+		if (length <= 0) {
+			return;
+		}
 		try {
 			String text = doc.getText(startIndex, length);
 			doc.remove(startIndex, length);
@@ -160,16 +165,50 @@ public class DocumentManager implements DocumentListener {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 
-				// Check if the input text is in the pending state by IME.
-		        Element paragraph = doc.getParagraphElement(de.getOffset());
-		        for (int i = 0; i < paragraph.getElementCount(); i ++) {
-		            Element element = paragraph.getElement(i);
-		            AttributeSet attrs = element.getAttributes();
-		            if (attrs != null
-		            		&& attrs.isDefined(StyleConstants.ComposedTextAttribute)) {
-		            	return;
-		            }
-		        }
+				Decoration existingIcon = null;
+				Element paragraph = doc.getParagraphElement(de.getOffset());
+				for (int i = 0; i < paragraph.getElementCount(); i++) {
+					Element element = paragraph.getElement(i);
+
+					// Check if the input text is in the pending state by IME.
+					AttributeSet attrs = element.getAttributes();
+					if (attrs != null
+							&& attrs.isDefined(StyleConstants.ComposedTextAttribute)) {
+						return;
+					}
+
+					// Check if the text is inserted just before/after the photo.
+					if (de.getType() == EventType.INSERT) {
+						// [inserted][element]
+						if (element.getStartOffset() == de.getOffset() + de.getLength()) {
+							if (element.getAttributes().isDefined(StyleConstants.IconAttribute)) {
+								existingIcon = getDecoration(de.getOffset());
+							}
+						// [element][inserted]
+						} else if (element.getEndOffset() == de.getOffset()) {
+							if (element.getAttributes().isDefined(StyleConstants.IconAttribute)) {
+								existingIcon = getDecoration(element.getStartOffset());
+							}
+						}
+					}
+				}
+
+				// Replace the photo if applicable.
+				if (existingIcon != null) {
+					try {
+						String insertedText = doc.getText(de.getOffset(), de.getLength());
+						if (photoApiPattern.matcher(insertedText).matches()) {
+							doc.remove(existingIcon.getStartIndex(),
+									existingIcon.getLenth() + de.getLength());
+							doc.insertString(
+									existingIcon.getStartIndex(),
+									insertedText,
+									defaultAttrs);
+						}
+					} catch (BadLocationException e) {
+						e.printStackTrace();
+					}
+				}
 
 		        // Update code.
 				String newCode;
@@ -268,7 +307,7 @@ public class DocumentManager implements DocumentListener {
 				PoseLibrary poseLibrary = PoseLibrary.getInstance();
 				String poseName = decoration.getOption().toString();
 				Pose pose = poseLibrary.get(poseName);
-				System.out.println("Pose " + poseName);
+				System.out.println("Decorating pose: " + poseName);
 				if (!poseLibrary.contains(poseName)) {
 					try {
 						pose = PoseLibrary.load(poseName);

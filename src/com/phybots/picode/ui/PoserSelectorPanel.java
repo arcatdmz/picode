@@ -129,6 +129,14 @@ public class PoserSelectorPanel extends JPanel {
 	}
 
 	public void onRemovePoserWithConnector(Poser poser) {
+
+		// If there will be no poser left,
+		// unselect the box item so that "New poser" dialog won't show up.
+		DefaultComboBoxModel<Object> model = (DefaultComboBoxModel<Object>)comboBox.getModel();
+		if (model.getSize() <= 2
+				&& model.getElementAt(0) == poser) {
+			comboBox.setSelectedIndex(-1);
+		}
 		comboBox.removeItem(poser);
 	}
 

@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -15,7 +16,12 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.phybots.picode.PicodeMain;
+import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserInfo;
+import com.phybots.picode.api.PoserLibrary;
+import com.phybots.picode.api.PoserTypeInfo;
+import com.phybots.picode.api.PoserWithConnector;
+import com.phybots.picode.ui.dialog.ConnectorPanel.ConnectorManager;
 
 public class PoserEditDialog extends JDialog implements ActionListener {
 	private static final long serialVersionUID = 355467424630256025L;
@@ -28,7 +34,8 @@ public class PoserEditDialog extends JDialog implements ActionListener {
 	 */
 	public static void main(String[] args) {
 		try {
-			PoserEditDialog dialog = new PoserEditDialog();
+			PoserEditDialog dialog = new PoserEditDialog(
+					PoserLibrary.getTypeInfos());
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -39,10 +46,11 @@ public class PoserEditDialog extends JDialog implements ActionListener {
 	/**
 	 * Create the dialog.
 	 */
-	public PoserEditDialog() {
+	public PoserEditDialog(Set<PoserTypeInfo> poserTypes) {
 		setBounds(100, 100, 450, 200);
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel = new PoserPanel();
+		contentPanel = new PoserPanel(poserTypes);
+		contentPanel.setConnectorManager(getConnectorManager());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPanel.setPoserTypeSelectable(isNew());
 		if (!isNew()) {
@@ -92,6 +100,25 @@ public class PoserEditDialog extends JDialog implements ActionListener {
 
 	protected PoserInfo getOriginalPoserInfo() {
 		return null;
+	}
+
+	protected boolean testConnector() {
+		return contentPanel.testConnector();
+	}
+
+	protected ConnectorManager getConnectorManager() {
+		return new ConnectorManager() {
+			@Override
+			public boolean exists(String connectionString) {
+				for (Poser poser : PoserLibrary.getInstance().getPosers()) {
+					if (poser instanceof PoserWithConnector) {
+						return connectionString.equals(
+								((PoserWithConnector) poser).getConnector());
+					}
+				}
+				return false;
+			}
+		};
 	}
 
 	@Override

@@ -202,8 +202,8 @@ public class PoserLibrary {
 		posers.add(poser);
 		if (ide != null) {
 			ide.onAddPoser(poser);
-			setCurrentPoser(poser);
 		}
+		setCurrentPoser(poser);
 	}
 
 	void removePoser(Poser poser) {
@@ -214,6 +214,7 @@ public class PoserLibrary {
 		if (ide != null) {
 			ide.onRemovePoser(poser);
 		}
+		setCurrentPoser(null);
 	}
 
 	public void setCurrentPoser(Poser poser) {

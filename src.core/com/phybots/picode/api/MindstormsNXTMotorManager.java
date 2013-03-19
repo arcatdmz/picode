@@ -31,9 +31,11 @@ public class MindstormsNXTMotorManager extends MotorManager {
 
 	@Override
 	public void stop() {
-		motorControlService.stop();
-		motorControlService = null;
-		System.out.println("MotorControl: service stopped.");
+		if (motorControlService != null) {
+			motorControlService.stop();
+			motorControlService = null;
+			System.out.println("MotorControl: service stopped.");
+		}
 	}
 
 	@Override

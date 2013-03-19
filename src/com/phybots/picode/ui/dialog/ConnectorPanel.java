@@ -35,6 +35,8 @@ public class ConnectorPanel extends JPanel {
 	private JTextField textField;
 	private JButton btnTest;
 
+	private ConnectorManager connectorManager;
+
 	/**
 	 * Create the panel.
 	 */
@@ -50,14 +52,7 @@ public class ConnectorPanel extends JPanel {
 		btnTest.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				btnTest.setEnabled(false);
-				Connector connector = newConnectorInstance();
-				if (connector != null && connector.connect()) {
-					connector.disconnect();
-					connectionSucceeded();
-				} else {
-					connectionFailed();
-				}
+				test();
 			}
 		});
 
@@ -78,6 +73,13 @@ public class ConnectorPanel extends JPanel {
 
 			private void somethingChanged() {
 				textField.setBackground(Color.white);
+				if (connectorManager != null
+						&& connectorManager.exists(
+								getConnectionString())) {
+					btnTest.setEnabled(false);
+				} else {
+					btnTest.setEnabled(true);
+				}
 			}
 		});
 
@@ -123,6 +125,25 @@ public class ConnectorPanel extends JPanel {
 		}
 	}
 
+	public boolean test() {
+		btnTest.setEnabled(false);
+		if (connectorManager != null
+				&& connectorManager.exists(
+						getConnectionString())) {
+			return false;
+		}
+		Connector connector = newConnectorInstance();
+		if (connector != null
+				&& (connector.isConnected() || connector.connect())) {
+			connector.disconnect();
+			connectionSucceeded();
+			return true;
+		} else {
+			connectionFailed();
+			return false;
+		}
+	}
+
 	public Connector newConnectorInstance() {
 		try {
 			return ConnectorFactory.makeConnector(getConnectionString());
@@ -131,10 +152,20 @@ public class ConnectorPanel extends JPanel {
 		}
 	}
 
+	public void setConnectorManager(ConnectorManager connectorManager) {
+		this.connectorManager = connectorManager;
+	}
+
 	public void setConnectionString(String connector) {
 		if (connector == null) {
 			textField.setText("");
 			return;
+		}
+		if (connectorManager != null
+				&& connectorManager.exists(connector)) {
+			btnTest.setEnabled(false);
+		} else {
+			btnTest.setEnabled(true);
 		}
 		if (connector.startsWith(FantomConnector.CON_PREFIX)) {
 			comboBox.setSelectedIndex(0);
@@ -199,5 +230,9 @@ public class ConnectorPanel extends JPanel {
 		comboBox.setEnabled(enabled);
 		textField.setEnabled(enabled);
 		btnTest.setEnabled(enabled);
+	}
+
+	public static interface ConnectorManager {
+		public boolean exists(String connectionString);
 	}
 }

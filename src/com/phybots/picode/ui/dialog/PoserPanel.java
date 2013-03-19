@@ -11,12 +11,13 @@ import javax.swing.JLabel;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Set;
 import java.util.Vector;
 
 import com.phybots.picode.PicodeMain;
 import com.phybots.picode.api.PoserInfo;
-import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.api.PoserTypeInfo;
+import com.phybots.picode.ui.dialog.ConnectorPanel.ConnectorManager;
 
 import javax.swing.JTextField;
 
@@ -33,7 +34,7 @@ public class PoserPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public PoserPanel() {
+	public PoserPanel(Set<PoserTypeInfo> poserTypeInfos) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 0, 0, 0, 0 };
@@ -53,7 +54,7 @@ public class PoserPanel extends JPanel {
 		comboBox = new JComboBox<PoserTypeInfo>();
 		comboBox.setFont(defaultFont);
 		comboBox.setModel(new DefaultComboBoxModel<PoserTypeInfo>(
-				new Vector<PoserTypeInfo>(PoserLibrary.getTypeInfos())));
+				new Vector<PoserTypeInfo>(poserTypeInfos)));
 		comboBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				updatePanelStatus();
@@ -102,11 +103,11 @@ public class PoserPanel extends JPanel {
 		gbc_panel.gridy = 2;
 		add(panel, gbc_panel);
 	}
-	
+
 	public void setPoserTypeSelectable(boolean isSelectable) {
 		comboBox.setEnabled(isSelectable);
 	}
-	
+
 	public void setPoserInfo(PoserInfo poserInfo) {
 		if (poserInfo == null) {
 			return;
@@ -126,6 +127,14 @@ public class PoserPanel extends JPanel {
 		poserInfo.name = textField.getText();
 		poserInfo.connector = panel.getConnectionString();
 		return poserInfo;
+	}
+
+	public boolean testConnector() {
+		return panel.test();
+	}
+
+	public void setConnectorManager(ConnectorManager connectorManager) {
+		panel.setConnectorManager(connectorManager);
 	}
 	
 	private void updatePanelStatus() {

@@ -20,7 +20,7 @@ public class NewSketchAction extends AbstractAction {
 	  if (picodeMain.getPintegration().checkModified()) {
   		PicodeSketch picodeSketch = PicodeSketch.newInstance(picodeMain);
   		if (picodeSketch != null) {
-  			picodeMain.setSketch(picodeSketch);
+  			picodeMain.loadSketch(picodeSketch);
   		}
 	  }
 	}

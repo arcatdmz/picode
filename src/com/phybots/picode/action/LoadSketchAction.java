@@ -44,7 +44,7 @@ public class LoadSketchAction extends AbstractAction {
 	    try {
 			PicodeSketch picodeSketch = new PicodeSketch(picodeMain,
 					parentFile.getAbsolutePath() + File.separatorChar + pdeName);
-		    picodeMain.setSketch(picodeSketch);
+		    picodeMain.loadSketch(picodeSketch);
 		} catch (IOException e1) {
 			return;
 		}

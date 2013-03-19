@@ -24,6 +24,8 @@ public class PicodeMain {
 
 	private ProcessingIntegration pintegration;
 
+	private PicodeSettings settings;
+
 	private PicodeSketch sketch;
 
 	private PicodeFrame picodeFrame;
@@ -48,12 +50,22 @@ public class PicodeMain {
 		// Launch main UI
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+
+				// Initialize GUI components.
 				initGUI();
 				PoseLibrary.getInstance().attachIDE(picodeFrame);
 				PoserLibrary.getInstance().attachIDE(picodeFrame);
 
-				// Add human instance by default.
-				new Human("No name");
+				// Load settings.
+				settings = new PicodeSettings();
+				if (!settings.load()) {
+
+					// Add human instance by default.
+					new Human("No name");
+				}
+
+				// Show the window.
+				getFrame().setVisible(true);
 			}
 		});
 	}
@@ -61,26 +73,34 @@ public class PicodeMain {
 	private void initGUI() {
 
 		picodeFrame = new PicodeFrame(this);
-		setSketch(PicodeSketch.newInstance(this));
+		loadSketch(PicodeSketch.newInstance(this));
 		picodeFrame.setRunnable(true);
 
 		Dimension d = new Dimension(840, 600);
 		picodeFrame.setPreferredSize(d);
 		picodeFrame.setSize(d);
-		picodeFrame.setVisible(true);
 		// picodeFrame.setDividerLocation(.5);
 		picodeFrame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Phybots.getInstance().dispose();
 				PicodeMain.this.dispose();
+				Phybots.getInstance().dispose();
 				e.getWindow().dispose();
 			}
 		});
 	}
 
 	public void dispose() {
+
+		// Save settings.
+		if (settings != null) {
+			settings.save();
+		}
+
+		// Disconnect from posers.
 		PoserLibrary.getInstance().dispose();
+
+		// If there's any building/running app, stop it.
 		if (builder != null) {
 			builder.stop();
 		}
@@ -97,13 +117,17 @@ public class PicodeMain {
 		return picodeFrame;
 	}
 
-	public void setSketch(PicodeSketch sketch) {
+	public void loadSketch(PicodeSketch sketch) {
 		this.sketch = sketch;
+
+		// Clear the editor.
 		getFrame().clearEditors();
 		for (int i = 0; i < sketch.getCodeCount(); i++) {
 			SketchCode code = sketch.getCode(i);
 			getFrame().addEditor(code);
 		}
+
+		// Update window title.
 		getPintegration().updateTitle();
 		// JViewport viewport = frame.getJScrollPane().getViewport();
 		// int caret = editor.getCaretPosition();

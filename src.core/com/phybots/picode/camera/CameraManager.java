@@ -10,7 +10,8 @@ import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.api.PoserTypeInfo;
 
 public class CameraManager {
-	
+	public static final String packageName = CameraAbstractImpl.class.getName().substring(0, 
+			CameraAbstractImpl.class.getName().lastIndexOf("."));
 	private Set<Camera> cameras;
 	private Map<Poser, Camera> camerasMap;
 	

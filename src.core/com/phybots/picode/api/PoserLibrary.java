@@ -91,6 +91,20 @@ public class PoserLibrary {
 		posers = new ArrayList<Poser>();
 	}
 
+	public static Poser newInstance(String identifier) {
+		String[] keys = identifier.split(Poser.identifierSeparator);
+		PoserTypeInfo typeInfo = getTypeInfo(keys[0]);
+		try {
+			Poser poser = typeInfo.constructor.newInstance();
+			if (poser instanceof PoserWithConnector) {
+				((PoserWithConnector) poser).setConnector(keys[1]);
+			}
+			return poser;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static Set<PoserTypeInfo> getTypeInfos() {
 		return new HashSet<PoserTypeInfo>(poserTypeInfos);
 	}
@@ -115,7 +129,8 @@ public class PoserLibrary {
 		Set<Class<? extends Poser>> classSet = new HashSet<Class<? extends Poser>>();
 
 		List<Class<?>> classObjects =
-			ClassUtils.getClasses("com.phybots.picode.api");
+			ClassUtils.getClasses(Poser.class.getName().substring(0,
+					Poser.class.getName().lastIndexOf(".")));
 		for (Class<?> classObject : classObjects) {
 
 			if (classSet.contains(classObject)) {

@@ -58,7 +58,7 @@
 			charset="UTF-8"
 			encoding="UTF-8"
 			docencoding="UTF-8"
-			locale="en"
+			locale="en_US"
 			classpath="${picode-classpath}"
 			bottom="&lt;center&gt;Copyright by Jun Kato (arc@dmz) at &lt;a href=&quot;http://junkato.jp/&quot; target=&quot;_top&quot;&gt;http://junkato.jp/&lt;/a&gt;&lt;/center&gt;">
 		</javadoc>

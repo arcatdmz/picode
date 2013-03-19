@@ -199,12 +199,6 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		return getChckbxmntmShowInlinePhotos().isSelected();
 	}
 
-	@Override
-	public void dispose() {
-		super.dispose();
-		picodeMain.dispose();
-	}
-
 	/**
 	 * This method initializes this
 	 * 

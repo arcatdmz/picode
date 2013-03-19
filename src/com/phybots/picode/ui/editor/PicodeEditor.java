@@ -38,6 +38,7 @@ public class PicodeEditor extends JEditorPane {
 						String poseName = (String) decoration.getOption();
 						PoseLibrary poseLibrary = PoseLibrary.getInstance();
 						poseLibrary.get(poseName);
+						// TODO Handle double-click of the pose image
 					}
 				}
 			}

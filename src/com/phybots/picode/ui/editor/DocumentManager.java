@@ -10,8 +10,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentEvent.EventType;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Element;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
@@ -94,7 +96,7 @@ public class DocumentManager implements DocumentListener {
 			e.printStackTrace();
 		}
 
-		update(null);
+		update();
 	}
 
 	public boolean isInlinePhotoEnabled() {
@@ -119,7 +121,7 @@ public class DocumentManager implements DocumentListener {
 
 		// Add photo decorations.
 		} else {
-			update(null);
+			update();
 		}
 	}
 
@@ -154,41 +156,58 @@ public class DocumentManager implements DocumentListener {
 		}
 	}
 
-	private void onUpdate(DocumentEvent de) {
-		String newCode;
-		try {
-			newCode = doc.getText(0, doc.getLength());
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-			return;
-		}
-		picodeEditor.getCode().setProgram(newCode);
-		picodeMain.getSketch().setModified(true);
-		update(de);
-	}
-
-	public void update(final DocumentEvent e) {
+	private void onUpdate(final DocumentEvent de) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				int caretPosition = picodeEditor.getCaretPosition();
-				doc.removeDocumentListener(DocumentManager.this);
 
+				// Check if the input text is in the pending state by IME.
+		        Element paragraph = doc.getParagraphElement(de.getOffset());
+		        for (int i = 0; i < paragraph.getElementCount(); i ++) {
+		            Element element = paragraph.getElement(i);
+		            AttributeSet attrs = element.getAttributes();
+		            if (attrs != null
+		            		&& attrs.isDefined(StyleConstants.ComposedTextAttribute)) {
+		            	return;
+		            }
+		        }
+
+		        // Update code.
+				String newCode;
 				try {
-					if (e != null && e.getType() == EventType.REMOVE) {
-						removeDecoration(e, false);
-					}
-					updateDecoration();
-					picodeMain.getPintegration().statusEmpty();
-				} catch (SketchException se) {
-					removeDecoration(e, true);
-					updateErrorDecoration(se);
-					picodeMain.getPintegration().statusError(se);
+					newCode = doc.getText(0, doc.getLength());
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+					return;
 				}
-
-				doc.addDocumentListener(DocumentManager.this);
-				picodeEditor.setCaretPosition(caretPosition);
+				picodeEditor.getCode().setProgram(newCode);
+				picodeMain.getSketch().setModified(true);
+				update(de);
 			}
 		});
+	}
+
+	public void update() {
+		update(null);
+	}
+
+	private void update(final DocumentEvent e) {
+		int caretPosition = picodeEditor.getCaretPosition();
+		doc.removeDocumentListener(DocumentManager.this);
+
+		try {
+			if (e != null && e.getType() == EventType.REMOVE) {
+				removeDecoration(e, false);
+			}
+			updateDecoration();
+			picodeMain.getPintegration().statusEmpty();
+		} catch (SketchException se) {
+			removeDecoration(e, true);
+			updateErrorDecoration(se);
+			picodeMain.getPintegration().statusError(se);
+		}
+
+		doc.addDocumentListener(DocumentManager.this);
+		picodeEditor.setCaretPosition(caretPosition);
 	}
 
 	private void updateErrorDecoration(SketchException se) {

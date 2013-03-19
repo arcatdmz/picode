@@ -1,6 +1,12 @@
+[Picode IDE]
+window.state = 0
+window.bounds = 158, -885, 963, 695
+
+[Posers]
 poser.0.id = Human
 poser.0.name = No name
 poser.0.camera = KinectCamera
 poser.1.id = MindstormsNXT/fantom:USB0::0x0694::0x0002::001653055D42::RAW
 poser.1.name = My NXT
 poser.1.camera = NormalCamera
+

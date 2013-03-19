@@ -1,5 +1,6 @@
 package com.phybots.picode;
 
+import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,7 +18,13 @@ import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.CameraManager;
 
 public class PicodeSettings {
+	private static final int STEP_IDE = 1;
+	private static final int STEP_POSERS = 2;
+	private static final String HEADER_IDE = "[Picode IDE]";
+	private static final String HEADER_POSERS = "[Posers]";
 	private String filePath;
+	private int windowState;
+	private int x, y, width, height;
 	
 	public PicodeSettings() {
 		this(System.getProperty("user.dir") + "\\settings.txt");
@@ -44,10 +51,27 @@ public class PicodeSettings {
 		Map<Integer, Poser> posers = new HashMap<Integer, Poser>();
 		String line;
 		try {
+			int step = -1;
 			while ((line = br.readLine()) != null) {
+				switch (line) {
+				case HEADER_IDE:
+					step = STEP_IDE;
+					continue;
+				case HEADER_POSERS:
+					step = STEP_POSERS;
+					continue;
+				default:
+					break;
+				}
 				String[] words = line.split("=", 2);
 				if (words.length < 2) continue;
-				deserialize(words[0].trim(), words[1].trim(), posers);
+				words[0] = words[0].trim();
+				words[1] = words[1].trim();
+				if (step == STEP_POSERS) {
+					deserializePosers(words[0], words[1], posers);
+				} else if (step == STEP_IDE) {
+					deserializeIde(words[0], words[1]);
+				}
 			}
 			br.close();
 		} catch (IOException e) {
@@ -63,14 +87,15 @@ public class PicodeSettings {
 		}
 		return true;
 	}
-	
+
 	public void save() {
 
 		// Save settings.
 		try {
 			FileWriter fw = new FileWriter(filePath);
 			BufferedWriter bw = new BufferedWriter(fw);
-			serialize(bw);
+			serializeIde(bw);
+			serializePosers(bw);
 			bw.close();
 		} catch (IOException e) {
 			System.err.print("Error while writing config to the file: ");
@@ -78,50 +103,81 @@ public class PicodeSettings {
 		}
 	}
 
+	private void deserializeIde(String key, String value) {
+		switch (key) {
+		case "window.state":
+			setIdeWindowState(Integer.valueOf(value.trim()));
+			break;
+		case "window.bounds":
+			String[] metrics = value.split(",");
+			if (metrics.length == 4) {
+				x = Integer.valueOf(metrics[0].trim());
+				y = Integer.valueOf(metrics[1].trim());
+				width = Integer.valueOf(metrics[2].trim());
+				height = Integer.valueOf(metrics[3].trim());
+			}
+			break;
+		}
+	}
+
+	private void serializeIde(BufferedWriter bw) throws IOException {
+		bw.write(HEADER_IDE);
+		bw.newLine();
+		bw.write(String.format("window.state = %d", getIdeWindowState()));
+		bw.newLine();
+		bw.write(String.format("window.bounds = %d, %d, %d, %d", x, y, width, height));
+		bw.newLine();
+		bw.newLine();
+	}
+
 	@SuppressWarnings("unchecked")
-	private void deserialize(String key, String value,
+	private void deserializePosers(String key, String value,
 			Map<Integer, Poser> posers) {
+
+		// Get the poser.
 		String[] subkeys = key.split("\\.");
-		if (subkeys.length == 3) {
-			if ("poser".equals(subkeys[0])) {
-				int index = Integer.valueOf(subkeys[1]);
-				Poser poser = posers.get(index);
+		if (subkeys.length != 3
+				|| !"poser".equals(subkeys[0])) {
+			return;
+		}
+		int index = Integer.valueOf(subkeys[1]);
+		Poser poser = posers.get(index);
 
-				// Poser id
-				if (poser == null) {
-					if ("id".equals(subkeys[2])) {
-						poser = PoserLibrary.newInstance(value);
-						if (poser != null) {
-							posers.put(index, poser);
-						}
-					}
-					return;
+		// Poser id
+		if (poser == null) {
+			if ("id".equals(subkeys[2])) {
+				poser = PoserLibrary.newInstance(value);
+				if (poser != null) {
+					posers.put(index, poser);
 				}
+			}
+			return;
+		}
 
-				// Poser name
-				if ("name".equals(subkeys[2])) {
-					poser.setName(value);
+		// Poser name
+		if ("name".equals(subkeys[2])) {
+			poser.setName(value);
 
-				// Poser camera
-				} else if ("camera".equals(subkeys[2])) {
-					try {
-						Class<?> cameraClass = Class.forName(
-								String.format("%s.%s", CameraManager.packageName, value));
-						if (cameraClass != null
-								&& Camera.class.isAssignableFrom(cameraClass)) {
-							Camera camera = PoserLibrary.getInstance().getCameraManager().getCamera(
-									(Class<? extends Camera>)cameraClass);
-							PoserLibrary.getInstance().getCameraManager().putCamera(poser, camera);
-						}
-					} catch (Exception e) {
-						// Do nothing.
-					}
+		// Poser camera
+		} else if ("camera".equals(subkeys[2])) {
+			try {
+				Class<?> cameraClass = Class.forName(
+						String.format("%s.%s", CameraManager.packageName, value));
+				if (cameraClass != null
+						&& Camera.class.isAssignableFrom(cameraClass)) {
+					Camera camera = PoserLibrary.getInstance().getCameraManager().getCamera(
+							(Class<? extends Camera>)cameraClass);
+					PoserLibrary.getInstance().getCameraManager().putCamera(poser, camera);
 				}
+			} catch (Exception e) {
+				// Do nothing.
 			}
 		}
 	}
 
-	private void serialize(BufferedWriter bw) throws IOException {
+	private void serializePosers(BufferedWriter bw) throws IOException {
+		bw.write(HEADER_POSERS);
+		bw.newLine();
 		int i = 0;
 		for (Poser poser : PoserLibrary.getInstance().getPosers()) {
 
@@ -142,6 +198,26 @@ public class PicodeSettings {
 			}
 			i ++;
 		}
+		bw.newLine();
+	}
+
+	public int getIdeWindowState() {
+		return windowState;
+	}
+
+	public void setIdeWindowState(int windowState) {
+		this.windowState = windowState;
+	}
+
+	public Rectangle getIdeWindowBounds() {
+		return new Rectangle(x, y, width, height);
+	}
+
+	public void setIdeWindowBounds(Rectangle r) {
+		this.x = r.x;
+		this.y = r.y;
+		this.width = r.width;
+		this.height = r.height;
 	}
 
 	/**

@@ -2,8 +2,13 @@ package com.phybots.picode;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
+
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import processing.app.PicodeSketch;
 import processing.app.SketchCode;
@@ -58,7 +63,10 @@ public class PicodeMain {
 
 				// Load settings.
 				settings = new PicodeSettings();
-				if (!settings.load()) {
+				if (settings.load()) {
+
+					picodeFrame.setBounds(settings.getIdeWindowBounds());
+				} else {
 
 					// Add human instance by default.
 					new Human("No name");
@@ -66,6 +74,12 @@ public class PicodeMain {
 
 				// Show the window.
 				getFrame().setVisible(true);
+				settings.setIdeWindowBounds(picodeFrame.getBounds());
+
+				// Maximize and/or iconify the window if desired.
+				int windowState = settings.getIdeWindowState()
+						& (JFrame.MAXIMIZED_BOTH | WindowEvent.WINDOW_ICONIFIED);
+				picodeFrame.setExtendedState(windowState);
 			}
 		});
 	}
@@ -80,12 +94,51 @@ public class PicodeMain {
 		picodeFrame.setPreferredSize(d);
 		picodeFrame.setSize(d);
 		// picodeFrame.setDividerLocation(.5);
+
 		picodeFrame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				PicodeMain.this.dispose();
 				Phybots.getInstance().dispose();
 				e.getWindow().dispose();
+			}
+			@Override
+			public void windowIconified(WindowEvent e) {
+				settings.setIdeWindowState(e.getNewState());
+			}
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				settings.setIdeWindowState(e.getNewState());
+			}
+		});
+		picodeFrame.addWindowStateListener(new WindowStateListener() {
+			@Override
+			public void windowStateChanged(WindowEvent e) {
+				settings.setIdeWindowState(e.getNewState());
+			}
+		});
+		picodeFrame.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				updateBounds(e);
+			}
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				updateBounds(e);
+			}
+			private void updateBounds(ComponentEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						if ((settings.getIdeWindowState() & WindowEvent.WINDOW_ICONIFIED) > 0) {
+							return;
+						}
+						if ((settings.getIdeWindowState() & JFrame.MAXIMIZED_BOTH) > 0) {
+							return;
+						}
+						// System.out.println(settings.getIdeWindowState());
+						settings.setIdeWindowBounds(picodeFrame.getBounds());
+					}
+				});
 			}
 		});
 	}

@@ -53,15 +53,12 @@ public class PicodeSettings {
 		try {
 			int step = -1;
 			while ((line = br.readLine()) != null) {
-				switch (line) {
-				case HEADER_IDE:
+				if (HEADER_IDE.equals(line)) {
 					step = STEP_IDE;
 					continue;
-				case HEADER_POSERS:
+				} else if (HEADER_POSERS.equals(line)) {
 					step = STEP_POSERS;
 					continue;
-				default:
-					break;
 				}
 				String[] words = line.split("=", 2);
 				if (words.length < 2) continue;
@@ -104,11 +101,9 @@ public class PicodeSettings {
 	}
 
 	private void deserializeIde(String key, String value) {
-		switch (key) {
-		case "window.state":
+		if ("window.state".equals(key)) {
 			setIdeWindowState(Integer.valueOf(value.trim()));
-			break;
-		case "window.bounds":
+		} else if ("window.bounds".equals(key)) {
 			String[] metrics = value.split(",");
 			if (metrics.length == 4) {
 				x = Integer.valueOf(metrics[0].trim());
@@ -116,7 +111,6 @@ public class PicodeSettings {
 				width = Integer.valueOf(metrics[2].trim());
 				height = Integer.valueOf(metrics[3].trim());
 			}
-			break;
 		}
 	}
 

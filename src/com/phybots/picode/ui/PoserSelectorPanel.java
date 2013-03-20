@@ -28,6 +28,8 @@ public class PoserSelectorPanel extends JPanel {
 	private static final long serialVersionUID = -3583127135224098029L;
 	private static final Font defaultFont = PicodeMain.getDefaultFont();
 
+	private JButton btnSelectHuman;
+	private JButton btnSelectRobot;
 	private JComboBox<Object> comboBox;
 	private JButton btnEdit;
 	private final Action selectHumanAction = new SelectHumanAction();
@@ -53,7 +55,7 @@ public class PoserSelectorPanel extends JPanel {
 		gbl_panel.rowWeights = new double[]{0.0};
 		panel.setLayout(gbl_panel);
 		
-		JButton btnSelectHuman = new JButton();
+		btnSelectHuman = new JButton();
 		btnSelectHuman.setAction(selectHumanAction);
 		btnSelectHuman.setIcon(new ImageIcon(PoserSelectorPanel.class.getResource("/human.png")));
 		btnSelectHuman.setFont(defaultFont);
@@ -67,7 +69,7 @@ public class PoserSelectorPanel extends JPanel {
 		gbc_btnHuman.gridy = 0;
 		panel.add(btnSelectHuman, gbc_btnHuman);
 		
-		JButton btnSelectRobot = new JButton();
+		btnSelectRobot = new JButton();
 		btnSelectRobot.setAction(selectRobotAction);
 		btnSelectRobot.setIcon(new ImageIcon(PoserSelectorPanel.class.getResource("/robot.png")));
 		btnSelectRobot.setFont(defaultFont);
@@ -119,6 +121,8 @@ public class PoserSelectorPanel extends JPanel {
 	}
 
 	public void setRunnable(boolean isRunnable) {
+		btnSelectHuman.setEnabled(isRunnable);
+		btnSelectRobot.setEnabled(isRunnable);
 		comboBox.setEnabled(isRunnable);
 		btnEdit.setEnabled(isRunnable);
 	}

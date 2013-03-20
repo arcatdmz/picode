@@ -249,6 +249,8 @@ public class Builder {
 					null));
 			coreLibraries.add(new Library(Base.getContentFile("lib/picode"),
 					null));
+			coreLibraries.add(new Library(Base.getContentFile("lib/kinect"),
+					null));
 			importToLibraryTable = new HashMap<String, ArrayList<Library>>();
 			for (Library lib : coreLibraries) {
 				lib.addPackageList(importToLibraryTable);

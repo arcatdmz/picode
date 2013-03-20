@@ -66,6 +66,11 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 	@Override
 	public boolean start() {
 
+		// Do nothing if it's already started.
+		if (wrapper.isStarted()) {
+			return true;
+		}
+
 		// Start the server if needed.
 		if (!wrapper.start()) {
 			if (!KinectCamera.startServer()) {

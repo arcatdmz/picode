@@ -1,6 +1,6 @@
 [Picode IDE]
 window.state = 0
-window.bounds = 158, -885, 963, 695
+window.bounds = 430, 128, 963, 579
 
 [Posers]
 poser.0.id = Human

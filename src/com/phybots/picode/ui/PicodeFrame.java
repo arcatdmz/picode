@@ -110,6 +110,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	public void setRunnable(boolean isRunnable) {
 		getMnFile().setEnabled(isRunnable);
 		getMnSketch().setEnabled(isRunnable);
+		getMnView().setEnabled(isRunnable);
 		getBtnRun().setEnabled(isRunnable);
 		getBtnStop().setEnabled(!isRunnable);
 		getPoserPanel().setRunnable(isRunnable);

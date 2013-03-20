@@ -159,7 +159,9 @@ public class CameraFrame extends JFrame {
 
 		CameraManager cm = PoserLibrary.getInstance().getCameraManager();
 		Camera camera = cm.getCamera(poser);
-		setCurrentCamera(poser, camera);
+		if (camera != null) {
+			setCurrentCamera(poser, camera);
+		}
 	}
 
 	private void hideCurrentCamera() {

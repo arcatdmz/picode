@@ -32,6 +32,7 @@ public class PoseLibrary {
 	public PoseLibrary() {
 		poses = new HashMap<String, Pose>();
 		listPoses();
+		Picode.getInstance();
 	}
 
 	public static Pose load(String name) throws IOException {

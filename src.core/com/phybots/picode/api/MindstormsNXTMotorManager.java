@@ -1,7 +1,11 @@
 package com.phybots.picode.api;
 
+import java.io.IOException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import jp.digitalmuseum.connector.Connector;
 
+import com.phybots.Phybots;
 import com.phybots.entity.MindstormsNXT;
 import com.phybots.entity.MindstormsNXT.MindstormsNXTExtension;
 import com.phybots.entity.MindstormsNXT.OutputState;
@@ -175,6 +179,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		 * Launch MotorControl program on the NXT brick.
 		 */
 		public synchronized void launchMotorControl() {
+			// ignorePreviousCommandReplies();
 			String currentProgramName = MindstormsNXT.getCurrentProgramName(connector);
 			if (!programName.equals(currentProgramName)) {
 				System.out.print("MotorControl: nxt current program = ");
@@ -197,6 +202,8 @@ public class MindstormsNXTMotorManager extends MotorManager {
 					// TODO Reset nxt?
 					System.out.print("MotorControl: nxt program launch failed, something wrong happened. / current program: ");
 					System.out.println(currentProgramName);
+					stop();
+					return;
 				} else {
 					System.out.println("MotorControl: nxt program launched");
 				}
@@ -270,42 +277,76 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				// Do nothing.
 			}
 		}
-	
+
+		private synchronized void ignorePreviousCommandReplies() {
+
+			// Read all data if needed.
+			Future<?> future = Phybots.getInstance().submit(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						if (connector.getInputStream().available() > 0) {
+							int i = 0;
+							while ((i = connector.read()) >= 0) {
+								System.out.println(i);
+							}
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+
+			// Set timeout of 1000 milliseconds.
+			try {
+				future.get(1000, TimeUnit.MILLISECONDS);
+			} catch (Exception e) {
+				future.cancel(true);
+			}
+		}
+
 		private synchronized boolean isMotorReady(int port) {
 
-			String command = String.format("3%1d", port);
-			byte[] commandBytes = command.getBytes();
-			MindstormsNXT.messageWrite(
-					commandBytes,
-					(byte)1, connector);
+			try {
+				// Send a query.
+				String command = String.format("3%1d", port);
+				byte[] commandBytes = command.getBytes();
+				MindstormsNXT.messageWrite(
+						commandBytes,
+						(byte)1, connector);
+	
+				// Pause before receiving motor status.
+				Thread.sleep(10);
 
-			// Pause before receiving motor status.
-			sleep(10);
+			} catch (InterruptedException e) {
+				System.out.println("interrupted");
 
-			// Receive motor status.
-			String message = MindstormsNXT.messageRead(
-					(byte)0, (byte)0, true, connector);
-
-			// Pause after receiving motor status.
-			sleep(10);
-			if (message == null || message.length() != 2) {
-				// Something wrong happened. Give up the motor control.
-				return false;
+			} finally {
+	
+				// Receive motor status.
+				String message = MindstormsNXT.messageRead(
+						(byte)0, (byte)0, true, connector);
+	
+				// Pause after receiving motor status.
+				sleep(10);
+				if (message == null || message.length() != 2) {
+					// Something wrong happened. Give up the motor control.
+					return false;
+				}
+				if (message.charAt(1) == '1') {
+					return true;
+				}
 			}
-			if (message.charAt(1) == '1') {
-				return true;
-			}
-
 			return false;
 		}
+
 		private synchronized boolean startMotorControl(int port) {
-	
+
+			// Check motor state.
 			MindstormsNXTExtension motor = motors[port];
 			if (motor == null) {
 				return true;
 			}
-
-			// Check motor state.
 			OutputState currentState = currentStates[port];
 			if (currentState.runState != MindstormsNXT.MOTOR_RUN_STATE_IDLE) {
 				return false;

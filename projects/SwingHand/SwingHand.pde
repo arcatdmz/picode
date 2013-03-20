@@ -1,8 +1,6 @@
 MindstormsNXT nxt;
 
 void setup() {
-
-  // 接続
   nxt = new MindstormsNXT();
   nxt.connect();
 }

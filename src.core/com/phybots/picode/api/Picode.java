@@ -10,6 +10,14 @@ public class Picode {
 	private static Picode instance = null;
 
 	private Picode() {
+//		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				System.out.println("shutdown");
+//				PoserLibrary.getInstance().dispose();
+//				Phybots.getInstance().dispose();
+//			}
+//		}));
 	}
 
 	public static Picode getInstance() {

@@ -89,6 +89,7 @@ public class PoserLibrary {
 	private PoserLibrary() {
 		cameraManager = new CameraManager();
 		posers = new ArrayList<Poser>();
+		Picode.getInstance();
 	}
 
 	public static Poser newInstance(String identifier) {

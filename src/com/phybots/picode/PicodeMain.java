@@ -66,7 +66,10 @@ public class PicodeMain {
 				settings = new PicodeSettings();
 				if (settings.load()) {
 
+					// Set window bounds.
 					picodeFrame.setBounds(settings.getIdeWindowBounds());
+
+					// Load last sketch.
 					if (settings.getSketchPath() != null) {
 						try {
 							PicodeSketch picodeSketch = new PicodeSketch(PicodeMain.this,
@@ -76,9 +79,16 @@ public class PicodeMain {
 							// Do nothing.
 						}
 					}
-				} else {
+				}
 
-					// Add human instance by default.
+				// Add human instance by default.
+				boolean humanExists = false;
+				for (Poser poser : PoserLibrary.getInstance().getPosers()) {
+					if (poser instanceof Human) {
+						humanExists = true;
+					}
+				}
+				if (!humanExists) {
 					new Human("No name");
 				}
 

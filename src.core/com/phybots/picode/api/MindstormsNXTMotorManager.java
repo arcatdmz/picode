@@ -68,8 +68,9 @@ public class MindstormsNXTMotorManager extends MotorManager {
 	@Override
 	public boolean isActing() {
 		if (motorControlService == null
-				|| !motorControlService.isStarted())
+				|| !motorControlService.isStarted()) {
 			return false;
+		}
 		else
 			return motorControlService.isActing();
 	}
@@ -86,6 +87,8 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		private Connector connector;
 		private MindstormsNXTExtension[] motors;
 		private OutputState[] currentStates;
+		private boolean[] localReadinesses;
+		private boolean[] currentReadinesses;
 		private int[] goals;
 		private int[] powers;
 	
@@ -98,6 +101,8 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			};
 			this.connector = connector;
 			currentStates = new OutputState[3];
+			localReadinesses = new boolean[3];
+			currentReadinesses = new boolean[3];
 			goals = new int[3];
 			powers = new int[]{ 30, 30, 30 };
 			setInterval(200);
@@ -111,8 +116,10 @@ public class MindstormsNXTMotorManager extends MotorManager {
 	
 		public boolean isActing(Port port) {
 			int i = enumToIndex(port);
-			if (i >= 0 && currentStates[i] != null)
-				return currentStates[i].runState != 0;
+			if (i >= 0) {
+				return !currentReadinesses[i]
+						|| (currentStates[i] != null && currentStates[i].runState != 0);
+			}
 			return false;
 		}
 	
@@ -148,8 +155,11 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		}
 
 		public void setRotationCounts(int[] rotationCounts) {
+			currentReadinesses[0] = false;
 			setRotationCount(rotationCounts[0], Port.A);
+			currentReadinesses[1] = false;
 			setRotationCount(rotationCounts[1], Port.B);
+			currentReadinesses[2] = false;
 			setRotationCount(rotationCounts[2], Port.C);
 		}
 
@@ -211,6 +221,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		@Override
 		public void run() {
 			if (isRunningPreviousTask) {
+				System.out.println("MotorControl: cancelling previous task");
 				return;
 			}
 			isRunningPreviousTask = true;
@@ -222,24 +233,24 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			for (int i = 0; i < 3; i ++) {
 				if (motors[i] != null) {
 					currentStates[i] = motors[i].getOutputState();
-					sleep(5);
+					localReadinesses[i] = isMotorReady(i);
 				}
 			}
 
 			// Start motor control if needed.
 			for (int i = 0; i < 3; i ++) {
-				if (goals[i] != Integer.MAX_VALUE) {
-					if (startMotorControl(i)) {
-						goals[i] = Integer.MAX_VALUE;
-						sleep(5);
-					}
+				if (goals[i] == Integer.MAX_VALUE) {
+					currentReadinesses[i] = localReadinesses[i];
+				} else if (startMotorControl(i)) {
+					goals[i] = Integer.MAX_VALUE;
+					sleep(5);
 				}
 			}
 
 			isRunningPreviousTask = false;
 		}
 	
-		private int enumToIndex(Port port) {
+		private static int enumToIndex(Port port) {
 			switch (port) {
 			case A:
 				return 0;
@@ -252,7 +263,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			}
 		}
 	
-		private void sleep(int sleep) {
+		private static void sleep(int sleep) {
 			try {
 				Thread.sleep(sleep);
 			} catch (InterruptedException e) {
@@ -260,6 +271,33 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			}
 		}
 	
+		private synchronized boolean isMotorReady(int port) {
+
+			String command = String.format("3%1d", port);
+			byte[] commandBytes = command.getBytes();
+			MindstormsNXT.messageWrite(
+					commandBytes,
+					(byte)1, connector);
+
+			// Pause before receiving motor status.
+			sleep(10);
+
+			// Receive motor status.
+			String message = MindstormsNXT.messageRead(
+					(byte)0, (byte)0, true, connector);
+
+			// Pause after receiving motor status.
+			sleep(10);
+			if (message == null || message.length() != 2) {
+				// Something wrong happened. Give up the motor control.
+				return false;
+			}
+			if (message.charAt(1) == '1') {
+				return true;
+			}
+
+			return false;
+		}
 		private synchronized boolean startMotorControl(int port) {
 	
 			MindstormsNXTExtension motor = motors[port];
@@ -267,43 +305,19 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				return true;
 			}
 
-			// Check raw output state.
+			// Check motor state.
 			OutputState currentState = currentStates[port];
 			if (currentState.runState != MindstormsNXT.MOTOR_RUN_STATE_IDLE) {
+				return false;
+			}
+			if (!localReadinesses[port]) {
 				return false;
 			}
 
 			// If we've already reached the goal, do nothing.
 			int goal = goals[port];
-			if (goal == currentState.rotationCount) {
+			if (Math.abs(goal - currentState.rotationCount) < 5) {
 				return true;
-			}
-
-			// Query the motor status.
-			{
-				String command = String.format("3%1d", port);
-				byte[] commandBytes = command.getBytes();
-				MindstormsNXT.messageWrite(
-						commandBytes,
-						(byte)1, connector);
-
-				// Pause before receiving motor status.
-				sleep(10);
-
-				// Receive motor status.
-				String message = MindstormsNXT.messageRead(
-						(byte)0, (byte)0, true, connector);
-				System.out.println("port status: " + message);
-
-				// Pause after receiving motor status.
-				sleep(10);
-				if (message == null || message.length() != 2) {
-					// Something wrong happened. Give up the motor control.
-					return true;
-				}
-				if (message.charAt(1) == '0') {
-					return false;
-				}
 			}
 
 			// Start motor control.

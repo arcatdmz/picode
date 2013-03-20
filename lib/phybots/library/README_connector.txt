@@ -2,7 +2,7 @@ connector - a communication package for Windows/Mac/Linux
 ================================================================
 Copyright (C) 2009-2013 Jun Kato
 
-version 1.0.5
+version 1.0.6
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 "connector" is a simple wrapper package for connecting Java VM

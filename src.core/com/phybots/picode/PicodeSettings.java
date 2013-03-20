@@ -23,6 +23,7 @@ public class PicodeSettings {
 	private static final String HEADER_IDE = "[Picode IDE]";
 	private static final String HEADER_POSERS = "[Posers]";
 	private String filePath;
+	private String sketchPath;
 	private int windowState;
 	private int x, y, width, height;
 	
@@ -101,7 +102,9 @@ public class PicodeSettings {
 	}
 
 	private void deserializeIde(String key, String value) {
-		if ("window.state".equals(key)) {
+		if ("sketch".equals(key)) {
+			sketchPath = value;
+		} else if ("window.state".equals(key)) {
 			setIdeWindowState(Integer.valueOf(value.trim()));
 		} else if ("window.bounds".equals(key)) {
 			String[] metrics = value.split(",");
@@ -117,6 +120,10 @@ public class PicodeSettings {
 	private void serializeIde(BufferedWriter bw) throws IOException {
 		bw.write(HEADER_IDE);
 		bw.newLine();
+		if (getSketchPath() != null) {
+			bw.write(String.format("sketch = %s", getSketchPath()));
+			bw.newLine();
+		}
 		bw.write(String.format("window.state = %d", getIdeWindowState()));
 		bw.newLine();
 		bw.write(String.format("window.bounds = %d, %d, %d, %d", x, y, width, height));
@@ -193,6 +200,14 @@ public class PicodeSettings {
 			i ++;
 		}
 		bw.newLine();
+	}
+
+	public String getSketchPath() {
+		return sketchPath;
+	}
+
+	public void setSketchPath(String sketchPath) {
+		this.sketchPath = sketchPath;
 	}
 
 	public int getIdeWindowState() {

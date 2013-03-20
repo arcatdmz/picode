@@ -1,6 +1,7 @@
 package com.phybots.picode.api;
 
 import jp.digitalmuseum.connector.ConnectorFactory;
+import jp.digitalmuseum.connector.FantomConnector;
 
 import com.phybots.entity.MindstormsNXT.Port;
 import com.phybots.picode.camera.Camera;
@@ -40,6 +41,16 @@ public class MindstormsNXT extends PoserWithConnector {
 
 	@Override
 	public boolean connect() {
+
+		// If no connector is specified, use the first USB connection by default.
+		if (raw.getConnector() == null) {
+			String[] ids = FantomConnector.queryIdentifiers();
+			if (ids != null) {
+				setConnector(ids[0]);
+			}
+		}
+
+		// Try to connect to the NXT brick.
 		boolean connected = raw.connect();
 		if (connected) {
 			getMotorManager().start();

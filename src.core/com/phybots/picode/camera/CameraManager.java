@@ -46,6 +46,9 @@ public class CameraManager {
 
 	@SuppressWarnings("unchecked")
 	public <C extends Camera> C getCamera(Class<C> cameraClass) {
+		if (cameraClass == null) {
+			return null;
+		}
 		for (Camera camera : cameras) {
 			if (cameraClass.isInstance(camera)) {
 				return (C) camera;

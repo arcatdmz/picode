@@ -7,7 +7,6 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import processing.app.PicodeSketch;
@@ -17,7 +16,9 @@ import processing.app.SketchException;
 import com.phybots.Phybots;
 import com.phybots.picode.api.Human;
 import com.phybots.picode.api.PoseLibrary;
+import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserLibrary;
+import com.phybots.picode.api.PoserWithConnector;
 import com.phybots.picode.builder.Builder;
 import com.phybots.picode.ui.PicodeFrame;
 
@@ -66,6 +67,15 @@ public class PicodeMain {
 				if (settings.load()) {
 
 					picodeFrame.setBounds(settings.getIdeWindowBounds());
+					if (settings.getSketchPath() != null) {
+						try {
+							PicodeSketch picodeSketch = new PicodeSketch(PicodeMain.this,
+									settings.getSketchPath());
+							loadSketch(picodeSketch);
+						} catch (Exception e) {
+							// Do nothing.
+						}
+					}
 				} else {
 
 					// Add human instance by default.
@@ -147,16 +157,19 @@ public class PicodeMain {
 
 		// Save settings.
 		if (settings != null) {
+			if (!sketch.isUntitled()) {
+				settings.setSketchPath(sketch.getMainFilePath());
+			}
 			settings.save();
 		}
-
-		// Disconnect from posers.
-		PoserLibrary.getInstance().dispose();
 
 		// If there's any building/running app, stop it.
 		if (builder != null) {
 			builder.stop();
 		}
+
+		// Disconnect from posers.
+		PoserLibrary.getInstance().dispose();
 	}
 
 	public ProcessingIntegration getPintegration() {
@@ -201,14 +214,20 @@ public class PicodeMain {
 		// Hide capture frame before we run the app.
 		PoserLibrary.getInstance().showCameraFrame(false);
 
+		// Disconnect from the posers.
+		for (Poser poser : PoserLibrary.getInstance().getPosers()) {
+			if (poser instanceof PoserWithConnector) {
+				((PoserWithConnector) poser).disconnect();
+			}
+		}
+
 		// Run the app.
 		builder = new Builder(this, sketch);
 		try {
 			builder.run();
 		} catch (SketchException se) {
-			builder = null;
-			picodeFrame.setRunnable(true);
 			getPintegration().statusError(se);
+			stopSketch();
 		}
 	}
 
@@ -216,6 +235,21 @@ public class PicodeMain {
 		if (builder != null) {
 			builder.stop();
 			builder = null;
+
+			// Wait for the vm to shutdown.
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+			// Connect to the posers.
+			for (Poser poser : PoserLibrary.getInstance().getPosers()) {
+				if (poser instanceof PoserWithConnector) {
+					((PoserWithConnector) poser).connect();
+				}
+			}
+
 			picodeFrame.setRunnable(true);
 		}
 	}

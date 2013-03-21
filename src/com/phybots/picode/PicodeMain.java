@@ -18,7 +18,6 @@ import com.phybots.picode.api.Human;
 import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserLibrary;
-import com.phybots.picode.api.PoserWithConnector;
 import com.phybots.picode.api.remote.MindstormsNXTServer;
 import com.phybots.picode.builder.Builder;
 import com.phybots.picode.ui.PicodeFrame;

@@ -24,6 +24,7 @@ import javax.swing.text.StyledEditorKit;
 import com.phybots.picode.PicodeMain;
 import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.api.Pose;
+import com.phybots.picode.parser.ASTtoHTMLConverter;
 import com.phybots.picode.parser.PdeParser;
 import com.phybots.picode.parser.PdeWalker;
 import com.phybots.picode.ui.editor.Decoration.Type;
@@ -52,6 +53,7 @@ public class DocumentManager implements DocumentListener {
 	private StyledDocument doc;
 	private SortedSet<Decoration> decorations;
 	private PdeParser parser;
+	private AST ast;
 
 	private boolean isInlinePhotoEnabled = true;
 	private Pattern photoApiPattern = Pattern.compile("Picode\\.pose\\(\"(.+?)\"\\)");
@@ -146,6 +148,15 @@ public class DocumentManager implements DocumentListener {
 			}
 		}
 		return null;
+	}
+
+	public String getHTML(String rootPath) {
+		ASTtoHTMLConverter converter = new ASTtoHTMLConverter(parser.getPreprocessor());
+		String name = picodeEditor.getCode().getPrettyName();
+		if (name == null) {
+			name = picodeEditor.getCode().getFileName();
+		}
+		return converter.convert(ast, name, rootPath);
 	}
 
 	private void setCharacterAttributes(int startIndex, int length, SimpleAttributeSet attrs) {
@@ -276,7 +287,7 @@ public class DocumentManager implements DocumentListener {
 
 	private void updateDecoration() throws SketchException {
 		SketchCode code = picodeEditor.getCode();
-		AST ast = parser.parse(code);
+		ast = parser.parse(code);
 		picodeMain.getFrame().setNumberOfLines(code.getLineCount());
 
 		decorations.clear();

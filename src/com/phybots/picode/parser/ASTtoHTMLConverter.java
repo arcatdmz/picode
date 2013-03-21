@@ -37,7 +37,8 @@ public class ASTtoHTMLConverter {
 			AST ast = parser.parse(0);
 			FileWriter writer = new FileWriter(sketch.getMainFilePath() + ".html");
 			writer.append(
-					new ASTtoHTMLConverter(parser.getPreprocessor()).convert(ast));
+					new ASTtoHTMLConverter(parser.getPreprocessor()).convert(
+							ast, sketch.getName(), "../../poses/"));
 			writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -46,9 +47,13 @@ public class ASTtoHTMLConverter {
 		}
 	}
 
-	public String convert(AST ast) {
+	private String rootPath = "./";
+	public String convert(AST ast, String title, String rootPath) {
+		this.rootPath = rootPath;
 		this.sb = new StringBuilder();
-		sb.append("<html><head><title></title></head><body>");
+		sb.append("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>");
+		sb.append(title);
+		sb.append("</title></head><body>");
 		doConvert(ast);
 		sb.append("</body></html>");
 		return sb.toString();
@@ -537,8 +542,8 @@ public class ASTtoHTMLConverter {
 							if (poseFileName.getType() == PdeTokenTypes.STRING_LITERAL) {
 								String fileName = poseFileName.getText();
 								fileName = fileName.substring(1, fileName.length() - 1);
-								String imageTag = String.format("<img src=\"%s/%s.thumb.png\" border=\"1\" align=\"middle\">",
-										PicodeSettings.getPoseFolderURL(),
+								String imageTag = String.format("<img src=\"%s/%s.jpg\" width=\"160\" border=\"1\" />",
+										rootPath,// PicodeSettings.getPoseFolderURL(),
 										fileName);
 								// toHTML(dot); // "Picode.pose("
 								// dumpHiddenBefore(poseFileName); // "("

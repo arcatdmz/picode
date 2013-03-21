@@ -6,8 +6,6 @@ boolean lastBothHandsUp = false;
 void setup() {
 
   // 接続
-  // robot =
-  // new Robot("btspp://001653047aeb");
   human = new Human();
 
   // キーを押せるようにする

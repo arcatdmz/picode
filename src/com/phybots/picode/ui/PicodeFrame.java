@@ -19,6 +19,7 @@ import com.phybots.picode.action.DeleteFileAction;
 import com.phybots.picode.action.LoadSketchAction;
 import com.phybots.picode.action.NewFileAction;
 import com.phybots.picode.action.NewSketchAction;
+import com.phybots.picode.action.PublishAsHTMLAction;
 import com.phybots.picode.action.RenameFileAction;
 import com.phybots.picode.action.RunAction;
 import com.phybots.picode.action.SaveSketchAction;
@@ -97,6 +98,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private transient Map<PoserTypeInfo, TypeBasedPoseLibrary> libraries;
 	private JMenu mnView;
 	private JCheckBoxMenuItem chckbxmntmShowInlinePhotos;
+	private JMenuItem mntmPublishHTML;
 
 	/**
 	 * This is the default constructor
@@ -528,6 +530,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 			mnView = new JMenu("View");
 			mnView.setMnemonic('v');
 			mnView.add(getChckbxmntmShowInlinePhotos());
+			mnView.add(getMntmPublishHTML());
 		}
 		return mnView;
 	}
@@ -572,4 +575,11 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		library.removeElement(pose);
 	}
 
+	private JMenuItem getMntmPublishHTML() {
+		if (mntmPublishHTML == null) {
+			mntmPublishHTML = new JMenuItem("Publish as a HTML page");
+			mntmPublishHTML.setAction(new PublishAsHTMLAction(picodeMain));
+		}
+		return mntmPublishHTML;
+	}
 }

@@ -5,4 +5,4 @@ set picode=.\picode.jar;%pde%;%phybots%;%kinect%
 
 set java="C:\Program Files (x86)\Java\jdk1.7.0_15\bin\java.exe"
 
-%java% -Djava.library.path=.\lib\phybot\library\ -classpath "%picode%" com.phybots.picode.PicodeMain%*
+%java% -Djava.library.path=.\lib\phybots\library\ -classpath "%picode%" com.phybots.picode.PicodeMain%*

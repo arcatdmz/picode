@@ -1,11 +1,7 @@
 package com.phybots.picode.api;
 
-import java.io.IOException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import jp.digitalmuseum.connector.Connector;
 
-import com.phybots.Phybots;
 import com.phybots.entity.MindstormsNXT;
 import com.phybots.entity.MindstormsNXT.MindstormsNXTExtension;
 import com.phybots.entity.MindstormsNXT.OutputState;
@@ -27,10 +23,17 @@ public class MindstormsNXTMotorManager extends MotorManager {
 	}
 
 	@Override
-	public void start() {
-		motorControlService = new MotorControlService(motors, nxt.raw.getConnector());
-		motorControlService.start();
-		System.out.println("MotorControl: service started.");
+	public boolean start() {
+		if (motorControlService == null
+				|| motorControlService.isStarted()) {
+			motorControlService = new MotorControlService(motors, nxt.raw.getConnector());
+			if (!motorControlService.launchMotorControl()) {
+				return false;
+			}
+			motorControlService.start();
+			System.out.println("MotorControl: service started.");
+		}
+		return true;
 	}
 
 	@Override
@@ -44,17 +47,15 @@ public class MindstormsNXTMotorManager extends MotorManager {
 
 	@Override
 	public Pose getPose() {
-		if (motorControlService == null
-				|| !motorControlService.isStarted())
-			return null;
 		Poser poser = getPoser();
 		MindstormsNXTPose pose = new MindstormsNXTPose();
 		pose.setPoserIdentifier(poser.getIdentifier());
 		pose.setPoserType(poser.getPoserType());
-		if (!pose.importData(motorControlService.getRotationCounts()))
-			return null;
-		else
-			return pose;
+		if (motorControlService != null
+				&& motorControlService.isStarted()) {
+			pose.importData(motorControlService.getRotationCounts());
+		}
+		return pose;
 	}
 
 	@Override
@@ -178,8 +179,8 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		/**
 		 * Launch MotorControl program on the NXT brick.
 		 */
-		public synchronized void launchMotorControl() {
-			// ignorePreviousCommandReplies();
+		public synchronized boolean launchMotorControl() {
+			//ignorePreviousCommandReplies();
 			String currentProgramName = MindstormsNXT.getCurrentProgramName(connector);
 			if (!programName.equals(currentProgramName)) {
 				System.out.print("MotorControl: nxt current program = ");
@@ -189,30 +190,29 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					return;
+					return false;
 				}
 				MindstormsNXT.startProgram(programName, connector);
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					return;
+					return false;
 				}
 				currentProgramName = MindstormsNXT.getCurrentProgramName(connector);
 				if (!programName.equals(currentProgramName)) {
 					// TODO Reset nxt?
 					System.out.print("MotorControl: nxt program launch failed, something wrong happened. / current program: ");
 					System.out.println(currentProgramName);
-					stop();
-					return;
+					return false;
 				} else {
 					System.out.println("MotorControl: nxt program launched");
 				}
 			}
+			return true;
 		}
 
 		@Override
 		protected void onStart() {
-			launchMotorControl();
 			for (int i = 0; i < 3; i ++) {
 				goals[i] = Integer.MAX_VALUE;
 			}
@@ -278,33 +278,6 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			}
 		}
 
-		private synchronized void ignorePreviousCommandReplies() {
-
-			// Read all data if needed.
-			Future<?> future = Phybots.getInstance().submit(new Runnable() {
-				@Override
-				public void run() {
-					try {
-						if (connector.getInputStream().available() > 0) {
-							int i = 0;
-							while ((i = connector.read()) >= 0) {
-								System.out.println(i);
-							}
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
-
-			// Set timeout of 1000 milliseconds.
-			try {
-				future.get(1000, TimeUnit.MILLISECONDS);
-			} catch (Exception e) {
-				future.cancel(true);
-			}
-		}
-
 		private synchronized boolean isMotorReady(int port) {
 
 			try {
@@ -319,7 +292,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				Thread.sleep(10);
 
 			} catch (InterruptedException e) {
-				System.out.println("interrupted");
+				System.out.println("MotorControl: function call interrupted");
 
 			} finally {
 	

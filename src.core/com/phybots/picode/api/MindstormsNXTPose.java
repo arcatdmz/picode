@@ -12,7 +12,7 @@ public class MindstormsNXTPose extends Pose {
 		rotationCounts = new int[3];
 	}
 
-	boolean importData(int[] rotationCounts) {
+	public boolean importData(int[] rotationCounts) {
 		if (rotationCounts == null
 				|| rotationCounts.length != this.rotationCounts.length)
 			return false;
@@ -25,7 +25,7 @@ public class MindstormsNXTPose extends Pose {
 		return true;
 	}
 
-	int[] getData() {
+	public int[] getData() {
 		return rotationCounts.clone();
 	}
 

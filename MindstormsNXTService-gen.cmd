@@ -1,0 +1,1 @@
+thrift -gen java -out .\src.core\ MindstormsNXTService.thrift

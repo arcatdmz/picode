@@ -19,6 +19,7 @@ import com.phybots.picode.api.PoseLibrary;
 import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.api.PoserWithConnector;
+import com.phybots.picode.api.remote.MindstormsNXTServer;
 import com.phybots.picode.builder.Builder;
 import com.phybots.picode.ui.PicodeFrame;
 
@@ -61,6 +62,9 @@ public class PicodeMain {
 				initGUI();
 				PoseLibrary.getInstance().attachIDE(picodeFrame);
 				PoserLibrary.getInstance().attachIDE(picodeFrame);
+
+				// Start the NXT server for remote connection.
+				MindstormsNXTServer.getInstance().start();
 
 				// Load settings.
 				settings = new PicodeSettings();
@@ -178,6 +182,9 @@ public class PicodeMain {
 			builder.stop();
 		}
 
+		// Stop the NXT server.
+		MindstormsNXTServer.getInstance().stop();
+
 		// Disconnect from posers.
 		PoserLibrary.getInstance().dispose();
 	}
@@ -225,11 +232,13 @@ public class PicodeMain {
 		PoserLibrary.getInstance().showCameraFrame(false);
 
 		// Disconnect from the posers.
+		/*
 		for (Poser poser : PoserLibrary.getInstance().getPosers()) {
 			if (poser instanceof PoserWithConnector) {
 				((PoserWithConnector) poser).disconnect();
 			}
 		}
+		*/
 
 		// Run the app.
 		builder = new Builder(this, sketch);
@@ -254,11 +263,13 @@ public class PicodeMain {
 			}
 
 			// Connect to the posers.
+			/*
 			for (Poser poser : PoserLibrary.getInstance().getPosers()) {
 				if (poser instanceof PoserWithConnector) {
 					((PoserWithConnector) poser).connect();
 				}
 			}
+			*/
 
 			picodeFrame.setRunnable(true);
 		}

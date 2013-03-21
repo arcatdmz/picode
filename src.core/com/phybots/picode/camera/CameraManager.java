@@ -21,8 +21,10 @@ public class CameraManager {
 	}
 
 	public void putCamera(Poser poser, Camera camera) {
-		cameras.add(camera);
-		camerasMap.put(poser, camera);
+		if (camera != null && poser != null) {
+			cameras.add(camera);
+			camerasMap.put(poser, camera);
+		}
 	}
 
 	public Camera getCamera(Poser poser) {
@@ -58,7 +60,9 @@ public class CameraManager {
 			if (cameraClass == poserType.defaultCameraClass) {
 				try {
 					Camera camera = poserType.defaultCameraConstructor.newInstance();
-					cameras.add(camera);
+					if (camera != null) {
+						cameras.add(camera);
+					}
 					return (C) camera;
 				} catch (Exception e) {
 					// Do nothing.
@@ -66,7 +70,9 @@ public class CameraManager {
 			} else if (cameraClass == poserType.secondaryCameraClass) {
 				try {
 					Camera camera = poserType.secondaryCameraConstructor.newInstance();
-					cameras.add(camera);
+					if (camera != null) {
+						cameras.add(camera);
+					}
 					return (C) camera;
 				} catch (Exception e) {
 					// Do nothing.

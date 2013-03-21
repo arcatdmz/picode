@@ -157,6 +157,10 @@ public class PoserLibrary {
 		this.ide = ide;
 	}
 
+	public boolean isWithIDE() {
+		return this.ide != null;
+	}
+
 	public CameraManager getCameraManager() {
 		return cameraManager;
 	}

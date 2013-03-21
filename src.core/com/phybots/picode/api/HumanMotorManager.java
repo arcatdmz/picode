@@ -8,12 +8,10 @@ public class HumanMotorManager extends MotorManager {
 		super(poser);
 	}
 
-	public void start() {
+	public boolean start() {
 		KinectCamera camera = PoserLibrary.getInstance().getCameraManager().getCamera(
 				KinectCamera.class);
-		if (camera != null) {
-			camera.start();
-		}
+		return camera != null && camera.start();
 	}
 
 	public void stop() {
@@ -26,18 +24,16 @@ public class HumanMotorManager extends MotorManager {
 
 	@Override
 	public Pose getPose() {
-		Poser poser = getPoser();
-		KinectCamera camera = PoserLibrary.getInstance().getCameraManager().getCamera(
-				KinectCamera.class);
-		if (camera == null || !camera.start()) {
+		if (!start()) {
 			return null;
 		}
 		HumanPose pose = new HumanPose();
+		Poser poser = getPoser();
 		pose.setPoserIdentifier(poser.getIdentifier());
 		pose.setPoserType(poser.getPoserType());
-		if (!pose.importData(camera.getLatestJoints())) {
-			return null;
-		}
+		KinectCamera camera = PoserLibrary.getInstance().getCameraManager().getCamera(
+				KinectCamera.class);
+		pose.importData(camera.getLatestJoints());
 		return pose;
 	}
 

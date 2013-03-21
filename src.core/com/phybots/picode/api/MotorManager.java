@@ -11,7 +11,7 @@ public abstract class MotorManager {
 		return poser;
 	}
 
-	public abstract void start();
+	public abstract boolean start();
 
 	public abstract void stop();
 

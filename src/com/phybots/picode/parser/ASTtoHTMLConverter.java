@@ -542,8 +542,10 @@ public class ASTtoHTMLConverter {
 							if (poseFileName.getType() == PdeTokenTypes.STRING_LITERAL) {
 								String fileName = poseFileName.getText();
 								fileName = fileName.substring(1, fileName.length() - 1);
-								String imageTag = String.format("<img src=\"%s/%s.jpg\" width=\"160\" border=\"1\" />",
-										rootPath,// PicodeSettings.getPoseFolderURL(),
+								String imageTag = String.format("<a href=\"%s%s.txt\"><img src=\"%s%s.jpg\" width=\"160\" border=\"1\" /></a>",
+										rootPath,
+										fileName,
+										rootPath,
 										fileName);
 								// toHTML(dot); // "Picode.pose("
 								// dumpHiddenBefore(poseFileName); // "("

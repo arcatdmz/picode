@@ -1,5 +1,5 @@
 [Picode IDE]
-sketch = C:\Users\arc\Documents\GitHub\picode\projects\SwingHand\SwingHand.pde
+sketch = C:\Users\arc\Documents\GitHub\picode\projects\HelloWorld\HelloWorld.pde
 window.state = 0
 window.bounds = 5, 5, 640, 480
 

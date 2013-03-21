@@ -60,10 +60,14 @@ public abstract class Pose implements Cloneable {
 	}
 
 	public void save() throws IOException {
+		saveInDirectory(PicodeSettings.getPoseFolderPath());
+	}
+
+	public void saveInDirectory(String directory) throws IOException {
 
 		// Save the pose data.
 		BufferedWriter writer = new BufferedWriter(new FileWriter(new File(
-				PicodeSettings.getPoseFolderPath(), getDataFileName(name))));
+				directory, getDataFileName(name))));
 		writer.write(poserIdentifier);
 		writer.newLine();
 		save(writer);
@@ -72,7 +76,7 @@ public abstract class Pose implements Cloneable {
 		// Save the photo.
 		if (getPhoto() != null) {
 			ImageIO.write(getPhoto(), "JPEG", new File(
-					PicodeSettings.getPoseFolderPath(), getPhotoFileName()));
+					directory, getPhotoFileName()));
 		}
 	}
 

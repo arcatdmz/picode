@@ -43,8 +43,10 @@ import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
@@ -125,6 +127,14 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 
 	public void setNumberOfLines(int lines) {
 		getNumLineLabel().setText(String.format("%d lines", lines));
+	}
+
+	public Set<PicodeEditor> getEditors() {
+		Set<PicodeEditor> editors = new HashSet<PicodeEditor>();
+		for (PicodeEditorPane editorPane : editorPanes) {
+			editors.add(editorPane.getPicodeEditor());
+		}
+		return editors;
 	}
 
 	public void addEditor(SketchCode code) {
@@ -534,6 +544,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		}
 		return mnView;
 	}
+
 	private JCheckBoxMenuItem getChckbxmntmShowInlinePhotos() {
 		if (chckbxmntmShowInlinePhotos == null) {
 			chckbxmntmShowInlinePhotos = new JCheckBoxMenuItem();
@@ -541,6 +552,14 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 			chckbxmntmShowInlinePhotos.setAction(new ToggleInlinePhotoEnabled(picodeMain));
 		}
 		return chckbxmntmShowInlinePhotos;
+	}
+
+	private JMenuItem getMntmPublishHTML() {
+		if (mntmPublishHTML == null) {
+			mntmPublishHTML = new JMenuItem();
+			mntmPublishHTML.setAction(new PublishAsHTMLAction(picodeMain));
+		}
+		return mntmPublishHTML;
 	}
 
 	public void onAddPoser(Poser poser) {
@@ -575,11 +594,4 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		library.removeElement(pose);
 	}
 
-	private JMenuItem getMntmPublishHTML() {
-		if (mntmPublishHTML == null) {
-			mntmPublishHTML = new JMenuItem("Publish as a HTML page");
-			mntmPublishHTML.setAction(new PublishAsHTMLAction(picodeMain));
-		}
-		return mntmPublishHTML;
-	}
 }

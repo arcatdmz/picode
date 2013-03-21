@@ -150,6 +150,10 @@ public class DocumentManager implements DocumentListener {
 		return null;
 	}
 
+	public SortedSet<Decoration> getDecorations() {
+		return new TreeSet<Decoration>(decorations);
+	}
+
 	public String getHTML(String rootPath) {
 		ASTtoHTMLConverter converter = new ASTtoHTMLConverter(parser.getPreprocessor());
 		String name = picodeEditor.getCode().getPrettyName();

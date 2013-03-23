@@ -21,6 +21,8 @@ import javax.swing.event.ChangeListener;
 import org.apache.thrift.TException;
 
 import com.phybots.picode.action.CapturePoseAction;
+import com.phybots.picode.api.Human;
+import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.KinectCamera;
 
@@ -149,6 +151,15 @@ public class KinectCameraPanel extends CameraPanelAbstractImpl implements FrameL
 			if (frame == null) {
 				return;
 			}
+			int width = 320;
+			int height = 240;
+			float scale = Math.min(getWidth() / 320f, getHeight() / 240f);
+			width = (int) (width * scale);
+			height = (int) (height * scale);
+			int x = (getWidth() - width) / 2;
+			int y = (getHeight() - height) / 2;
+			boolean isShowingHuman = PoserLibrary.getInstance().getCurrentPoser() != null
+					&& PoserLibrary.getInstance().getCurrentPoser() instanceof Human;
 			if (frame.isSetDepthImage()) {
 				if (depthImage == null) {
 					depthImage = new BufferedImage(
@@ -187,26 +198,33 @@ public class KinectCameraPanel extends CameraPanelAbstractImpl implements FrameL
 						}
 					}
 				}
-				int x = (getWidth() - depthImage.getWidth() * 2) / 2;
-				int y = (getHeight() - depthImage.getHeight() * 2) / 2;
 
-				g.drawImage(depthImage, x, y, depthImage.getWidth() * 2, depthImage.getHeight() * 2, null);
-			} else if (frame.isSetImage()) {
-				int x = (getWidth() - image.getWidth()) / 2;
-				int y = (getHeight() - image.getHeight()) / 2;
-
-				g.drawImage(image, x, y, null);
-
-				if (frame.joints.size() == 20) {
-					joints = frame.joints;
-					skeletonLife = KinectCamera.SKELETON_LIFE;
-				} else if (skeletonLife > 0) {
-					skeletonLife --;
+				if (isShowingHuman) {
+					g.drawImage(depthImage, x, y, width, height, null);
+				} else {
+					g.drawImage(depthImage,
+							x + width, y, x, y + height,
+							0, 0, depthImage.getWidth(), depthImage.getHeight(), null);
 				}
-				if (skeletonLife > 0) {
-					g.setColor(Color.green);
-					((Graphics2D) g).setStroke(stroke);
-					KinectServiceWrapper.drawSkeleton(g, joints, x, y);
+			} else if (frame.isSetImage()) {
+				if (isShowingHuman) {
+					g.drawImage(image, x, y, width, height, null);
+	
+					if (frame.joints.size() == 20) {
+						joints = frame.joints;
+						skeletonLife = KinectCamera.SKELETON_LIFE;
+					} else if (skeletonLife > 0) {
+						skeletonLife --;
+					}
+					if (skeletonLife > 0) {
+						g.setColor(Color.green);
+						((Graphics2D) g).setStroke(stroke);
+						KinectServiceWrapper.drawSkeleton(g, joints, x, y);
+					}
+				} else {
+					g.drawImage(image,
+							x + width, y, x, y + height,
+							0, 0, image.getWidth(), image.getHeight(), null);
 				}
 			}
 		}

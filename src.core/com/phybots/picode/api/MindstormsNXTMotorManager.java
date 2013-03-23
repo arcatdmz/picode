@@ -109,7 +109,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			currentStates = new OutputState[3];
 			localReadinesses = new boolean[3];
 			currentReadinesses = new boolean[3];
-			previousGoals = new int[3];
+			previousGoals = new int[] { Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE		 };
 			goals = new int[3];
 			powers = new int[]{ 30, 30, 30 };
 			setInterval(200);
@@ -120,12 +120,11 @@ public class MindstormsNXTMotorManager extends MotorManager {
 					|| isActing(Port.B)
 					|| isActing(Port.C);
 		}
-	
+
 		public boolean isActing(Port port) {
 			int i = enumToIndex(port);
 			if (i >= 0) {
-				return !currentReadinesses[i]
-						|| (currentStates[i] != null && currentStates[i].runState != 0);
+				return !currentReadinesses[i];
 			}
 			return false;
 		}
@@ -301,7 +300,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 				// Receive motor status.
 				String message = MindstormsNXT.messageRead(
 						(byte)0, (byte)0, true, connector);
-	
+
 				// Pause after receiving motor status.
 				sleep(10);
 				if (message == null || message.length() != 2) {
@@ -309,6 +308,14 @@ public class MindstormsNXTMotorManager extends MotorManager {
 					return false;
 				}
 				if (message.charAt(1) == '1') {
+
+					// Before starting the motor control...
+					int diff = currentStates[port].rotationCount - previousGoals[port];
+					if (previousGoals[port] != Integer.MAX_VALUE && Math.abs(diff) > 5) {
+						// wait more.
+						return false;
+					}
+
 					return true;
 				}
 			}
@@ -319,21 +326,11 @@ public class MindstormsNXTMotorManager extends MotorManager {
 
 			// Check motor state.
 			MindstormsNXTExtension motor = motors[port];
-			if (motor == null) {
+			if (motor == null)
 				return true;
-			}
-			OutputState currentState = currentStates[port];
-			if (currentState.runState != MindstormsNXT.MOTOR_RUN_STATE_IDLE) {
-				if (Math.abs(currentState.rotationCount - previousGoals[port]) < 5) {
-					motor.setOutputState((byte) 0, 0, 0, 0, 0, 0);
-				}
-				return false;
-			}
-			if (!localReadinesses[port]) {
-				return false;
-			}
 
 			// If we've already reached the goal, do nothing.
+			OutputState currentState = currentStates[port];
 			int goal = goals[port];
 			if (Math.abs(goal - currentState.rotationCount) < 5) {
 				return true;
@@ -341,9 +338,8 @@ public class MindstormsNXTMotorManager extends MotorManager {
 
 			// Start motor control.
 			int power = powers[port];
-			if (goal < currentState.rotationCount) {
+			if (goal < currentState.rotationCount)
 				power += 100;
-			}
 	
 			int tachoLimit = Math.abs(goal - currentState.rotationCount);
 

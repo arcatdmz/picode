@@ -3,6 +3,4 @@ set phybots=.\lib\phybots\library\phybots-core-1.0.2.jar;.\lib\phybots\library\c
 set kinect=.\lib\kinect\library\kinect.jar;.\lib\kinect\library\libthrift-0.9.0.jar;.\lib\kinect\library\slf4j-api-1.5.8.jar;.\lib\kinect\library\slf4j-simple-1.5.8.jar
 set picode=.\picode.jar;%pde%;%phybots%;%kinect%
 
-set java="C:\Program Files (x86)\Java\jdk1.7.0_15\bin\java.exe"
-
-%java% -Djava.library.path=.\lib\phybots\library\ -classpath "%picode%" com.phybots.picode.PicodeMain%*
+java -Djava.library.path=.\lib\phybots\library\ -classpath "%picode%" com.phybots.picode.PicodeMain%*

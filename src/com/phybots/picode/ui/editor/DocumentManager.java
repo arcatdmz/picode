@@ -37,6 +37,7 @@ import processing.mode.java.preproc.PdeTokenTypes;
 import processing.mode.java.preproc.TokenUtil;
 import antlr.CommonASTWithHiddenTokens;
 import antlr.CommonHiddenStreamToken;
+import antlr.ExtendedCommonASTWithHiddenTokens;
 import antlr.collections.AST;
 
 public class DocumentManager implements DocumentListener {
@@ -382,6 +383,13 @@ public class DocumentManager implements DocumentListener {
 		decorations.add(new Decoration(
 				parser.getIndex(ast),
 				ast.getText().length(),
+				Decoration.Type.KEYWORD));
+	}
+
+	private void decorateKeyword(int index, int length) {
+		decorations.add(new Decoration(
+				index,
+				length,
 				Decoration.Type.KEYWORD));
 	}
 
@@ -943,18 +951,53 @@ public class DocumentManager implements DocumentListener {
 		AST thenPath = condition.getNextSibling();
 		decorate(thenPath);
 
+		AST lastChild = thenPath;
+		while (lastChild.getNumberOfChildren() > 0) {
+			lastChild = lastChild.getFirstChild();
+			while (lastChild.getNextSibling() != null) {
+				lastChild = lastChild.getNextSibling();
+			}
+		}
+		CommonASTWithHiddenTokens lastTokens = (CommonASTWithHiddenTokens) lastChild;
+
 		// optional "else" clause: an SLIST or an EXPR
 		// what could be simpler?
 		AST elsePath = thenPath.getNextSibling();
 		if (elsePath != null) {
 			AST bestPrintableNode = getBestPrintableNode(elsePath, true);
-			decorateKeyword(elsePath); // TODO "else" statement visualization bug.
 			dumpHiddenBefore(bestPrintableNode);
 			CommonASTWithHiddenTokens elseTokens = (CommonASTWithHiddenTokens) elsePath;
-			CommonHiddenStreamToken hiddenBefore = elseTokens.getHiddenBefore();
+			CommonHiddenStreamToken elseTokenHiddenBefore = elseTokens.getHiddenBefore();
+
+			int elseStartIndex = parser.getIndex(lastTokens);
+			String hiddenAfterString = ((ExtendedCommonASTWithHiddenTokens) lastTokens)
+					.getHiddenAfterString();
+			elseStartIndex += lastTokens.getText().length() + hiddenAfterString.length();
+			
+			int elseEndIndex = parser.getIndex(elseTokens);
+
+			// Look for "else" string in the code.
+			if (elseEndIndex < elseStartIndex) {
+				AST next = literalIf.getNextSibling();
+				if (next == null)
+					elseEndIndex = -1;
+				else
+					elseEndIndex = parser.getIndex(next);
+				if (elseEndIndex < elseStartIndex) {
+					elseEndIndex = doc.getLength();
+				}
+				try {
+					String text = doc.getText(elseStartIndex, elseEndIndex - elseStartIndex);
+					elseEndIndex = elseStartIndex + text.indexOf("else") + "else".length();
+				} catch (BadLocationException e) {
+					elseEndIndex = elseStartIndex;
+				}
+			}
+			decorateKeyword(elseStartIndex, elseEndIndex - elseStartIndex);
+
 			if (elsePath.getType() == PdeTokenTypes.SLIST
 					&& elsePath.getNumberOfChildren() == 0
-					&& hiddenBefore == null) {
+					&& elseTokenHiddenBefore == null) {
 				CommonHiddenStreamToken hiddenAfter = elseTokens.getHiddenAfter();
 				if (hiddenAfter != null) {
 					dumpHiddenTokens(hiddenAfter);

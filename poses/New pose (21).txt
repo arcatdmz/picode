@@ -1,0 +1,4 @@
+MindstormsNXT/fantom:USB0::0x0694::0x0002::0016530A49DC::RAW
+-3
+-95
+0

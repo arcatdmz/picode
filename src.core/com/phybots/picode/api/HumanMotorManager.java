@@ -33,7 +33,9 @@ public class HumanMotorManager extends MotorManager {
 		pose.setPoserType(poser.getPoserType());
 		KinectCamera camera = PoserLibrary.getInstance().getCameraManager().getCamera(
 				KinectCamera.class);
-		pose.importData(camera.getLatestJoints());
+		if (!pose.importData(camera.getLatestJoints())) {
+			return null;
+		}
 		return pose;
 	}
 

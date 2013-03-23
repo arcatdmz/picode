@@ -201,7 +201,7 @@ public class HumanPose extends Pose {
 
 	@Override
 	public boolean eq(Pose pose) {
-		return eq(pose, .3f);
+		return eq(pose, .05f);
 	}
 
 	@Override

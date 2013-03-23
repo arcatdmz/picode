@@ -26,8 +26,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.AbstractAction;
-import javax.swing.SwingWorker;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -104,11 +102,13 @@ public class CameraFrame extends JFrame {
 
 			@Override
 			public void windowOpened(WindowEvent e) {
+				/*
 				if (pnlCamera != null) {
 					getGlassPane().setVisible(true);
 					new SwingWorker<Object, Object>() {
 						@Override
 						public Object doInBackground() {
+							System.out.println("camera: started - opened");
 							return pnlCamera.start();
 						}
 						@Override
@@ -117,6 +117,7 @@ public class CameraFrame extends JFrame {
 						}
 					}.execute();
 				}
+				*/
 			}
 
 			@Override

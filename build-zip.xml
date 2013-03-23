@@ -6,13 +6,13 @@
 	<!-- Make zip -->
 	<target name="picode-zip" depends="build, picode-jar, picode-javadoc">
         <zip destfile="picode-ide.zip">
-        	<zipfileset dir="./" includes="*.txt picode.* picode-x86.*" excludes="settings.txt" />
-        	<zipfileset dir="./" includes="poses/*.txt poses/*.jpg" />
-        	<zipfileset dir="./" includes="kinect/**/*" />
-        	<zipfileset dir="./" includes="processing/**/*" />
-        	<zipfileset dir="./" includes="lib/**/*" />
-        	<zipfileset dir="./" includes="projects/**/*" />
-        	<zipfileset dir="./" includes="docs/**/*" />
+        	<zipfileset dir="./" prefix="picode-ide" includes="*.txt picode.* picode-x86.*" excludes="settings.txt" />
+        	<zipfileset dir="./" prefix="picode-ide" includes="poses/*.txt poses/*.jpg" />
+        	<zipfileset dir="./" prefix="picode-ide" includes="kinect/**/*" />
+        	<zipfileset dir="./" prefix="picode-ide" includes="processing/**/*" />
+        	<zipfileset dir="./" prefix="picode-ide" includes="lib/**/*" />
+        	<zipfileset dir="./" prefix="picode-ide" includes="projects/**/*" />
+        	<zipfileset dir="./" prefix="picode-ide" includes="docs/**/*" />
        	</zip>
 	</target>
 	

@@ -53,6 +53,7 @@
 	<target name="picode-javadoc">
 		<javadoc
 			sourcepath="${picode-src-core.dir}"
+			excludepackagenames="com.phybots.picode.api.remote"
 			destdir="${picode-javadoc.dir}"
 			charset="UTF-8"
 			encoding="UTF-8"

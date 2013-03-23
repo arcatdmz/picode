@@ -1,9 +1,6 @@
 package com.phybots.picode.ui.camera;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.DefaultFocusTraversalPolicy;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -23,17 +20,15 @@ import com.phybots.picode.api.Poser;
 import com.phybots.picode.api.PoserLibrary;
 import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.CameraManager;
+import com.phybots.picode.ui.LockingGlassPane;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.AbstractAction;
 import javax.swing.SwingWorker;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.Action;
@@ -261,34 +256,6 @@ public class CameraFrame extends JFrame {
 			if (camera == null) return;
 			hideCurrentCamera();
 			setCurrentCamera(poser, camera);
-		}
-	}
-
-	/**
-	 * <a href="http://terai.xrea.jp/Swing/WaitCursor.html">Swing/WaitCursor</a>
-	 */
-	private static class LockingGlassPane extends JComponent {
-		private static final long serialVersionUID = -5849931332134848601L;
-
-		public LockingGlassPane() {
-			setOpaque(false);
-			setFocusTraversalPolicy(new DefaultFocusTraversalPolicy() {
-				private static final long serialVersionUID = -1604235471535054871L;
-				@Override
-				public boolean accept(Component c) {
-					return false;
-				}
-			});
-			addKeyListener(new KeyAdapter() {});
-			addMouseListener(new MouseAdapter() {});
-			requestFocusInWindow();
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		}
-
-		@Override
-		public void setVisible(boolean flag) {
-			super.setVisible(flag);
-			setFocusTraversalPolicyProvider(flag);
 		}
 	}
 }

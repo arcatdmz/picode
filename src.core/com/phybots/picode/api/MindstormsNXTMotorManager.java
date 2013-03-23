@@ -94,6 +94,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 		private OutputState[] currentStates;
 		private boolean[] localReadinesses;
 		private boolean[] currentReadinesses;
+		private int[] previousGoals;
 		private int[] goals;
 		private int[] powers;
 	
@@ -108,6 +109,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			currentStates = new OutputState[3];
 			localReadinesses = new boolean[3];
 			currentReadinesses = new boolean[3];
+			previousGoals = new int[3];
 			goals = new int[3];
 			powers = new int[]{ 30, 30, 30 };
 			setInterval(200);
@@ -322,6 +324,9 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			}
 			OutputState currentState = currentStates[port];
 			if (currentState.runState != MindstormsNXT.MOTOR_RUN_STATE_IDLE) {
+				if (Math.abs(currentState.rotationCount - previousGoals[port]) < 5) {
+					motor.setOutputState((byte) 0, 0, 0, 0, 0, 0);
+				}
 				return false;
 			}
 			if (!localReadinesses[port]) {
@@ -335,30 +340,29 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			}
 
 			// Start motor control.
-			{
-				int power = powers[port];
-				if (goal < currentState.rotationCount) {
-					power += 100;
-				}
-		
-				int tachoLimit = Math.abs(goal - currentState.rotationCount);
-	
-				int mode = 0;
-	
-				// Pause before sending a string motor command message.
-				sleep(5); // 15 - 10
-
-				// Send a motor command message.
-				String command = String.format("1%1d%03d%06d%1d",
-						port, power, tachoLimit, mode);
-				byte[] commandBytes = command.getBytes();
-				MindstormsNXT.messageWrite(
-						commandBytes,
-						(byte)1,
-						connector);
-
-				System.out.println("command: " + command);
+			int power = powers[port];
+			if (goal < currentState.rotationCount) {
+				power += 100;
 			}
+	
+			int tachoLimit = Math.abs(goal - currentState.rotationCount);
+
+			int mode = 1; // HoldBrake
+
+			// Pause before sending a string motor command message.
+			sleep(5); // 15 - 10
+
+			// Send a motor command message.
+			String command = String.format("1%1d%03d%06d%1d",
+					port, power, tachoLimit, mode);
+			byte[] commandBytes = command.getBytes();
+			MindstormsNXT.messageWrite(
+					commandBytes,
+					(byte)1,
+					connector);
+
+			System.out.println("command: " + command);
+			previousGoals[port] = goal;
 			return true;
 		}
 	}

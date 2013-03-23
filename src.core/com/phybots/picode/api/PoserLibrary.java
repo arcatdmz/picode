@@ -170,6 +170,9 @@ public class PoserLibrary {
 			cameraFrame = new CameraFrame();
 			cameraFrame.setPoser(currentPoser);
 		}
+		if (isVisible) {
+			currentPoser.getMotorManager().reset();
+		}
 		cameraFrame.setVisible(isVisible);
 	}
 
@@ -215,7 +218,6 @@ public class PoserLibrary {
 		if (!posers.remove(poser)) {
 			return;
 		}
-		poser.dispose();
 		if (ide != null) {
 			ide.onRemovePoser(poser);
 		}
@@ -243,6 +245,9 @@ public class PoserLibrary {
 			cameraFrame = null;
 		}
 		cameraManager.dispose();
+		for (Poser poser : getPosers()) {
+			poser.dispose();
+		}
 	}
 
 }

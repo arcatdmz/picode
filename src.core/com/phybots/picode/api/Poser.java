@@ -47,6 +47,7 @@ public abstract class Poser {
 	}
 
 	public void dispose() {
+		getMotorManager().reset();
 		PoserLibrary.getInstance().removePoser(this);
 	}
 

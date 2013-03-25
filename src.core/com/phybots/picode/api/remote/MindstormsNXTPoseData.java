@@ -30,6 +30,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("all")
 public class MindstormsNXTPoseData implements org.apache.thrift.TBase<MindstormsNXTPoseData, MindstormsNXTPoseData._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("MindstormsNXTPoseData");
 
@@ -37,7 +38,7 @@ public class MindstormsNXTPoseData implements org.apache.thrift.TBase<Mindstorms
   private static final org.apache.thrift.protocol.TField B_FIELD_DESC = new org.apache.thrift.protocol.TField("b", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField C_FIELD_DESC = new org.apache.thrift.protocol.TField("c", org.apache.thrift.protocol.TType.I32, (short)3);
 
-  private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
     schemes.put(StandardScheme.class, new MindstormsNXTPoseDataStandardSchemeFactory());
     schemes.put(TupleScheme.class, new MindstormsNXTPoseDataTupleSchemeFactory());

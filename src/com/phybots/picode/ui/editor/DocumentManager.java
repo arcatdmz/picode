@@ -214,8 +214,9 @@ public class DocumentManager implements DocumentListener {
 					try {
 						String insertedText = doc.getText(de.getOffset(), de.getLength());
 						if (photoApiPattern.matcher(insertedText).matches()) {
+							picodeEditor.undo(); // Cancel text insertion
 							doc.remove(existingIcon.getStartIndex(),
-									existingIcon.getLenth() + de.getLength());
+									existingIcon.getLenth());
 							doc.insertString(
 									existingIcon.getStartIndex(),
 									insertedText,
@@ -248,6 +249,7 @@ public class DocumentManager implements DocumentListener {
 	private void update(final DocumentEvent e) {
 		int caretPosition = picodeEditor.getCaretPosition();
 		doc.removeDocumentListener(DocumentManager.this);
+		picodeEditor.setUndoManagerEnabled(false);
 
 		try {
 			if (e != null && e.getType() == EventType.REMOVE) {
@@ -259,10 +261,11 @@ public class DocumentManager implements DocumentListener {
 			removeDecoration(e, true);
 			updateErrorDecoration(se);
 			picodeMain.getPintegration().statusError(se);
+		} finally {
+			picodeEditor.setUndoManagerEnabled(true);
+			doc.addDocumentListener(DocumentManager.this);
+			picodeEditor.setCaretPosition(caretPosition);
 		}
-
-		doc.addDocumentListener(DocumentManager.this);
-		picodeEditor.setCaretPosition(caretPosition);
 	}
 
 	private void updateErrorDecoration(SketchException se) {

@@ -1,10 +1,21 @@
 package com.phybots.picode.ui.editor;
 
 import java.awt.Font;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
 
 import processing.app.SketchCode;
 
@@ -18,6 +29,8 @@ public class PicodeEditor extends JEditorPane {
 	private DocumentManager documentManager;
 	private SketchCode code;
 	private JScrollPane jScrollPane;
+	private UndoManager undoManager;
+	private boolean isUndoManagerEnabled;
 
 	public static Font getDefaultFont() {
 		return defaultFont;
@@ -26,8 +39,62 @@ public class PicodeEditor extends JEditorPane {
 	public PicodeEditor(PicodeMain picodeMain, SketchCode code) {
 		this.code = code;
 		documentManager = new DocumentManager(picodeMain, this);
+		undoManager = new UndoManager();
+		isUndoManagerEnabled = true;
 		setFont(defaultFont);
+		initializeListeners();
+		setDragEnabled(true);
+	}
 
+	private void initializeListeners() {
+		getDocument().addUndoableEditListener(new UndoableEditListener() {
+			@Override
+			public void undoableEditHappened(UndoableEditEvent e) {
+				if (isUndoManagerEnabled) {
+					undoManager.addEdit(e.getEdit());
+				}
+			}
+		});
+		addKeyListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {
+			}
+
+			public void keyPressed(KeyEvent e) {
+				if (!e.isControlDown()) {
+					return;
+				}
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_Z:
+					undo();
+					e.consume();
+					break;
+				case KeyEvent.VK_Y:
+					redo();
+					e.consume();
+					break;
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+		});
+		addPropertyChangeListener("dropLocation",
+				new PropertyChangeListener() {
+			private int x, y, lastX, lastY;
+			public void propertyChange(PropertyChangeEvent evt) {
+				Point p = MouseInfo.getPointerInfo().getLocation();
+				SwingUtilities.convertPointFromScreen(p, PicodeEditor.this);
+				x = p.x; y = p.y;
+				if (lastX != x || lastY != y) {
+					int index = viewToModel(p);
+					System.out.println(
+							String.format(
+									"dnd: location update -> [%d, %d] (%d)",
+									x, y, index));
+					lastX = x; lastY = y;
+				}
+			}
+		});
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
@@ -43,8 +110,6 @@ public class PicodeEditor extends JEditorPane {
 				}
 			}
 		});
-
-		setDragEnabled(true);
 	}
 
 	public void setOuterScrollPane(JScrollPane jScrollPane) {
@@ -61,6 +126,22 @@ public class PicodeEditor extends JEditorPane {
 
 	public DocumentManager getDocumentManager() {
 		return documentManager;
+	}
+
+	public void undo() {
+		if (undoManager.canUndo()) {
+			undoManager.undo();
+		}
+	}
+
+	public void redo() {
+		if (undoManager.canRedo()) {
+			undoManager.redo();
+		}
+	}
+
+	void setUndoManagerEnabled(boolean isEnabled) {
+		isUndoManagerEnabled = isEnabled;
 	}
 
 }

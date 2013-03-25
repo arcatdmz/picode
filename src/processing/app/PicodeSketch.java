@@ -980,6 +980,9 @@ public class PicodeSketch {
     // Add this sketch back using the new name
     picodeMain.getPintegration().addRecent();
 
+    // Update the editor's tab name
+    picodeMain.getFrame().updateEditorNames();
+
     // let Editor know that the save was successful
     return true;
   }

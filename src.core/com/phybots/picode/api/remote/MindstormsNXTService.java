@@ -30,6 +30,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("all")
 public class MindstormsNXTService {
 
   public interface Iface {

@@ -3,6 +3,8 @@ package com.phybots.picode.ui;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -10,11 +12,13 @@ import java.awt.event.MouseEvent;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 
 import com.phybots.picode.PicodeMain;
 import com.phybots.picode.TypeBasedPoseLibrary;
@@ -165,6 +169,29 @@ public class PoseLibraryPanel extends JPanel {
 			jList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			jList.setDragEnabled(true);
 			jList.setDropMode(DropMode.INSERT);
+			jList.setTransferHandler(new TransferHandler() {
+				private static final long serialVersionUID = -6052595555714712415L;
+
+				@Override
+				public int getSourceActions(JComponent c) {
+					return COPY;
+				}
+
+				@SuppressWarnings("unchecked")
+				@Override
+				protected Transferable createTransferable(JComponent c) {
+					System.out.println("dnd: start");
+					JList<Pose> list = (JList<Pose>) c;
+					String value = list.getSelectedValue().toString();
+					return new StringSelection(value);
+				}
+
+				@Override
+				protected void exportDone(JComponent source, Transferable data,
+						int action) {
+					System.out.println("dnd: " + action);
+				}
+			});
 			jList.setFont(defaultFont);
 			addPopup(jList, getPopupMenu());
 		}

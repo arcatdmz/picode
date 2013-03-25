@@ -121,7 +121,17 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		getPosePanel().setRunnable(isRunnable);
 	}
 
+	public String getStatusText() {
+		return getStatusLabel().getText();
+	}
+
+	public void setErrorText(String errorText) {
+		getStatusLabel().setForeground(Color.red);
+		getStatusLabel().setText(errorText);
+	}
+
 	public void setStatusText(String statusText) {
+		getStatusLabel().setForeground(Color.black);
 		getStatusLabel().setText(statusText);
 	}
 
@@ -180,10 +190,22 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		return currentEditor;
 	}
 
+	public void updateEditorNames() {
+		for (int i = 0; i < editorPanes.size(); i++) {
+			updateEditorName(i);
+		}
+	}
+
 	public void updateCurrentEditorName() {
-		getTabbedPane().setTitleAt(
-				getCurrentEditorIndex(),
-				getTitle(getCurrentEditor()));
+		updateEditorName(getCurrentEditorIndex());
+	}
+
+	private void updateEditorName(int i) {
+		if (i >= 0 && i < editorPanes.size()) {
+			getTabbedPane().setTitleAt(
+					i,
+					getTitle(getEditor(i)));
+		}
 	}
 	
 	private String getTitle(PicodeEditor picodeEditor) {
@@ -364,7 +386,6 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		if (statusLabel == null) {
 			statusLabel = new JLabel();
 			statusLabel.setFont(defaultFont);
-			statusLabel.setForeground(Color.red);
 		}
 		return statusLabel;
 	}

@@ -359,7 +359,7 @@ public class ProcessingIntegration implements RunnerListener {
   }
 
   public void headerRebuild() {
-    // Do nothing.
+    picodeMain.getFrame().updateEditorNames();
   }
 
   // Runner listener methods are implemented below:
@@ -370,7 +370,7 @@ public class ProcessingIntegration implements RunnerListener {
    * Show an error in the status bar.
    */
   public void statusError(String what) {
-    picodeMain.getFrame().setStatusText(what);
+    picodeMain.getFrame().setErrorText(what);
   }
 
 
@@ -440,8 +440,7 @@ public class ProcessingIntegration implements RunnerListener {
    * Show a notice message in the editor status bar.
    */
   public void statusNotice(String msg) {
-	//TODO [Enhancement] Show notice.
-	//    status.notice(msg);
+	picodeMain.getFrame().setStatusText(msg);
   }
 
 
@@ -451,10 +450,12 @@ public class ProcessingIntegration implements RunnerListener {
    * Clear the status area.
    */
   public void clearNotice(String msg) {
-	//TODO [Enhancement] Show notice.
-	//    if (status.message.equals(msg)) {
-	//      statusEmpty();
-	//    }
+    String currentMsg = picodeMain.getFrame().getStatusText();
+    if (((currentMsg == null || "".equals(currentMsg))
+        && (msg == null || "".equals(msg)))
+            || currentMsg.equals(msg)) {
+      statusEmpty();
+    }
   }
 
 

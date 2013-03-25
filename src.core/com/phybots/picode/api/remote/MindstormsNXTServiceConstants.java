@@ -30,6 +30,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("all")
 public class MindstormsNXTServiceConstants {
 
   public static final int SERVER_DEFAULT_PORT = 50001;

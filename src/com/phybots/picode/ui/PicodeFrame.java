@@ -20,12 +20,14 @@ import com.phybots.picode.action.LoadSketchAction;
 import com.phybots.picode.action.NewFileAction;
 import com.phybots.picode.action.NewSketchAction;
 import com.phybots.picode.action.PublishAsHTMLAction;
+import com.phybots.picode.action.RedoAction;
 import com.phybots.picode.action.RenameFileAction;
 import com.phybots.picode.action.RunAction;
 import com.phybots.picode.action.SaveSketchAction;
 import com.phybots.picode.action.SaveSketchAsAction;
 import com.phybots.picode.action.StopAction;
 import com.phybots.picode.action.ToggleInlinePhotoEnabled;
+import com.phybots.picode.action.UndoAction;
 import com.phybots.picode.api.PicodeInterface;
 import com.phybots.picode.api.Pose;
 import com.phybots.picode.api.Poser;
@@ -59,7 +61,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.border.EmptyBorder;
-import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 
 public class PicodeFrame extends JFrame implements PicodeInterface {
@@ -77,6 +78,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private JLabel statusLabel = null;
 	private JLabel numLineLabel = null;
 
+	private JPanel editorContainer = null;
 	private JPanel libraryPane = null;
 	private PoserSelectorPanel poserPanel = null;
 	private PoseLibraryPanel poseLibraryPanel = null;
@@ -101,6 +103,9 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private JMenu mnView;
 	private JCheckBoxMenuItem chckbxmntmShowInlinePhotos;
 	private JMenuItem mntmPublishHTML;
+	private JButton btnUndo;
+	private JButton btnRedo;
+	private JPanel editorPanel;
 
 	/**
 	 * This is the default constructor
@@ -292,7 +297,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 	private JSplitPane getSplitPane() {
 		if (splitPane == null) {
 			splitPane = new JSplitPane();
-			splitPane.setLeftComponent(getTabbedPane());
+			splitPane.setLeftComponent(getEditorContainer());
 			splitPane.setRightComponent(getLibraryPane());
 			splitPane.setResizeWeight(.6);
 		}
@@ -308,7 +313,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		if (menuPanel == null) {
 			menuPanel = new JPanel();
 			GridBagLayout gbl_menuPanel = new GridBagLayout();
-			gbl_menuPanel.columnWeights = new double[] { 0.0, 1.0 };
+			gbl_menuPanel.columnWeights = new double[] { 0.0, 0.0 };
 			gbl_menuPanel.rowWeights = new double[] { 0.0 };
 			menuPanel.setLayout(gbl_menuPanel);
 			GridBagConstraints gbc_runJButton = new GridBagConstraints();
@@ -337,9 +342,7 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		if (btnRun == null) {
 			btnRun = new JButton();
 			btnRun.setAction(new RunAction(picodeMain));
-			btnRun.setIcon(new ImageIcon(PicodeFrame.class.getResource("/run.png")));
 			btnRun.setFont(defaultFont);
-			btnRun.setToolTipText("Compile and run this script");
 		}
 		return btnRun;
 	}
@@ -353,10 +356,28 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		if (btnStop == null) {
 			btnStop = new JButton();
 			btnStop.setAction(new StopAction(picodeMain));
-			btnStop.setIcon(new ImageIcon(PicodeFrame.class.getResource("/stop.png")));
 			btnStop.setFont(defaultFont);
 		}
 		return btnStop;
+	}
+
+	public JButton getBtnUndo() {
+		if (btnUndo == null) {
+			btnUndo = new JButton();
+			btnUndo.setAction(new UndoAction(picodeMain));
+			btnUndo.setFont(defaultFont);
+			btnUndo.setEnabled(false);
+		}
+		return btnUndo;
+	}
+	public JButton getBtnRedo() {
+		if (btnRedo == null) {
+			btnRedo = new JButton();
+			btnRedo.setAction(new RedoAction(picodeMain));
+			btnRedo.setFont(defaultFont);
+			btnRedo.setEnabled(false);
+		}
+		return btnRedo;
 	}
 
 	/**
@@ -401,6 +422,16 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 			numLineLabel.setFont(defaultFont);
 		}
 		return numLineLabel;
+	}
+
+	private JPanel getEditorContainer() {
+		if (editorContainer == null) {
+			editorContainer = new JPanel();
+			editorContainer.setLayout(new BorderLayout(0, 0));
+			editorContainer.add(getTabbedPane(), BorderLayout.CENTER);
+			editorContainer.add(getEditorPanel(), BorderLayout.SOUTH);
+		}
+		return editorContainer;
 	}
 
 	private JPanel getLibraryPane() {
@@ -502,9 +533,12 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 			tabbedPane.setFont(defaultFont);
 			tabbedPane.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
-					if (getCurrentEditor() != null) {
+					PicodeEditor currentEditor = getCurrentEditor();
+					if (currentEditor != null) {
 						picodeMain.getFrame().setNumberOfLines(
-								getCurrentEditor().getCode().getLineCount());
+								currentEditor.getCode().getLineCount());
+						getBtnUndo().setEnabled(currentEditor.canUndo());
+						getBtnRedo().setEnabled(currentEditor.canRedo());
 					}
 				}
 			});
@@ -615,4 +649,27 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 		library.removeElement(pose);
 	}
 
+	private JPanel getEditorPanel() {
+		if (editorPanel == null) {
+			editorPanel = new JPanel();
+			GridBagLayout gbl_editorPanel = new GridBagLayout();
+			gbl_editorPanel.columnWeights = new double[]{0.0, 0.0};
+			gbl_editorPanel.rowWeights = new double[]{0.0};
+			editorPanel.setLayout(gbl_editorPanel);
+			GridBagConstraints gbc_btnUndo = new GridBagConstraints();
+			gbc_btnUndo.weightx = 1.0;
+			gbc_btnUndo.anchor = GridBagConstraints.NORTHEAST;
+			gbc_btnUndo.insets = new Insets(0, 5, 5, 5);
+			gbc_btnUndo.gridx = 0;
+			gbc_btnUndo.gridy = 0;
+			editorPanel.add(getBtnUndo(), gbc_btnUndo);
+			GridBagConstraints gbc_btnRedo = new GridBagConstraints();
+			gbc_btnRedo.insets = new Insets(0, 0, 5, 5);
+			gbc_btnRedo.anchor = GridBagConstraints.NORTHEAST;
+			gbc_btnRedo.gridx = 1;
+			gbc_btnRedo.gridy = 0;
+			editorPanel.add(getBtnRedo(), gbc_btnRedo);
+		}
+		return editorPanel;
+	}
 }

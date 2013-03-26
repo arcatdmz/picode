@@ -40,9 +40,10 @@ import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import java.awt.event.KeyEvent;
 import javax.swing.JSeparator;
-import java.awt.FlowLayout;
-import javax.swing.ImageIcon;
 import javax.swing.border.EmptyBorder;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class PoseLibraryPanel extends JPanel {
 	private static final long serialVersionUID = 5622163966849443710L;
@@ -117,9 +118,22 @@ public class PoseLibraryPanel extends JPanel {
 		if (jPanel == null) {
 			jPanel = new JPanel();
 			jPanel.setBorder(new EmptyBorder(5, 0, 0, 0));
-			jPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-			jPanel.add(getBtnAddPose());
-			jPanel.add(getBtnDeletePose());
+			GridBagLayout gbl_jPanel = new GridBagLayout();
+			gbl_jPanel.columnWeights = new double[]{0.0, 0.0};
+			gbl_jPanel.rowWeights = new double[]{0.0};
+			jPanel.setLayout(gbl_jPanel);
+			GridBagConstraints gbc_btnAddPose = new GridBagConstraints();
+			gbc_btnAddPose.weightx = 1.0;
+			gbc_btnAddPose.anchor = GridBagConstraints.NORTHEAST;
+			gbc_btnAddPose.insets = new Insets(0, 5, 0, 5);
+			gbc_btnAddPose.gridx = 0;
+			gbc_btnAddPose.gridy = 0;
+			jPanel.add(getBtnAddPose(), gbc_btnAddPose);
+			GridBagConstraints gbc_btnDeletePose = new GridBagConstraints();
+			gbc_btnDeletePose.anchor = GridBagConstraints.NORTHEAST;
+			gbc_btnDeletePose.gridx = 1;
+			gbc_btnDeletePose.gridy = 0;
+			jPanel.add(getBtnDeletePose(), gbc_btnDeletePose);
 		}
 		return jPanel;
 	}
@@ -128,7 +142,6 @@ public class PoseLibraryPanel extends JPanel {
 		if (btnAddPose == null) {
 			btnAddPose = new JButton();
 			btnAddPose.setAction(new ShowCameraFrameAction());
-			btnAddPose.setIcon(new ImageIcon(PoseLibraryPanel.class.getResource("/camera.png")));
 			btnAddPose.setFont(defaultFont);
 		}
 		return btnAddPose;
@@ -138,7 +151,6 @@ public class PoseLibraryPanel extends JPanel {
 		if (btnDeletePose == null) {
 			btnDeletePose = new JButton();
 			btnDeletePose.setAction(new DeleteSelectedPoseAction(picodeMain));
-			btnDeletePose.setIcon(new ImageIcon(PoseLibraryPanel.class.getResource("/trashcan.png")));
 			btnDeletePose.setFont(defaultFont);
 		}
 		return btnDeletePose;

@@ -26,6 +26,7 @@ import com.phybots.picode.ui.editor.Decoration.Type;
 public class PicodeEditor extends JEditorPane {
 	private static final long serialVersionUID = -6366895407636859766L;
 	private static final Font defaultFont = new Font(Font.MONOSPACED, Font.PLAIN, 14);
+	private PicodeMain picodeMain;
 	private DocumentManager documentManager;
 	private SketchCode code;
 	private JScrollPane jScrollPane;
@@ -37,6 +38,7 @@ public class PicodeEditor extends JEditorPane {
 	}
 
 	public PicodeEditor(PicodeMain picodeMain, SketchCode code) {
+		this.picodeMain = picodeMain;
 		this.code = code;
 		documentManager = new DocumentManager(picodeMain, this);
 		undoManager = new UndoManager();
@@ -52,6 +54,7 @@ public class PicodeEditor extends JEditorPane {
 			public void undoableEditHappened(UndoableEditEvent e) {
 				if (isUndoManagerEnabled) {
 					undoManager.addEdit(e.getEdit());
+					picodeMain.getFrame().getBtnUndo().setEnabled(true);
 				}
 			}
 		});
@@ -86,11 +89,11 @@ public class PicodeEditor extends JEditorPane {
 				SwingUtilities.convertPointFromScreen(p, PicodeEditor.this);
 				x = p.x; y = p.y;
 				if (lastX != x || lastY != y) {
-					int index = viewToModel(p);
-					System.out.println(
-							String.format(
-									"dnd: location update -> [%d, %d] (%d)",
-									x, y, index));
+//					int index = viewToModel(p);
+//					System.out.println(
+//							String.format(
+//									"dnd: location update -> [%d, %d] (%d)",
+//									x, y, index));
 					lastX = x; lastY = y;
 				}
 			}
@@ -134,10 +137,18 @@ public class PicodeEditor extends JEditorPane {
 		}
 	}
 
+	public boolean canUndo() {
+		return undoManager.canUndo();
+	}
+
 	public void redo() {
 		if (undoManager.canRedo()) {
 			undoManager.redo();
 		}
+	}
+
+	public boolean canRedo() {
+		return undoManager.canRedo();
 	}
 
 	void setUndoManagerEnabled(boolean isEnabled) {

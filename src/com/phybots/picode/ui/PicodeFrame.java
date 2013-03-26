@@ -537,8 +537,10 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 					if (currentEditor != null) {
 						picodeMain.getFrame().setNumberOfLines(
 								currentEditor.getCode().getLineCount());
-						getBtnUndo().setEnabled(currentEditor.canUndo());
-						getBtnRedo().setEnabled(currentEditor.canRedo());
+						getBtnUndo().setEnabled(
+								currentEditor.getDocumentManager().canUndo());
+						getBtnRedo().setEnabled(
+								currentEditor.getDocumentManager().canRedo());
 					}
 				}
 			});

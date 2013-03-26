@@ -13,9 +13,6 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoManager;
 
 import processing.app.SketchCode;
 
@@ -30,8 +27,6 @@ public class PicodeEditor extends JEditorPane {
 	private DocumentManager documentManager;
 	private SketchCode code;
 	private JScrollPane jScrollPane;
-	private UndoManager undoManager;
-	private boolean isUndoManagerEnabled;
 
 	public static Font getDefaultFont() {
 		return defaultFont;
@@ -41,23 +36,12 @@ public class PicodeEditor extends JEditorPane {
 		this.picodeMain = picodeMain;
 		this.code = code;
 		documentManager = new DocumentManager(picodeMain, this);
-		undoManager = new UndoManager();
-		isUndoManagerEnabled = true;
 		setFont(defaultFont);
 		initializeListeners();
 		setDragEnabled(true);
 	}
 
 	private void initializeListeners() {
-		getDocument().addUndoableEditListener(new UndoableEditListener() {
-			@Override
-			public void undoableEditHappened(UndoableEditEvent e) {
-				if (isUndoManagerEnabled) {
-					undoManager.addEdit(e.getEdit());
-					picodeMain.getFrame().getBtnUndo().setEnabled(true);
-				}
-			}
-		});
 		addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 			}
@@ -68,11 +52,11 @@ public class PicodeEditor extends JEditorPane {
 				}
 				switch (e.getKeyCode()) {
 				case KeyEvent.VK_Z:
-					undo();
+					documentManager.undo();
 					e.consume();
 					break;
 				case KeyEvent.VK_Y:
-					redo();
+					documentManager.redo();
 					e.consume();
 					break;
 				}
@@ -129,30 +113,6 @@ public class PicodeEditor extends JEditorPane {
 
 	public DocumentManager getDocumentManager() {
 		return documentManager;
-	}
-
-	public void undo() {
-		if (undoManager.canUndo()) {
-			undoManager.undo();
-		}
-	}
-
-	public boolean canUndo() {
-		return undoManager.canUndo();
-	}
-
-	public void redo() {
-		if (undoManager.canRedo()) {
-			undoManager.redo();
-		}
-	}
-
-	public boolean canRedo() {
-		return undoManager.canRedo();
-	}
-
-	void setUndoManagerEnabled(boolean isEnabled) {
-		isUndoManagerEnabled = isEnabled;
 	}
 
 }

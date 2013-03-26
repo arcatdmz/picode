@@ -23,9 +23,11 @@ public class RedoAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		PicodeEditor currentEditor = picodeMain.getFrame().getCurrentEditor();
 		if (currentEditor != null) {
-			currentEditor.redo();
-			picodeMain.getFrame().getBtnUndo().setEnabled(currentEditor.canUndo());
-			picodeMain.getFrame().getBtnRedo().setEnabled(currentEditor.canRedo());
+			currentEditor.getDocumentManager().redo();
+			picodeMain.getFrame().getBtnUndo().setEnabled(
+					currentEditor.getDocumentManager().canUndo());
+			picodeMain.getFrame().getBtnRedo().setEnabled(
+					currentEditor.getDocumentManager().canRedo());
 		}
 	}
 }

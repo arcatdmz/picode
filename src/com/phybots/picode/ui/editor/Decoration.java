@@ -1,13 +1,13 @@
 package com.phybots.picode.ui.editor;
 
 public class Decoration implements Comparable<Decoration> {
-	private int startIndex;
+	private int offset;
 	private int length;
 	private Type type;
 	private Object option;
 
-	public Decoration(int startIndex, int length, Type type, Object option) {
-		this.startIndex = startIndex;
+	public Decoration(int offset, int length, Type type, Object option) {
+		this.offset = offset;
 		this.length = length;
 		this.type = type;
 		this.option = option;
@@ -18,11 +18,11 @@ public class Decoration implements Comparable<Decoration> {
 	}
 
 	public int compareTo(Decoration decoration) {
-		return startIndex - decoration.startIndex;
+		return offset - decoration.offset;
 	}
 
-	public int getStartIndex() {
-		return startIndex;
+	public int getOffset() {
+		return offset;
 	}
 
 	public int getLenth() {
@@ -46,7 +46,7 @@ public class Decoration implements Comparable<Decoration> {
 		StringBuilder sb = new StringBuilder();
 		sb.append(type);
 		sb.append(" from:");
-		sb.append(getStartIndex());
+		sb.append(getOffset());
 		sb.append(" length:");
 		sb.append(getLenth());
 		sb.append(" option:");

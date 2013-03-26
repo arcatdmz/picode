@@ -28,6 +28,7 @@ import com.phybots.picode.parser.ASTtoHTMLConverter;
 import com.phybots.picode.parser.PdeParser;
 import com.phybots.picode.parser.PdeWalker;
 import com.phybots.picode.ui.editor.Decoration.Type;
+import com.phybots.picode.ui.editor.UndoManager.EditType;
 
 import processing.app.SketchCode;
 import processing.app.SketchException;
@@ -42,22 +43,24 @@ import antlr.collections.AST;
 
 public class DocumentManager implements DocumentListener {
 
-	private static SimpleAttributeSet defaultAttrs;
+	static SimpleAttributeSet defaultAttrs;
 	private static SimpleAttributeSet commentAttrs;
 	private static SimpleAttributeSet keywordAttrs;
 	private static SimpleAttributeSet errorAttrs;
+	private static Pattern photoApiPattern;
 
 	private PicodeMain picodeMain;
 	private PicodeEditor picodeEditor;
 
 	private StyleContext sc;
-	private StyledDocument doc;
+	StyledDocument doc;
 	private SortedSet<Decoration> decorations;
 	private PdeParser parser;
 	private AST ast;
 
 	private boolean isInlinePhotoEnabled = true;
-	private Pattern photoApiPattern = Pattern.compile("Picode\\.pose\\(\"(.+?)\"\\)");
+	private UndoManager undoManager;
+	private String lastRemovedText;
 
 	static {
 		defaultAttrs = new SimpleAttributeSet();
@@ -76,6 +79,8 @@ public class DocumentManager implements DocumentListener {
 		errorAttrs = new SimpleAttributeSet(defaultAttrs);
 		errorAttrs.addAttribute(StyleConstants.Background,
 				new Color(0xcc, 0xcc, 0xcc));
+
+		photoApiPattern = Pattern.compile("Picode\\.pose\\(\"(.+?)\"\\)");
 	}
 
 	public DocumentManager(PicodeMain picodeMain, PicodeEditor picodeEditor) {
@@ -87,12 +92,29 @@ public class DocumentManager implements DocumentListener {
 	private void initialize() {
 		sc = new StyleContext();
 		sc.getStyle(StyleContext.DEFAULT_STYLE).addAttributes(defaultAttrs);
-		doc = new DefaultStyledDocument(sc);
+		doc = new DefaultStyledDocument(sc) {
+			private static final long serialVersionUID = 6958151177602959743L;
+
+			@Override
+			public void remove(int offset, int length) throws BadLocationException {
+				lastRemovedText = doc.getText(offset, length);
+				super.remove(offset, length);
+			}
+
+			@Override
+			public void replace(int offset, int length, String text,
+                    AttributeSet attrs) throws BadLocationException {
+				lastRemovedText = doc.getText(offset, length);
+				super.replace(offset, length, text, attrs);
+			}
+		};
 		decorations = new TreeSet<Decoration>();
 		parser = picodeMain.getSketch().getParser();
 
 		picodeEditor.setEditorKit(new StyledEditorKit());
 		picodeEditor.setDocument(doc);
+
+		undoManager = new UndoManager(this);
 
 		String codeString = picodeEditor.getCode().getProgram();
 		try {
@@ -117,7 +139,7 @@ public class DocumentManager implements DocumentListener {
 				Decoration decoration = it.next();
 				if (decoration.getType() == Type.POSE) {
 					setCharacterAttributes(
-							decoration.getStartIndex(),
+							decoration.getOffset(),
 							decoration.getLenth(),
 							defaultAttrs);
 					it.remove();
@@ -143,8 +165,8 @@ public class DocumentManager implements DocumentListener {
 
 	public Decoration getDecoration(int index) {
 		for (Decoration decoration : decorations) {
-			if (index >= decoration.getStartIndex() &&
-					index < decoration.getStartIndex() + decoration.getLenth()) {
+			if (index >= decoration.getOffset() &&
+					index < decoration.getOffset() + decoration.getLenth()) {
 				return decoration;
 			}
 		}
@@ -164,6 +186,26 @@ public class DocumentManager implements DocumentListener {
 		return converter.convert(ast, name, rootPath);
 	}
 
+	public void undo() {
+		if (undoManager.canUndo()) {
+			undoManager.undo();
+		}
+	}
+
+	public boolean canUndo() {
+		return undoManager.canUndo();
+	}
+
+	public void redo() {
+		if (undoManager.canRedo()) {
+			undoManager.redo();
+		}
+	}
+
+	public boolean canRedo() {
+		return undoManager.canRedo();
+	}
+
 	private void setCharacterAttributes(int startIndex, int length, SimpleAttributeSet attrs) {
 		if (length <= 0) {
 			return;
@@ -180,6 +222,20 @@ public class DocumentManager implements DocumentListener {
 	private void onUpdate(final DocumentEvent de) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				UndoManager.Edit edit = new UndoManager.Edit();
+				edit.offset = de.getOffset();
+				try {
+					if (de.getType() == EventType.INSERT) {
+						edit.type = EditType.INSERT;
+						edit.afterText = doc.getText(
+								de.getOffset(), de.getLength());
+					} else if (de.getType() == EventType.REMOVE) {
+						edit.type = EditType.REMOVE;
+						edit.beforeText = lastRemovedText;
+					}
+				} catch (BadLocationException e) {
+					e.printStackTrace();
+				}
 
 				Decoration existingIcon = null;
 				Element paragraph = doc.getParagraphElement(de.getOffset());
@@ -214,29 +270,32 @@ public class DocumentManager implements DocumentListener {
 					try {
 						String insertedText = doc.getText(de.getOffset(), de.getLength());
 						if (photoApiPattern.matcher(insertedText).matches()) {
-							picodeEditor.undo(); // Cancel text insertion
-							doc.remove(existingIcon.getStartIndex(),
+							edit.type = EditType.REPLACE;
+							edit.offset = existingIcon.getOffset();
+							edit.beforeText = doc.getText(
+									existingIcon.getOffset(),
 									existingIcon.getLenth());
+							doc.removeDocumentListener(DocumentManager.this);
+							// Remove the API call body.
+							doc.remove(existingIcon.getOffset(),
+									existingIcon.getLenth() + de.getLength());
+							// Insert new API call.
 							doc.insertString(
-									existingIcon.getStartIndex(),
+									existingIcon.getOffset(),
 									insertedText,
 									defaultAttrs);
+							doc.addDocumentListener(DocumentManager.this);
 						}
 					} catch (BadLocationException e) {
 						e.printStackTrace();
 					}
 				}
+				undoManager.registerEdit(edit);
+				picodeMain.getFrame().getBtnUndo().setEnabled(canUndo());
+				picodeMain.getFrame().getBtnRedo().setEnabled(canRedo());
 
 		        // Update code.
-				String newCode;
-				try {
-					newCode = doc.getText(0, doc.getLength());
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-					return;
-				}
-				picodeEditor.getCode().setProgram(newCode);
-				picodeMain.getSketch().setModified(true);
+				syncCode();
 				update(de);
 			}
 		});
@@ -246,10 +305,21 @@ public class DocumentManager implements DocumentListener {
 		update(null);
 	}
 
+	public void syncCode() {
+		String newCode;
+		try {
+			newCode = doc.getText(0, doc.getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+			return;
+		}
+		picodeEditor.getCode().setProgram(newCode);
+		picodeMain.getSketch().setModified(true);
+	}
+
 	private void update(final DocumentEvent e) {
 		int caretPosition = picodeEditor.getCaretPosition();
 		doc.removeDocumentListener(DocumentManager.this);
-		picodeEditor.setUndoManagerEnabled(false);
 
 		try {
 			if (e != null && e.getType() == EventType.REMOVE) {
@@ -262,7 +332,6 @@ public class DocumentManager implements DocumentListener {
 			updateErrorDecoration(se);
 			picodeMain.getPintegration().statusError(se);
 		} finally {
-			picodeEditor.setUndoManagerEnabled(true);
 			doc.addDocumentListener(DocumentManager.this);
 			picodeEditor.setCaretPosition(caretPosition);
 		}
@@ -304,7 +373,7 @@ public class DocumentManager implements DocumentListener {
 		SketchException se = null;
 		for (Decoration decoration : decorations) {
 
-			int startIndex = decoration.getStartIndex();
+			int startIndex = decoration.getOffset();
 			int length = decoration.getLenth();
 			if (startIndex > index) {
 				setCharacterAttributes(index, startIndex - index, defaultAttrs);
@@ -326,7 +395,7 @@ public class DocumentManager implements DocumentListener {
 				PoseLibrary poseLibrary = PoseLibrary.getInstance();
 				String poseName = decoration.getOption().toString();
 				Pose pose = poseLibrary.get(poseName);
-				System.out.println("Decorating pose: " + poseName);
+				// System.out.println("Decorating pose: " + poseName);
 				if (!poseLibrary.contains(poseName)) {
 					try {
 						pose = PoseLibrary.load(poseName);
@@ -370,10 +439,10 @@ public class DocumentManager implements DocumentListener {
 		while (it.hasNext()) {
 			decoration = it.next();
 			if (forceRemoval || decoration.getType() == Type.POSE) {
-				int dsi = decoration.getStartIndex(), dei = dsi + decoration.getLenth();
+				int dsi = decoration.getOffset(), dei = dsi + decoration.getLenth();
 				if ((esi >= dsi && esi < dei) || (eei >= dsi && eei < dei)) {
 					setCharacterAttributes(
-							decoration.getStartIndex(),
+							decoration.getOffset(),
 							decoration.getLenth() - length,
 							defaultAttrs);
 					it.remove();

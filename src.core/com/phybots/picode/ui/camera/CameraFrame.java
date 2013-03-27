@@ -1,8 +1,8 @@
 package com.phybots.picode.ui.camera;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +22,6 @@ import com.phybots.picode.camera.Camera;
 import com.phybots.picode.camera.CameraManager;
 import com.phybots.picode.ui.LockingGlassPane;
 
-import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 import javax.swing.ButtonGroup;
 import javax.swing.AbstractAction;
@@ -30,6 +29,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.Action;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 public class CameraFrame extends JFrame {
 	private static final long serialVersionUID = -1065767804512646130L;
@@ -46,11 +50,14 @@ public class CameraFrame extends JFrame {
 	private transient ExecutorService es;
 	private final Action primaryCameraAction = new PrimaryCameraAction();
 	private final Action action = new SecondaryCameraAction();
+	private JLabel lblStatus;
 
 	/**
 	 * Create the frame.
 	 */
 	public CameraFrame() {
+		setTitle("Camera");
+
 		setType(Type.UTILITY);
 		setAlwaysOnTop(true);
 		setBounds(100, 100, 450, 300);
@@ -77,13 +84,31 @@ public class CameraFrame extends JFrame {
 
 		JPanel pnlButtons = new JPanel();
 		contentPane.add(pnlButtons, BorderLayout.SOUTH);
-		pnlButtons.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-
-		btnCapture = new JButton();
-		btnCapture.setAction(new CapturePoseAction());
-		btnCapture.setIcon(new ImageIcon(CameraFrame.class.getResource("/camera.png")));
-		btnCapture.setFont(defaultFont);
-		pnlButtons.add(btnCapture);
+		GridBagLayout gbl_pnlButtons = new GridBagLayout();
+		gbl_pnlButtons.columnWeights = new double[]{0.0, 0.0};
+		gbl_pnlButtons.rowWeights = new double[]{0.0};
+		pnlButtons.setLayout(gbl_pnlButtons);
+				
+				lblStatus = new JLabel();
+				lblStatus.setHorizontalAlignment(SwingConstants.RIGHT);
+				lblStatus.setFont(defaultFont.deriveFont(Font.BOLD, 16));
+				GridBagConstraints gbc_lblStatus = new GridBagConstraints();
+				gbc_lblStatus.fill = GridBagConstraints.HORIZONTAL;
+				gbc_lblStatus.weightx = 1.0;
+				gbc_lblStatus.anchor = GridBagConstraints.EAST;
+				gbc_lblStatus.insets = new Insets(0, 0, 0, 5);
+				gbc_lblStatus.gridx = 0;
+				gbc_lblStatus.gridy = 0;
+				pnlButtons.add(lblStatus, gbc_lblStatus);
+		
+				btnCapture = new JButton();
+				btnCapture.setAction(new CapturePoseAction());
+				btnCapture.setFont(defaultFont);
+				GridBagConstraints gbc_btnCapture = new GridBagConstraints();
+				gbc_btnCapture.anchor = GridBagConstraints.NORTHWEST;
+				gbc_btnCapture.gridx = 1;
+				gbc_btnCapture.gridy = 0;
+				pnlButtons.add(btnCapture, gbc_btnCapture);
 
 		pnlDefaultCamera = new JPanel();
 		contentPane.add(pnlDefaultCamera, BorderLayout.CENTER);
@@ -139,6 +164,15 @@ public class CameraFrame extends JFrame {
 		es.shutdown();
 	}
 
+	public void setText(String text, Color color) {
+		lblStatus.setForeground(color);
+		setText(text);
+	}
+
+	public void setText(String text) {
+		lblStatus.setText(text);
+	}
+
 	public void setPoser(Poser poser) {
 
 		hideCurrentCamera();
@@ -158,6 +192,7 @@ public class CameraFrame extends JFrame {
 		if (camera != null) {
 			setCurrentCamera(poser, camera);
 		}
+		setTitle(String.format("Camera seeing %s", poser.getPoserType().typeName));
 	}
 
 	private void hideCurrentCamera() {

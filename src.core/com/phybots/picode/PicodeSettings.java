@@ -4,10 +4,11 @@ import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ public class PicodeSettings {
 	private String sketchPath;
 	private int windowState;
 	private int x, y, width, height;
+	private String header, footer;
 	
 	public PicodeSettings() {
 		this(System.getProperty("user.dir") + "\\settings.txt");
@@ -40,9 +42,10 @@ public class PicodeSettings {
 		// Start reading the file.
 		BufferedReader br = null;
 		try {
-			FileReader fr = new FileReader(filePath);
-			br = new BufferedReader(fr);
-		} catch (FileNotFoundException e) {
+			InputStreamReader isr = new InputStreamReader(
+					new FileInputStream(new File(filePath)), "UTF-8");
+			br = new BufferedReader(isr);
+		} catch (IOException e) {
 			System.err.print("Config file not found: ");
 			System.err.println(filePath);
 			return false;
@@ -56,9 +59,11 @@ public class PicodeSettings {
 			while ((line = br.readLine()) != null) {
 				if (HEADER_IDE.equals(line)) {
 					step = STEP_IDE;
+					System.out.println("step ide");
 					continue;
 				} else if (HEADER_POSERS.equals(line)) {
 					step = STEP_POSERS;
+					System.out.println("step posers");
 					continue;
 				}
 				String[] words = line.split("=", 2);
@@ -90,8 +95,9 @@ public class PicodeSettings {
 
 		// Save settings.
 		try {
-			FileWriter fw = new FileWriter(filePath);
-			BufferedWriter bw = new BufferedWriter(fw);
+			OutputStreamWriter osw = new OutputStreamWriter(
+					new FileOutputStream(new File(filePath)), "UTF-8");
+			BufferedWriter bw = new BufferedWriter(osw);
 			serializeIde(bw);
 			serializePosers(bw);
 			bw.close();
@@ -114,10 +120,17 @@ public class PicodeSettings {
 				width = Integer.valueOf(metrics[2].trim());
 				height = Integer.valueOf(metrics[3].trim());
 			}
+		} else if ("header".equals(key)) {
+			setHeader(value);
+		} else if ("footer".equals(key)) {
+			setFooter(value);
 		}
 	}
 
 	private void serializeIde(BufferedWriter bw) throws IOException {
+		bw.write("; Picode setting file");
+		bw.newLine();
+		bw.newLine();
 		bw.write(HEADER_IDE);
 		bw.newLine();
 		if (getSketchPath() != null) {
@@ -128,6 +141,14 @@ public class PicodeSettings {
 		bw.newLine();
 		bw.write(String.format("window.bounds = %d, %d, %d, %d", x, y, width, height));
 		bw.newLine();
+		if (getHeader() != null) {
+			bw.write(String.format("header = %s", getHeader()));
+			bw.newLine();
+		}
+		if (getFooter() != null) {
+			bw.write(String.format("footer = %s", getFooter()));
+			bw.newLine();
+		}
 		bw.newLine();
 	}
 
@@ -208,6 +229,22 @@ public class PicodeSettings {
 
 	public void setSketchPath(String sketchPath) {
 		this.sketchPath = sketchPath;
+	}
+
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
+
+	public String getFooter() {
+		return footer;
+	}
+
+	public void setFooter(String footer) {
+		this.footer = footer;
 	}
 
 	public int getIdeWindowState() {

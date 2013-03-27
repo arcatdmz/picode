@@ -274,6 +274,14 @@ public class PicodeMain {
 		}
 	}
 
+	public String getHeader() {
+		return settings.getHeader();
+	}
+
+	public String getFooter() {
+		return settings.getFooter();
+	}
+
 	public static Font getDefaultFont() {
 		return Phybots.getInstance().getDefaultFont();
 	}

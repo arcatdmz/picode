@@ -183,7 +183,12 @@ public class DocumentManager implements DocumentListener {
 		if (name == null) {
 			name = picodeEditor.getCode().getFileName();
 		}
-		return converter.convert(ast, name, rootPath);
+		return converter.convert(
+				ast,
+				name,
+				picodeMain.getHeader(),
+				picodeMain.getFooter(),
+				rootPath);
 	}
 
 	public void undo() {
@@ -328,9 +333,7 @@ public class DocumentManager implements DocumentListener {
 			updateDecoration();
 			picodeMain.getPintegration().statusEmpty();
 		} catch (SketchException se) {
-			if (e != null) {
-				removeDecoration(e, true);
-			}
+			removeDecoration(e, true);
 			updateErrorDecoration(se);
 			picodeMain.getPintegration().statusError(se);
 		} finally {

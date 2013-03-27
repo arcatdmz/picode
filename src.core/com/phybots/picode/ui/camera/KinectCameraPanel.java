@@ -219,7 +219,7 @@ public class KinectCameraPanel extends CameraPanelAbstractImpl implements FrameL
 					if (skeletonLife > 0) {
 						g.setColor(Color.green);
 						((Graphics2D) g).setStroke(stroke);
-						KinectServiceWrapper.drawSkeleton(g, joints, x, y);
+						KinectServiceWrapper.drawSkeleton(g, joints, x, y, scale / 2);
 					}
 				} else {
 					g.drawImage(image,

@@ -49,12 +49,17 @@ public class ASTtoHTMLConverter {
 
 	private String rootPath = "./";
 	public String convert(AST ast, String title, String rootPath) {
+		return convert(ast, title, null, null, rootPath);
+	}
+	public String convert(AST ast, String title, String header, String footer, String rootPath) {
 		this.rootPath = rootPath;
 		this.sb = new StringBuilder();
 		sb.append("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><title>");
 		sb.append(title);
 		sb.append("</title></head><body>");
+		if (header != null) sb.append(header);
 		doConvert(ast);
+		if (footer != null) sb.append(footer);
 		sb.append("</body></html>");
 		return sb.toString();
 	}

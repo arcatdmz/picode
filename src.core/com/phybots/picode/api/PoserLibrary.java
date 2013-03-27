@@ -165,6 +165,15 @@ public class PoserLibrary {
 		return cameraManager;
 	}
 
+	public CameraFrame getCameraFrame() {
+		return cameraFrame;
+	}
+
+	public boolean isCameraFrameVisible() {
+		return cameraFrame != null
+				&& cameraFrame.isVisible();
+	}
+
 	public void showCameraFrame(boolean isVisible) {
 		if (cameraFrame == null) {
 			cameraFrame = new CameraFrame();

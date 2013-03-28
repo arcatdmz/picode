@@ -98,8 +98,9 @@ public class KinectCamera extends CameraAbstractImpl implements FrameListener {
 			try {
 				wrapper.setColorEnabled(true);
 				wrapper.setDepthEnabled(false);
-				wrapper.addKeyword("Capture");
-				wrapper.setVoiceEnabled(true);
+				// wrapper.addKeyword("Capture");
+				// wrapper.setVoiceEnabled(true);
+				wrapper.setVoiceEnabled(false);
 				break;
 			} catch (TException e) {
 				if (i == 10) {

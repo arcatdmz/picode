@@ -21,11 +21,11 @@ public class UndoManager {
 		}
 		edits.addLast(edit);
 		pointer ++;
-		System.out.print("--- reg:");
-		System.out.println(edit.type);
-		System.out.println(edit.offset);
-		System.out.println(edit.beforeText);
-		System.out.println(edit.afterText);
+//		System.out.print("--- reg:");
+//		System.out.println(edit.type);
+//		System.out.println(edit.offset);
+//		System.out.println(edit.beforeText);
+//		System.out.println(edit.afterText);
 	}
 
 	public boolean canUndo() {

@@ -125,19 +125,22 @@ public class KinectCameraPanel extends CameraPanelAbstractImpl implements FrameL
 		this.frame = frame;
 		this.image = image;
 		this.depthImageData = depthImageData;
-		if (frame.isSetWords()) {
-			boolean save = false;
-			System.out.print("Word detected: ");
-			for (String word : frame.getWords()) {
-				System.out.print(word);
-				save |= "capture".equalsIgnoreCase(word);
-			}
-			System.out.println();
-			if (save) {
-				new CapturePoseAction().actionPerformed(null);
-			}
-		}
+//		if (frame.isSetWords()) {
+//			boolean save = false;
+//			System.out.print("Word detected: ");
+//			for (String word : frame.getWords()) {
+//				System.out.print(word);
+//				save |= "capture".equalsIgnoreCase(word);
+//			}
+//			System.out.println();
+//			if (save) {
+//				new CapturePoseAction().actionPerformed(null);
+//			}
+//		}
 		panel.repaint();
+		if (frame.frameId % 5 == 0) {
+			System.gc();
+		}
 	}
 
 	private class KinectImagePanel extends JPanel {

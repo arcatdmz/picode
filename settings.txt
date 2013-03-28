@@ -1,7 +1,7 @@
 ; Picode setting file
 
 [Picode IDE]
-sketch = C:\Users\arc\Documents\GitHub\picode\projects\HelloWorld\HelloWorld.pde
+sketch = C:\Users\arc\Documents\GitHub\picode\projects\FlagKinectAndRobot\FlagKinectAndRobot.pde
 window.state = 0
 window.bounds = 5, 5, 640, 480
 header = <style>body{font-family:'Meiryo','Hiragino Kaku Gothic Pro',sans-serif} h2{margin-bottom: 0;padding-bottom: 0} h2 img,center img{height: 1.7em; vertical-align: bottom} h2 img{margin-right: .5em} h2 small{font-weight: normal; font-size: smaller;} pre{font-family:'Courier New',Modern,sans-serif} hr{margin-top: .2em;height:1px;border:solid #003f8e;border-width:2px 0;background:#003f8e;}</style><h2><img src="http://junkato.jp/picode/miraikan.png" alt="Miraikan" /><b>Picodeワークショップ</b><small>～カラダをつかってロボットプログラミング！～</small></h2><hr/><pre>

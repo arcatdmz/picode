@@ -114,22 +114,22 @@ void setPose(int pose) {
 
     // 左手あげて！
     case 0:
-      nxt.setPose(Picode.pose("New pose (32)"));
+      nxt.setPose(Picode.pose("New pose (22)"));
       break;
 
     // 右手あげて！
     case 1:
-      nxt.setPose(Picode.pose("New pose (21)"));
+      nxt.setPose(Picode.pose("New pose (25)"));
       break;
 
     // 両手さげて！
     case 2:
-      nxt.setPose(Picode.pose("New pose (20)"));
+      nxt.setPose(Picode.pose("New pose (19)"));
       break;
 
     // 両手あげて！
     case 3:
-      nxt.setPose();
+      nxt.setPose(Picode.pose("New pose (24)"));
       break;
   }
 }

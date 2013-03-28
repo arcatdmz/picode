@@ -11,9 +11,9 @@ void draw() {
     return;
   }
   if (flag) {
-    nxt.setPose(Picode.pose("New pose (0)"));
+    nxt.setPose(Picode.pose("New pose (22)"));
   } else {
-    nxt.setPose(Picode.pose("New pose (1)"));
+    nxt.setPose(Picode.pose("New pose (25)"));
   }
   println("switch " + flag);
   flag = !flag;

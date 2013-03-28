@@ -279,6 +279,9 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			}
 		}
 
+		private int[] trivialWait = new int[3];
+		private static final int trivialWaitTime = 5;
+		private static final int trivialWaitAngleThreshold = 10;
 		private synchronized boolean isMotorReady(int port) {
 
 			try {
@@ -311,12 +314,37 @@ public class MindstormsNXTMotorManager extends MotorManager {
 
 					// Before starting the motor control...
 					int diff = currentStates[port].rotationCount - previousGoals[port];
-					if (previousGoals[port] != Integer.MAX_VALUE && Math.abs(diff) > 5) {
+					if (previousGoals[port] != Integer.MAX_VALUE && Math.abs(diff) > trivialWaitAngleThreshold) {
+						if (trivialWait[port] == 0) {
+							System.out.println(String.format(
+									"MotorControl: waiting for port:%d / diff: %d",
+									port, diff));
+							trivialWait[port] ++;
+						} else if (trivialWait[port] >= trivialWaitTime) {
+							System.out.println(String.format(
+									"MotorControl: waiting for port:%d time out / diff: %d",
+									port, diff));
+							trivialWait[port] = 0;
+							return true;
+						} else {
+							trivialWait[port] ++;
+							System.out.println(String.format(
+									"MotorControl: waiting for port:%d (%s trial ) / diff: %d",
+									port,
+									trivialWait[port] == 2 ? "2nd" :
+										(trivialWait[port] == 3 ? "3rd" :
+											trivialWait[port] + "th"),
+									diff));
+						}
 						// wait more.
 						return false;
+					} else {
+						trivialWait[port] = 0;
 					}
 
 					return true;
+				} else {
+					trivialWait[port] = 0;
 				}
 			}
 			return false;
@@ -332,7 +360,7 @@ public class MindstormsNXTMotorManager extends MotorManager {
 			// If we've already reached the goal, do nothing.
 			OutputState currentState = currentStates[port];
 			int goal = goals[port];
-			if (Math.abs(goal - currentState.rotationCount) < 5) {
+			if (Math.abs(goal - currentState.rotationCount) <= trivialWaitAngleThreshold) {
 				return true;
 			}
 

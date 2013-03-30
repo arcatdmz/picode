@@ -1,22 +1,21 @@
 Human human;
-MindstormsNXT robot;
+MindstormsNXT nxt;
 PFont font, largeFont;
-PImage left;
 
 void setup() {
 
   // いろいろ初期化
+  nxt = new MindstormsNXT();
+  nxt.connect();
   human = new Human();
-  robot = new MindstormsNXT();
-  robot.connect();
+  human.showCaptureFrame(true);
   font = createFont("Meiryo UI", 24, true);
   largeFont = createFont("Meiryo UI", 40, true);
-  left = loadImage("left.png");
   size(640, 640);
   frameRate(15);
 
   // はじめの姿勢
-  robot.setPose(Picode.pose("New pose (30)"));
+  nxt.setPose(Picode.pose("none"));
 }
 
 void draw() {
@@ -35,25 +34,26 @@ void draw() {
   // 指示
   textFont(largeFont);
   textAlign(CENTER);
-  image(left, 20, 10);
-  text("左手あげて！", 320, 610);
+  text("はいポーズ！", 320, 610);
 
   // 姿勢がとれなかったら何もしない
   if (pose == null) {
     return;
   }
 
-  // 左手をあげたら
-  if (pose.eq(Picode.pose("New pose (23)"))) {
-    if (!robot.isActing()) {
-      // シュート！
-      robot.setPose(Picode.pose("New pose (21)"));
-    }
-  } else {
-    if (!robot.isActing()) {
-      // それ以外のときは、はじめの姿勢に戻る
-      robot.setPose(Picode.pose("New pose (20)"));
-    }
+  // ロボットがまだ動いていたら何もしない
+  if (nxt.isActing() == true) {
+    return;
   }
+
+  // このポーズだったら
+  if (pose.eq(Picode.pose("fugafuga"))) {
+    // シュート！
+    nxt.setPose(Picode.pose("left"));
+    return;
+  }
+
+  // それ以外のときは、はじめの姿勢に戻る
+  nxt.setPose(Picode.pose("none"));
 }
 

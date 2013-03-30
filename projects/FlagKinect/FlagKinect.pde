@@ -55,28 +55,28 @@ void draw() {
 
     // 左手あげて！
     case 0:
-      if (pose.eq(Picode.pose("New pose (3)"))) {
+      if (pose.eq(Picode.pose("hoge"))) {
         ok = true;
       }
       break;
 
     // 右手あげて！
     case 1:
-      if (pose.eq(Picode.pose("New pose (4)"))) {
+      if (pose.eq(Picode.pose("fugafuga"))) 	{
         ok = true;
       }
       break;
 
     // 両手さげて！
     case 2:
-      if (pose.eq(Picode.pose("New pose (2)"))) {
+      if (pose.eq(Picode.pose("hogehoge"))) {	
         ok = true;
       }
       break;
 
     // 両手あげて！
     case 3:
-      if (pose.eq(Picode.pose("New pose (5)"))) {
+      if (pose.eq(Picode.pose("hoge"))) {
         ok = true;
       }
       break;

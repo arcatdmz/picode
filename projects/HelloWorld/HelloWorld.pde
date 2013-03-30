@@ -23,7 +23,7 @@ void draw() {
   }
   boolean right = false;
   boolean both = false;
-  if (pose.eq(Picode.pose("New pose (4)"), 0.04)) {
+  if (pose.eq(Picode.pose("hoge"), 0.04)) {
     fill(200, 40, 40);
     if (!lastRightHandUp) {
       r.keyPress(java.awt.event.KeyEvent.VK_RIGHT);
@@ -31,7 +31,7 @@ void draw() {
     }
     right = true;
   } else
-  if (pose.eq(Picode.pose("New pose (5)"), 0.04)) {
+  if (pose.eq(Picode.pose("hogehoge"), 0.04)) {
     fill(30, 200, 30);
     if (!lastBothHandsUp) {
       r.keyPress(java.awt.event.KeyEvent.VK_LEFT);

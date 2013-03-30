@@ -1,5 +1,7 @@
 package com.phybots.picode.api;
 
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import com.phybots.picode.camera.Camera;
@@ -68,7 +70,23 @@ public abstract class Poser {
 		pose.setName(poseLibrary.newName());
 		Camera camera = getCamera();
 		if (camera != null) {
-			pose.setPhoto(camera.getImage());
+			BufferedImage image = camera.getImage();
+			boolean isShowingHuman = this instanceof Human;
+			if (!isShowingHuman) {
+				BufferedImage invertedImage = new BufferedImage(
+						image.getWidth(),
+						image.getHeight(),
+						image.getType());
+				Graphics g = invertedImage.createGraphics();
+				int x = image.getWidth() - 1;
+				int y = image.getHeight() - 1;
+				g.drawImage(image,
+						x, 0, 0, y,
+						0, 0, x, y, null);
+				g.dispose();
+				image = invertedImage;
+			}
+			pose.setPhoto(image);
 		}
 		try {
 			pose.save();

@@ -254,7 +254,7 @@ public class PoseLibraryPanel extends JPanel {
 			popupMenu = new JPopupMenu();
 			popupMenu.add(getMntmApplyThisPose());
 			popupMenu.add(getMntmDuplicateThisPose());
-			popupMenu.add(getMntmRenameThisPose());
+			// popupMenu.add(getMntmRenameThisPose());
 			popupMenu.add(getMntmDeleteThisPose());
 			popupMenu.add(getSeparator());
 			popupMenu.add(getMntmOpenPoseFolder());

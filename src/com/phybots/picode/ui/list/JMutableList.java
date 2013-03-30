@@ -38,15 +38,15 @@ public class JMutableList<T> extends JList<T> implements CellEditorListener {
 	}
 
 	private void initialize() {
-		getActionMap().put("startEditing", new StartEditingAction());
-		getActionMap().put("cancel", new CancelEditingAction());
-		addMouseListener(new MouseListener());
-		getInputMap().put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0),
-				"startEditing");
-		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-				"cancel");
+//		getActionMap().put("startEditing", new StartEditingAction());
+//		getActionMap().put("cancel", new CancelEditingAction());
+//		addMouseListener(new MouseListener());
+//		getInputMap().put(
+//				KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0),
+//				"startEditing");
+//		getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
+//				KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+//				"cancel");
 		putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 	}
 

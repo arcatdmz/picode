@@ -333,7 +333,9 @@ public class DocumentManager implements DocumentListener {
 			updateDecoration();
 			picodeMain.getPintegration().statusEmpty();
 		} catch (SketchException se) {
-			removeDecoration(e, true);
+			if (e != null && e.getType() == EventType.REMOVE) {
+				removeDecoration(e, true);
+			}
 			updateErrorDecoration(se);
 			picodeMain.getPintegration().statusError(se);
 		} finally {

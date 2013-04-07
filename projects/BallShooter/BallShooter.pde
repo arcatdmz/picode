@@ -49,7 +49,7 @@ void draw() {
   // このポーズだったら
   if (pose.eq(Picode.pose("fugafuga"))) {
     // シュート！
-    nxt.setPose(Picode.pose("left"));
+    nxt.setPose(Picode.pose("none"));
     return;
   }
 

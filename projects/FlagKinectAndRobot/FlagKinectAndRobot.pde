@@ -114,12 +114,12 @@ void setPose(int pose) {
 
     // 左手あげて！
     case 0:
-      nxt.setPose(Picode.pose("left"));
+      nxt.setPose(Picode.pose("none"));
       break;
 
     // 右手あげて！
     case 1:
-      nxt.setPose(Picode.pose("right"));
+      nxt.setPose(Picode.pose("none"));
       break;
 
     // 両手さげて！
@@ -129,7 +129,7 @@ void setPose(int pose) {
 
     // 両手あげて！
     case 3:
-      nxt.setPose(Picode.pose("both"));
+      nxt.setPose(Picode.pose("none"));
       break;
   }
 }
@@ -220,4 +220,7 @@ int getTime() {
   return ((hour() * 60 + minute()) * 60 + second()) * 10 + millis() / 100;
 }
 
-
+// クリックされたらカメラの画面を出す
+void mouseClicked() {
+  human.showCaptureFrame(true);
+}

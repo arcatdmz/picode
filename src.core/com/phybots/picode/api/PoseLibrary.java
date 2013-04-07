@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,14 +53,16 @@ public class PoseLibrary {
 
 	private void listPoses() {
 		File poseFolder = new File(PicodeSettings.getPoseFolderPath());
-		for (File file : poseFolder.listFiles(new FilenameFilter() {
+		File[] files = poseFolder.listFiles(new FilenameFilter() {
 			public boolean accept(File folder, String fileName) {
 				if (fileName.toLowerCase().endsWith(".jpg")) {
 					return true;
 				}
 				return false;
 			}
-		})) {
+		});
+		Arrays.sort(files);
+		for (File file : files) {
 			try {
 				String fileName = file.getName();
 				doLoad(fileName.substring(

@@ -15,7 +15,7 @@ void setup() {
   frameRate(15);
 
   // はじめの姿勢
-  nxt.setPose(Picode.pose("none"));
+  loadInitialPose();
 }
 
 void draw() {
@@ -54,6 +54,15 @@ void draw() {
   }
 
   // それ以外のときは、はじめの姿勢に戻る
+  loadInitialPose();
+}
+
+// はじめの姿勢に戻る
+void loadInitialPose() {
   nxt.setPose(Picode.pose("none"));
 }
 
+// クリックされたらカメラの画面を出す
+void mouseClicked() {
+  human.showCaptureFrame(true);
+}

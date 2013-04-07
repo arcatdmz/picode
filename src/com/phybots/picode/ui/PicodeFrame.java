@@ -643,7 +643,20 @@ public class PicodeFrame extends JFrame implements PicodeInterface {
 
 	public void onAddPose(Pose pose) {
 		TypeBasedPoseLibrary library = libraries.get(pose.getPoserType());
-		library.addElement(pose);
+		int index;
+		if (library.getSize() > 0) {
+			index = library.getSize();
+			for (int i = 0; i < library.getSize(); i ++) {
+				Pose p = library.get(i);
+				if (p.getName().compareToIgnoreCase(pose.getName()) > 0) {
+					index = i;
+					break;
+				}
+			}
+		} else {
+			index = 0;
+		}
+		library.add(index, pose);
 	}
 
 	public void onRemovePose(Pose pose) {

@@ -205,3 +205,7 @@ int getTime() {
   return ((hour() * 60 + minute()) * 60 + second()) * 10 + millis() / 100;
 }
 
+// クリックされたらカメラの画面を出す
+void mouseClicked() {
+  human.showCaptureFrame(true);
+}

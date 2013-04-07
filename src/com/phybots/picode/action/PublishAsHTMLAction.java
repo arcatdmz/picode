@@ -138,6 +138,9 @@ public class PublishAsHTMLAction extends AbstractAction {
 		// to the directory being zipped, so chop off the rest of the path
 		String zipFilePath = file.getCanonicalPath().substring(directoryToZip.getCanonicalPath().length() + 1,
 				file.getCanonicalPath().length());
+		while (zipFilePath.indexOf(File.separator) >= 0) {
+			zipFilePath = zipFilePath.replace(File.separator, "/");
+		}
 		ZipEntry zipEntry = new ZipEntry(zipFilePath);
 		zos.putNextEntry(zipEntry);
 

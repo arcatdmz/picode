@@ -42,9 +42,8 @@ public class PicodeSettings {
 		// Start reading the file.
 		BufferedReader br = null;
 		try {
-			InputStreamReader isr = new InputStreamReader(
-					new FileInputStream(new File(filePath)), "UTF-8");
-			br = new BufferedReader(isr);
+			br = new BufferedReader(new InputStreamReader(
+					new FileInputStream(new File(filePath)), "UTF-8"));
 		} catch (IOException e) {
 			System.err.print("Config file not found: ");
 			System.err.println(filePath);
@@ -59,11 +58,9 @@ public class PicodeSettings {
 			while ((line = br.readLine()) != null) {
 				if (HEADER_IDE.equals(line)) {
 					step = STEP_IDE;
-					System.out.println("step ide");
 					continue;
 				} else if (HEADER_POSERS.equals(line)) {
 					step = STEP_POSERS;
-					System.out.println("step posers");
 					continue;
 				}
 				String[] words = line.split("=", 2);

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import com.phybots.picode.camera.Camera;
+import com.phybots.picode.camera.KinectCamera;
 
 public abstract class Poser {
 
@@ -72,7 +73,7 @@ public abstract class Poser {
 		if (camera != null) {
 			BufferedImage image = camera.getImage();
 			boolean isShowingHuman = this instanceof Human;
-			if (!isShowingHuman) {
+			if (!isShowingHuman && camera instanceof KinectCamera) {
 				BufferedImage invertedImage = new BufferedImage(
 						image.getWidth(),
 						image.getHeight(),

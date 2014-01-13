@@ -147,7 +147,7 @@ public class ConnectorPanel extends JPanel {
 	public Connector newConnectorInstance() {
 		try {
 			return ConnectorFactory.makeConnector(getConnectionString());
-		} catch (IllegalArgumentException e) {
+		} catch (InstantiationError | Exception e) {
 			return null;
 		}
 	}
@@ -201,7 +201,12 @@ public class ConnectorPanel extends JPanel {
 		default:
 			// Return the default identifier.
 			if (option.equals("")) {
-				String[] ids = FantomConnector.queryIdentifiers();
+				String[] ids;
+				try {
+					ids = FantomConnector.queryIdentifiers();
+				} catch (InstantiationError e) {
+					ids = null;
+				}
 				if (ids != null) {
 					return ids[0];
 				}

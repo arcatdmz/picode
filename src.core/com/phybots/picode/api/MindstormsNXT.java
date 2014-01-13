@@ -33,9 +33,10 @@ public class MindstormsNXT extends PoserWithConnector {
 	public void setConnector(String connector) {
 		try {
 			raw.setConnector(ConnectorFactory.makeConnector(connector));
-		} catch (Exception e) {
+		} catch (InstantiationError | Exception e) {
 			// Do nothing.
-			e.printStackTrace();
+			// This happens when there's no compatible jfantom native library.
+			System.err.println(String.format("faile to set connector: %s", e.getMessage()));
 		}
 	}
 
@@ -57,9 +58,15 @@ public class MindstormsNXT extends PoserWithConnector {
 
 		// If no connector is specified, use the first USB connection by default.
 		if (raw.getConnector() == null) {
-			String[] ids = FantomConnector.queryIdentifiers();
-			if (ids != null) {
-				setConnector(ids[0]);
+			try {
+				String[] ids = FantomConnector.queryIdentifiers();
+				if (ids != null) {
+					setConnector(ids[0]);
+				}
+			} catch (InstantiationError | Exception e) {
+				// Do nothing.
+				// This happens when there's no compatible jfantom native library.
+				return false;
 			}
 		}
 

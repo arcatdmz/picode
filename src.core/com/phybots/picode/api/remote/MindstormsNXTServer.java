@@ -39,7 +39,7 @@ public class MindstormsNXTServer {
 	public void register(MindstormsNXT nxt) {
 		if (!contains(nxt)) {
 			nxts.put(id ++, nxt);
-			System.out.println("server: registered " + id);
+			//System.out.println("server: registered " + id);
 		}
 	}
 
@@ -70,9 +70,9 @@ public class MindstormsNXTServer {
 				
 				@Override
 				public void run() {
-					System.out.println("server: start");
+					//System.out.println("server: start");
 					server.serve();
-					System.out.println("server: stop");
+					//System.out.println("server: stop");
 				}
 			});
 			return true;
@@ -97,11 +97,11 @@ public class MindstormsNXTServer {
 		
 		@Override
 		public int connect(String identifier) throws TException {
-			System.out.println("server: look for " + identifier);
+			//System.out.println("server: look for " + identifier);
 			if (identifier == null) return -1;
 			for (Entry<Integer, MindstormsNXT> entry : nxts.entrySet()) {
 				if (identifier.equals(entry.getValue().getIdentifier())) {
-					System.out.println("server: found");
+					//System.out.println("server: found");
 					return entry.getValue().connect() ? entry.getKey() : -1;
 				}
 			}

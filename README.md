@@ -1,8 +1,6 @@
 Picode: Proccessing-based IDE with Inline Photos
 ================================================================
-Copyright (C) 2013 Jun KATO
-
-version 0.0.1
+Copyright (C) 2013-2014 Jun KATO
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ## How to use
@@ -16,6 +14,8 @@ Then, simply double-click picode.cmd
 
 ### Mac OS X
 
+Environmental variable JAVA_HOME should point to JDK 6 or 7.
+
 Simply double-click picode.sh
 
 ### Supported hardware
@@ -25,4 +25,4 @@ Simply double-click picode.sh
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 http://github.com/arcatdmz/picode
-arc (at) digitalmuseum.jp
+i (at) junkato.jp

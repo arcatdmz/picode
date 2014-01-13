@@ -147,7 +147,9 @@ public class ConnectorPanel extends JPanel {
 	public Connector newConnectorInstance() {
 		try {
 			return ConnectorFactory.makeConnector(getConnectionString());
-		} catch (InstantiationError | Exception e) {
+		} catch (InstantiationError e) {
+			return null;
+		} catch (Exception e) {
 			return null;
 		}
 	}

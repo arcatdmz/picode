@@ -31,5 +31,12 @@
 	<classpathentry kind="lib" path="lib/kinect/library/slf4j-api-1.5.8.jar"/>
 	<classpathentry kind="lib" path="lib/kinect/library/slf4j-simple-1.5.8.jar"/>
 	<classpathentry kind="lib" path="picode-resources.jar"/>
+	<classpathentry kind="lib" path="processing/lib/tools.jar"/>
+	<!--
+	<classpathentry kind="lib" path="processing/lib/com.ibm.icu_4.4.2.v20110823.jar"/>
+	<classpathentry kind="lib" path="processing/lib/jdi.jar"/>
+	<classpathentry kind="lib" path="processing/lib/jdimodel.jar"/>
+	<classpathentry kind="lib" path="processing/lib/org.eclipse.osgi_3.8.1.v20120830-144521.jar"/>
+	-->
 	<classpathentry kind="output" path="bin"/>
 </classpath>

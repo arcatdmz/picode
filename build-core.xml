@@ -5,10 +5,12 @@
 	<!-- ****Properties**** -->
 
 	<!-- Software version -->
-	<property name="picode-version" value="0.1.0" />
+	<property name="picode-version" value="0.2.0" />
 
 	<!-- Dependent class pathes -->
-	<property name="pde.classpath" value="./lib/core/library/core.jar; ${env.JAVA_HOME}/lib/tools.jar; ./processing/lib/ant.jar; ./processing/lib/ant-launcher.jar; ./processing/lib/antlr.jar; ./processing/lib/apple.jar; ./processing/lib/jdt-core.jar; ./processing/lib/jna.jar; ./processing/lib/org-netbeans-swing-outline.jar; ./processing/lib/ecj.jar"/>
+	<!-- <property name="jdi.classpath" value="./processing/lib/com.ibm.icu_4.4.2.v20110823.jar; ./processing/lib/jdi.jar; ./processing/lib/jdimodel.jar; ./processing/lib/org.eclipse.osgi_3.8.1.v20120830-144521.jar"/> -->
+	<property name="jdi.classpath" value="./processing/lib/tools.jar"/>
+	<property name="pde.classpath" value="./lib/core/library/core.jar; ${jdi.classpath}; ./processing/lib/ant.jar; ./processing/lib/ant-launcher.jar; ./processing/lib/antlr.jar; ./processing/lib/apple.jar; ./processing/lib/jna.jar; ./processing/lib/org-netbeans-swing-outline.jar; ./processing/lib/ecj.jar"/>
 	<property name="phybots.classpath" value="./lib/phybots/library/phybots-core-1.0.2.jar; ./lib/phybots/library/connector-1.0.6.jar; ./lib/phybots/library/capture-1.0.3.jar; ./lib/phybots/library/bluecove-2.1.1-SNAPSHOT.jar" />
 	<property name="kinect.classpath" value="./lib/kinect/library/kinect.jar; ./lib/kinect/library/libthrift-0.9.0.jar; ./lib/kinect/library/slf4j-api-1.5.8.jar; ./lib/kinect/library/slf4j-simple-1.5.8.jar" />
 	<property name="picode-classpath" value="./bin; ${pde.classpath}; ${phybots.classpath}; ${kinect.classpath}" />

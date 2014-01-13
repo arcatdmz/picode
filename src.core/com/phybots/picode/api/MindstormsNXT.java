@@ -33,10 +33,11 @@ public class MindstormsNXT extends PoserWithConnector {
 	public void setConnector(String connector) {
 		try {
 			raw.setConnector(ConnectorFactory.makeConnector(connector));
-		} catch (InstantiationError | Exception e) {
-			// Do nothing.
+		} catch (InstantiationError e) {
 			// This happens when there's no compatible jfantom native library.
-			System.err.println(String.format("faile to set connector: %s", e.getMessage()));
+			System.err.println(String.format("failed to set connector: %s", e.getMessage()));
+		} catch (Exception e) {
+			// Do nothing.
 		}
 	}
 
@@ -63,10 +64,11 @@ public class MindstormsNXT extends PoserWithConnector {
 				if (ids != null) {
 					setConnector(ids[0]);
 				}
-			} catch (InstantiationError | Exception e) {
-				// Do nothing.
+			} catch (InstantiationError e) {
 				// This happens when there's no compatible jfantom native library.
-				return false;
+				System.err.println(String.format("failed to set connector: %s", e.getMessage()));
+			} catch (Exception e) {
+				// Do nothing.
 			}
 		}
 

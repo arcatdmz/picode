@@ -258,7 +258,7 @@ public class PicodeMain {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				System.err.println(e.getMessage());
 			}
 
 			// Connect to the posers.
